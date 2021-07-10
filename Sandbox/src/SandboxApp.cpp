@@ -14,11 +14,10 @@ public:
 
 	}
 
-	void Run()
+	void Run() 
 	{
-		
-	}
 
+	}
 };
 
 Atlas::Application* Atlas::CreateApplication()
