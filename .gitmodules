@@ -1,3 +1,6 @@
 [submodule "Atlas/vendor/spdlog"]
 	path = Atlas/vendor/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "Atlas/vendor/glfw"]
+	path = Atlas/vendor/glfw
+	url = https://github.com/TheCherno/GLFW

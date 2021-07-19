@@ -4,6 +4,8 @@
 #include "Atlas/Events/ApplicationEvent.h"
 #include "Atlas/Log.h"
 
+#include <GLFW/glfw3.h>
+
 namespace Atlas {
 
 	Application::Application()
