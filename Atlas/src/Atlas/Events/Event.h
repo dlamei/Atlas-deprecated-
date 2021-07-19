@@ -1,9 +1,7 @@
 #pragma once
 
+#include "atlpch.h"
 #include "Atlas/Core.h"
-
-#include <string>
-#include <functional>
 
 namespace Atlas
 {

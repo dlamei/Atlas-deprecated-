@@ -1,7 +1,7 @@
+#include "atlpch.h"
 #include "Application.h"
 
 #include "Atlas/Events/ApplicationEvent.h"
-
 #include "Atlas/Log.h"
 
 namespace Atlas {
