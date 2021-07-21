@@ -6,11 +6,12 @@ class Sandbox : public Atlas::Application
 public:
 	Sandbox()
 	{
+
 	}
 
 	~Sandbox()
 	{
-
+		
 	}
 
 	void Run() 

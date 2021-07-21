@@ -7,10 +7,12 @@
 #include <GLFW/glfw3.h>
 
 namespace Atlas {
+	#define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
 
 	Application::Application()
+		: m_Window(std::unique_ptr<Window>(Window::Create())) 
 	{
-
+		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 	}
 	
 	Application::~Application()
@@ -18,19 +20,16 @@ namespace Atlas {
 
 	}
 
+	void Application::OnEvent(Event& e)
+	{
+		ATL_CORE_INFO("{0}", e);
+	}
+
 	void Application::Run()
 	{
-		WindowResizeEvent event(1280, 720);
-
-		if (event.IsInCategory(EventCategoryApplication))
+		while (m_Running) 
 		{
-			ATL_ERROR(event);
+			m_Window->OnUpdate();
 		}
-		if (event.IsInCategory(EventCategoryInput))
-		{
-			ATL_TRACE(event.ToString());
-		}
-
-		while (true);
 	}
 }
