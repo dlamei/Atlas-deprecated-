@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Atlas/Window.h"
-
 #include <GLFW/glfw3.h>
 
 namespace Atlas {
