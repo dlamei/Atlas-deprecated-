@@ -25,9 +25,9 @@ namespace Atlas
 		EventCategoryMouseButton	= BIT(4)
 	};
 
-#define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\
-																virtual EventType GetEventType() const override { return GetStaticType(); } \
-																virtual const char* GetName() const override { return #type; }
+#define EVENT_CLASS_TYPE(type)  static EventType GetStaticType() { return EventType::##type; }\
+								virtual EventType GetEventType() const override { return GetStaticType(); } \
+								virtual const char* GetName() const override { return #type; }
 
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
 
@@ -67,7 +67,7 @@ namespace Atlas
 		{
 			if (m_Event.GetEventType() == T::GetStaticType())
 			{
-				m_Event.m_Handled = func(*(T*)&m_Event);
+				m_Event.m_Handled = func(*(T*)& m_Event);
 				return true;
 			}
 			return false;
