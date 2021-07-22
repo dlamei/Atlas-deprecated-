@@ -19,6 +19,8 @@ namespace Atlas {
 
 		bool OnWindowClose(WindowCloseEvent& e);
 
+		static Application* s_Instance;
+
 	public:
 		Application();
 		virtual ~Application();
@@ -30,6 +32,8 @@ namespace Atlas {
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 
+		inline Window& GetWindow() { return *m_Window; }
+		static inline Application& Get() { return *s_Instance; }
 
 	};
 
