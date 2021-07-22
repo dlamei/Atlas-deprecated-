@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Core.h"
+
+#include "Window.h"
+#include "Atlas/LayerStack.h"
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
-#include "Window.h"
 
 namespace Atlas {
 
@@ -13,6 +15,7 @@ namespace Atlas {
 	private:
 		std::unique_ptr<Window> m_Window;
 		bool m_Running = true;
+		LayerStack m_LayerStack;
 
 		bool OnWindowClose(WindowCloseEvent& e);
 
@@ -23,6 +26,9 @@ namespace Atlas {
 		void Run();
 
 		void OnEvent(Event& e);
+
+		void PushLayer(Layer* layer);
+		void PushOverlay(Layer* overlay);
 
 
 	};
