@@ -74,6 +74,7 @@ namespace Atlas {
 				data.EventCallback(event);
 		});
 
+
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
 				WindowData& data = *(WindowData*) glfwGetWindowUserPointer(window);
@@ -88,7 +89,7 @@ namespace Atlas {
 					}
 					case GLFW_RELEASE:
 					{
-						KeyReleaseEvent event(key);
+						KeyReleasedEvent event(key);
 						data.EventCallback(event);
 						break;
 					}
@@ -99,6 +100,13 @@ namespace Atlas {
 						break;
 					}
 				}
+		});
+
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keyCode)
+		{
+				WindowData& data = *(WindowData*) glfwGetWindowUserPointer(window);
+				KeyTypedEvent event(keyCode);
+				data.EventCallback(event);
 		});
 
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)

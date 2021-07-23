@@ -41,10 +41,10 @@ namespace Atlas {
 		EVENT_CLASS_TYPE(KeyPressed)
 	};
 
-	class ATLAS_API KeyReleaseEvent : public KeyEvent
+	class ATLAS_API KeyReleasedEvent : public KeyEvent
 	{
 	public:
-		KeyReleaseEvent(int keycode)
+		KeyReleasedEvent(int keycode)
 			: KeyEvent(keycode) {}
 
 		std::string ToString() const override
@@ -55,6 +55,23 @@ namespace Atlas {
 		}
 
 		EVENT_CLASS_TYPE(KeyReleased)
+	};
+
+	class ATLAS_API KeyTypedEvent : public KeyEvent
+	{
+
+	public:
+		KeyTypedEvent(unsigned int keyCode)
+			: KeyEvent(keyCode) {}
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "KeyPressEvent: " << m_KeyCode;
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(KeyTyped)
 	};
 
 }

@@ -22,8 +22,8 @@ class Sandbox : public Atlas::Application
 public:
 	Sandbox()
 	{
+		PushLayer(new Atlas::ImGuiLayer());
 		PushLayer(new ExampleLayer());
-		PushOverlay(new Atlas::ImGuiLayer());
 	}
 
 	~Sandbox()
