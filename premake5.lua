@@ -8,6 +8,8 @@ workspace "Atlas"
 		"Dist"
 	}
 
+	startproject "Sandbox"
+
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
@@ -15,14 +17,21 @@ IncludeDir["GLFW"] = "Atlas/vendor/GLFW/include"
 IncludeDir["Glad"] = "Atlas/vendor/Glad/include"
 IncludeDir["ImGui"] = "Atlas/vendor/ImGui"
 
-include "Atlas/vendor/GLFW"
-include "Atlas/vendor/Glad"
-include "Atlas/vendor/ImGui"
+--include "Atlas/vendor/GLFW"
+--include "Atlas/vendor/Glad"
+--include "Atlas/vendor/ImGui"
+group "Dependencies" 
+	include "Atlas/vendor/GLFW"
+	include "Atlas/vendor/Glad"
+	include "Atlas/vendor/ImGui"
+group""
+
 
 project "Atlas"
 	location "Atlas"
 	kind "SharedLib"
 	language "C++"
+	staticruntime "Off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -55,7 +64,6 @@ project "Atlas"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "Off"
 		systemversion "latest"
 
 		defines
@@ -67,7 +75,7 @@ project "Atlas"
 
 		postbuildcommands
 		{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
+			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"")
 		}
 
 	filter "configurations:Debug"
@@ -86,6 +94,7 @@ project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
+	staticruntime "Off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -109,7 +118,6 @@ project "Sandbox"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "Off"
 		systemversion "latest"
 
 		defines
@@ -119,12 +127,15 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "ATL_DEBUG"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "ATL_RELEASE"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "ATL_DIST"
+		runtime "Release"
 		optimize "On"

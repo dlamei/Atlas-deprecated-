@@ -6,6 +6,8 @@
 
 #include <glad/glad.h>
 
+#include "Input.h"
+
 namespace Atlas {
 
 	Application* Application::s_Instance = nullptr;
@@ -50,6 +52,9 @@ namespace Atlas {
 				layer->OnUpdate();
 			}
 
+			auto [x, y] = Input::GetMousePos();
+			ATL_CORE_TRACE("{0}, {1}", x, y);
+
 			m_Window->OnUpdate();
 		}
 	}
@@ -63,13 +68,11 @@ namespace Atlas {
 	void Application::PushLayer(Layer* layer)
 	{
 		m_LayerStack.PushLayer(layer);
-		layer->OnAttach();
 	}
 
 	void Application::PushOverlay(Layer* overlay)
 	{
 		m_LayerStack.PushOverlay(overlay);
-		overlay->OnAttach();
 	}
 
 }
