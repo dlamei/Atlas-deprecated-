@@ -3,9 +3,11 @@
 #include "Core.h"
 
 #include "Window.h"
-#include "Atlas/LayerStack.h"
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
+
+#include "Atlas/LayerStack.h"
+#include "Atlas/ImGui/ImGuiLayer.h"
 
 namespace Atlas {
 
@@ -14,6 +16,7 @@ namespace Atlas {
 
 	private:
 		std::unique_ptr<Window> m_Window;
+		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 

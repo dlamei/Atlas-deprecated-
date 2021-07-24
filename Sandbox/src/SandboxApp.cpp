@@ -8,12 +8,16 @@ public:
 
 	void OnUpdate() override
 	{
-		ATL_INFO("ExampleLayer::Update");
+		//ATL_INFO("ExampleLayer::Update");
+		if (Atlas::Input::IsKeyPressed(ATL_KEY_TAB))
+		{
+			ATL_INFO("Tab key is pressed");
+		}
 	}
 
 	void OnEvent(Atlas::Event& event) override
 	{
-		ATL_TRACE("{0}", event);
+		//ATL_TRACE("{0}", event);
 	}
 };
 
@@ -22,7 +26,6 @@ class Sandbox : public Atlas::Application
 public:
 	Sandbox()
 	{
-		PushLayer(new Atlas::ImGuiLayer());
 		PushLayer(new ExampleLayer());
 	}
 
