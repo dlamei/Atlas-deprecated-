@@ -1,11 +1,15 @@
 #pragma once
 
 #ifdef ATL_PLATFORM_WINDOWS
+#if ATL_DYNAMIC_LINK
 	#ifdef ATL_BUILD_DLL
 		#define ATLAS_API __declspec(dllexport)
 	#else
 		#define ATLAS_API __declspec(dllimport)
 	#endif
+#else
+	#define ATLAS_API 
+#endif
 #else 
 	#error Atlas only supports Windows!
 #endif

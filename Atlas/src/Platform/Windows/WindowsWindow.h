@@ -3,6 +3,8 @@
 #include "Atlas/Window.h"
 #include <GLFW/glfw3.h>
 
+#include "Atlas/Renderer/GraphicsContext.h"
+
 namespace Atlas {
 
 	class WindowsWindow : public Window
@@ -12,6 +14,7 @@ namespace Atlas {
 		virtual void Shutdown();
 
 		GLFWwindow* m_Window;
+		GraphicsContext* m_Context;
 
 		struct WindowData
 		{
@@ -38,7 +41,6 @@ namespace Atlas {
 		bool IsVSync() const override;
 
 		inline virtual void* GetNativeWindow() const { return m_Window; }
-
 	};
 
 }

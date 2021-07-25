@@ -1,5 +1,7 @@
 #include <Atlas.h>
 
+#include "ImGui/imgui.h"
+
 class ExampleLayer : public Atlas::Layer 
 {
 public:
@@ -18,6 +20,13 @@ public:
 	void OnEvent(Atlas::Event& event) override
 	{
 		//ATL_TRACE("{0}", event);
+	}
+
+	void OnImGuiRender() override
+	{
+		ImGui::Begin("Test");
+		ImGui::Text("Hello World");
+		ImGui::End();
 	}
 };
 
