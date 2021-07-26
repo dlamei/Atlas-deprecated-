@@ -25,6 +25,7 @@ public:
 	void OnImGuiRender() override
 	{
 		ImGui::Begin("Test");
+		ImGui::SetWindowFontScale(1.8);
 		ImGui::Text("Hello World");
 		ImGui::End();
 	}

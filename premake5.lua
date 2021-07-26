@@ -75,11 +75,6 @@ project "Atlas"
 			"_CRT_SECURE_NO_WARNINGS"
 		}
 
-		--postbuildcommands
-		--{
-		--	("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"")
-		--}
-
 	filter "configurations:Debug"
 		defines "ATL_DEBUG"
 		runtime "Debug"
