@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include <glm/glm.hpp>
+
 namespace Atlas {
 
 	class Shader
@@ -15,6 +17,8 @@ namespace Atlas {
 
 		void Bind() const;
 		void Unbind() const;
+
+		void SetUniformMat4(const std::string& name, const glm::mat4& matrix);
 	 };
 
 }
