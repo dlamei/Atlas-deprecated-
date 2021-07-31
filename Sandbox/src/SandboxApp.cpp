@@ -12,11 +12,16 @@ private:
 	std::shared_ptr<Atlas::VertexArray> m_SquareVertexArray;
 
 	Atlas::OrthographicCamera m_Camera;
+	glm::vec3 m_CameraPosition;
+	float m_CameraRotation = 0.0f;
+
+	float m_CameraSpeed = 4.0f;
+	float m_CameraRotationSpeed = 180.0f;
 
 
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f, 0.0f, 0.0f)
 	{
 		m_VertexArray.reset(Atlas::VertexArray::Create());
 
@@ -138,12 +143,41 @@ public:
 
 	}
 
-	void OnUpdate() override
+	void OnUpdate(Atlas::Timestep timestep) override
 	{
+		
+		if (Atlas::Input::IsKeyPressed(ATL_KEY_D))
+		{
+			m_CameraPosition.x -= m_CameraSpeed * timestep;
+		} 
+		else if (Atlas::Input::IsKeyPressed(ATL_KEY_A))
+		{
+			m_CameraPosition.x += m_CameraSpeed * timestep;
+		}
+
+		if (Atlas::Input::IsKeyPressed(ATL_KEY_W))
+		{
+			m_CameraPosition.y -= m_CameraSpeed * timestep;
+		} 
+		else if (Atlas::Input::IsKeyPressed(ATL_KEY_S))
+		{
+			m_CameraPosition.y += m_CameraSpeed * timestep;
+		}
+
+		if (Atlas::Input::IsKeyPressed(ATL_KEY_Q))
+		{
+			m_CameraRotation += m_CameraRotationSpeed * timestep;
+		}
+		else if (Atlas::Input::IsKeyPressed(ATL_KEY_E))
+		{
+			m_CameraRotation -= m_CameraRotationSpeed * timestep;
+		}
+
 		Atlas::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Atlas::RenderCommand::Clear();
 
-		m_Camera.SetRotation(45.0f);
+		m_Camera.SetPosition(m_CameraPosition);
+		m_Camera.SetRotation(m_CameraRotation);
 
 		Atlas::Renderer::BeginScene(m_Camera);
 
@@ -159,6 +193,7 @@ public:
 
 	void OnImGuiRender() override
 	{
+		ImGui::ShowDemoWindow();
 	}
 };
 

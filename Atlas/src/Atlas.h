@@ -5,6 +5,8 @@
 #include "Atlas/Layer.h"
 #include "Atlas/Log.h"
 
+#include "Atlas/Core/Timestep.h"
+
 #include "Atlas/Input.h"
 #include "Atlas/KeyCodes.h"
 #include "Atlas/MouseButtonCodes.h"

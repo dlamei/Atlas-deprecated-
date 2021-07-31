@@ -9,17 +9,13 @@
 #include "Atlas/LayerStack.h"
 #include "Atlas/ImGui/ImGuiLayer.h"
 
-#include "Atlas/Renderer/Shader.h"
-#include "Atlas/Renderer/Buffer.h"
-#include "Atlas/Renderer/VertexArray.h"
-
-#include "Atlas/Renderer/OrthographicCamera.h"
-
+#include "Atlas/Core/Timestep.h"
 
 namespace Atlas {
 
 	class ATLAS_API Application
 	{
+
 
 	private:
 		std::unique_ptr<Window> m_Window;
@@ -30,6 +26,8 @@ namespace Atlas {
 		bool OnWindowClose(WindowCloseEvent& e);
 
 		static Application* s_Instance;
+	
+		float m_LastFrameTime;
 
 
 	public:

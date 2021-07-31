@@ -3,6 +3,8 @@
 #include "Atlas/Core.h"
 #include "Atlas/Events/Event.h"
 
+#include "Atlas/Core/Timestep.h"
+
 namespace Atlas {
 
 	class ATLAS_API Layer
@@ -16,7 +18,7 @@ namespace Atlas {
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(Timestep ts) {}
 		virtual void OnImGuiRender() {}
 		virtual void OnEvent(Event& event) {}
 
