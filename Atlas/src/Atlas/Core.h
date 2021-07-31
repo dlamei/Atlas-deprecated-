@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #ifdef ATL_PLATFORM_WINDOWS
 #if ATL_DYNAMIC_LINK
 	#ifdef ATL_BUILD_DLL
@@ -29,3 +31,12 @@
 #define BIT(x) (1 << x)
 
 #define ATL_BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
+
+namespace Atlas
+{
+	template<typename T>
+	using Scope = std::shared_ptr<T>;
+
+	template<typename T>
+	using Ref = std::shared_ptr<T>;
+}

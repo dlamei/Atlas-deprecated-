@@ -1,9 +1,11 @@
 #include <Atlas.h>
 
+#include "Platform/OpenGL/OpenGLShader.h"
+
 #include "ImGui/imgui.h"
 
-
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 class ExampleLayer : public Atlas::Layer
 {
@@ -11,7 +13,7 @@ private:
 	std::shared_ptr<Atlas::Shader> m_Shader;
 	std::shared_ptr<Atlas::VertexArray> m_VertexArray;
 
-	std::shared_ptr<Atlas::Shader> m_SquareShader;
+	std::shared_ptr<Atlas::Shader> m_FlatColorShader;
 	std::shared_ptr<Atlas::VertexArray> m_SquareVertexArray;
 
 	Atlas::OrthographicCamera m_Camera;
@@ -24,9 +26,12 @@ private:
 
 	Atlas::Timestep timestep = 0.0f;
 
+	glm::vec4 m_Color1 = { 0.8f, 0.2f, 0.3f, 1.0f };
+	glm::vec4 m_Color2 = { 0.2f, 0.3f, 0.8f, 1.0f };
+
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f, 0.0f, 0.0f) 
+		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f, 0.0f, 0.0f)
 	{
 		m_VertexArray.reset(Atlas::VertexArray::Create());
 
@@ -86,7 +91,7 @@ public:
 			}
 		)";
 
-		m_Shader.reset(new Atlas::Shader(vertexSrc, fragmentSrc));
+		m_Shader.reset(Atlas::Shader::Create(vertexSrc, fragmentSrc));
 
 		float squareVertices[4 * 3] = {
 			-0.5f, -0.5f, 0.0f,
@@ -111,7 +116,7 @@ public:
 		squareIndexBuffer.reset(Atlas::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
 		m_SquareVertexArray->SetIndexBuffer(squareIndexBuffer);
 
-		std::string squareVertexSrc = R"(
+		std::string flatVertexSrc = R"(
 			#version 330 core
 
 			layout(location = 0) in vec3 a_Position;
@@ -131,22 +136,24 @@ public:
 			}
 		)";
 
-		std::string squareFragmentSrc = R"(
+		std::string flatFragmentSrc = R"(
 			#version 330 core
 
 			layout(location = 0) out vec4 color;
 
+			uniform vec4 u_Color;
+
 			in vec3 v_Position;
 			in vec4 v_Color;
 
-
 			void main()
 			{
-				color = vec4(0.3, 0.0, 0.2, 1.0);
+				//color = vec4(0.3, 0.0, 0.2, 1.0);
+				color = u_Color;
 			}
 		)";
 
-		m_SquareShader.reset(new Atlas::Shader(squareVertexSrc, squareFragmentSrc));
+		m_FlatColorShader.reset(Atlas::Shader::Create(flatVertexSrc, flatFragmentSrc));
 
 	}
 
@@ -191,16 +198,29 @@ public:
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
+		Atlas::Renderer::Submit(m_Shader, m_VertexArray);
+
+		
+		std::dynamic_pointer_cast<Atlas::OpenGLShader>(m_FlatColorShader)->Bind();
 		for (int i = 0; i < 20; i++)
 		{
 			for (int j = 0; j < 20; j++)
 			{
-				glm::vec3 pos(i * 0.15f, j * 0.15f, 0.0f);
+				glm::vec3 pos(i * 0.12f, j * 0.12f, 0.0f);
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				Atlas::Renderer::Submit(m_SquareShader, m_SquareVertexArray, transform);
+
+				if ((i + j) % 2 == 0)
+				{
+					std::dynamic_pointer_cast<Atlas::OpenGLShader>(m_FlatColorShader)->SetUnifromFloat4("u_Color", m_Color1);
+				}
+				else
+				{
+					std::dynamic_pointer_cast<Atlas::OpenGLShader>(m_FlatColorShader)->SetUnifromFloat4("u_Color", m_Color2);
+				}
+
+				Atlas::Renderer::Submit(m_FlatColorShader, m_SquareVertexArray, transform);
 			}
 		}
-		Atlas::Renderer::Submit(m_Shader, m_VertexArray);
 
 		Atlas::Renderer::EndScene();
 	}
@@ -224,7 +244,12 @@ public:
 
 	void OnImGuiRender() override
 	{
-		ImGui::ShowDemoWindow();
+		//ImGui::ShowDemoWindow();
+		ImGui::Begin("Settings");
+		ImGui::SetWindowFontScale(1.8f);
+		ImGui::ColorEdit3("color1", glm::value_ptr(m_Color1));
+		ImGui::ColorEdit3("color2", glm::value_ptr(m_Color2));
+		ImGui::End();
 	}
 };
 
