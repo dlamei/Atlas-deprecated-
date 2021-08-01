@@ -18,7 +18,7 @@ namespace Atlas {
 
 
 	private:
-		std::shared_ptr<Window> m_Window;
+		std::unique_ptr<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;

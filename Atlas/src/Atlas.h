@@ -19,6 +19,7 @@
 #include "Atlas/Renderer/Buffer.h"
 #include "Atlas/Renderer/VertexArray.h"
 #include "Atlas/Renderer/Shader.h"
+#include "Atlas/Renderer/Texture.h"
 
 #include "Atlas/Renderer/OrthographicCamera.h"
 //--Entry Point--

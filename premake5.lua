@@ -17,6 +17,7 @@ IncludeDir["GLFW"] = "Atlas/vendor/GLFW/include"
 IncludeDir["Glad"] = "Atlas/vendor/Glad/include"
 IncludeDir["ImGui"] = "Atlas/vendor/ImGui"
 IncludeDir["GLM"] = "Atlas/vendor/GLM"
+IncludeDir["stb_image"] = "Atlas/vendor/stb_image"
 
 group "Dependencies" 
 	include "Atlas/vendor/GLFW"
@@ -42,6 +43,8 @@ project "Atlas"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/stb_image/**.cpp",
+		"%{prj.name}/vendor/stb_image/**.h",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl"
 	}
@@ -53,7 +56,8 @@ project "Atlas"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.GLM}"
+		"%{IncludeDir.GLM}",
+		"%{IncludeDir.stb_image}"
 	}
 
 	links 

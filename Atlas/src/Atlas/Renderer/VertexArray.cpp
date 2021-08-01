@@ -10,7 +10,7 @@ namespace Atlas {
 	{
 		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::API::None:	ATL_CORE_ASSERT(false, "RendererAPI is no't supported!"); return nullptr;
+			case RendererAPI::API::None:	ATL_CORE_ASSERT(false, "RendererAPI is not supported!"); return nullptr;
 			case RendererAPI::API::OpenGL:	return new OpenGLVertexArray();
 		}
 
