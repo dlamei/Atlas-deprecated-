@@ -16,7 +16,6 @@ workspace "Atlas"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
--- Include directories relative to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["GLFW"] = "Atlas/vendor/GLFW/include"
 IncludeDir["Glad"] = "Atlas/vendor/Glad/include"

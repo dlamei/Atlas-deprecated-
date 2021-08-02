@@ -33,5 +33,4 @@ namespace Atlas {
 		const glm::mat4& GetViewMatrix() { return m_ViewMatrix; }
 		const glm::mat4& GetViewProjectionMatrix() { return m_ViewProjectionMatrix; }
 	};
-
 }

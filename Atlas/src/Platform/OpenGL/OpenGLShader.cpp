@@ -29,9 +29,16 @@ namespace Atlas {
 		std::string source = ReadFile(filepath);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
+
+		auto lastSlash = filepath.find_last_of("/\\");
+		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+		auto lastDot = filepath.rfind(".");
+		auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
+		m_Name = filepath.substr(lastSlash, count);
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc)
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
+		: m_Name(name)
 	{
 		std::unordered_map<GLenum, std::string> sources;
 		sources[GL_VERTEX_SHADER] = vertexSrc;
@@ -47,7 +54,7 @@ namespace Atlas {
 	std::string OpenGLShader::ReadFile(const std::string& filepath)
 	{
 		std::string result;
-		std::ifstream inStream(filepath, std::ios::in, std::ios::binary);
+		std::ifstream inStream(filepath, std::ios::in | std::ios::binary);
 		if (inStream)
 		{
 			inStream.seekg(0, std::ios::end);
@@ -91,7 +98,8 @@ namespace Atlas {
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
 		GLuint program = glCreateProgram();
-		std::vector<GLenum> glShaderIDs(shaderSources.size());
+		std::vector<GLenum> glShaderIDs;
+		glShaderIDs.resize(shaderSources.size());
 
 		for (auto& kv : shaderSources)
 		{
@@ -168,49 +176,42 @@ namespace Atlas {
 	void OpenGLShader::SetUnifromInt(const std::string& name, const int value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		if (location == -1) ATL_CORE_WARN("Shader {0} not found!", name);
 		glUniform1i(location, value);
 	}
 
 	void OpenGLShader::SetUnifromFloat(const std::string& name, const float value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		if (location == -1) ATL_CORE_WARN("Shader {0} not found!", name);
 		glUniform1f(location, value);
 	}
 
 	void OpenGLShader::SetUnifromFloat2(const std::string& name, const glm::vec2& values)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		if (location == -1) ATL_CORE_WARN("Shader {0} not found!", name);
 		glUniform2f(location, values.x, values.y);
 	}
 
 	void OpenGLShader::SetUnifromFloat3(const std::string& name, const glm::vec3& values)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		if (location == -1) ATL_CORE_WARN("Shader {0} not found!", name);
 		glUniform3f(location, values.x, values.y, values.z);
 	}
 
 	void OpenGLShader::SetUnifromFloat4(const std::string& name, const glm::vec4& values)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		if (location == -1) ATL_CORE_WARN("Shader {0} not found!", name);
 		glUniform4f(location, values.x, values.y, values.z, values.w);
 	}
 
 	void OpenGLShader::SetUniformMat3(const std::string& name, const glm::mat3& matrix)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		if (location == -1) ATL_CORE_WARN("Shader {0} not found!", name);
 		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 
 	void OpenGLShader::SetUniformMat4(const std::string& name, const glm::mat4& matrix)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		if (location == -1) ATL_CORE_WARN("Shader {0} not found!", name);
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 
