@@ -8,7 +8,7 @@
 
 namespace Atlas {
 
-	class ATLAS_API Log
+	class Log
 	{
 	private:
 		static std::shared_ptr<spdlog::logger> s_CoreLogger;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "Atlas/Core.h"
+#include "Atlas/Core/Core.h"
 
 namespace Atlas {
 

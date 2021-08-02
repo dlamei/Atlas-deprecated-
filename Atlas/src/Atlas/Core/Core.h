@@ -10,7 +10,7 @@
 		#define ATLAS_API __declspec(dllimport)
 	#endif
 #else
-	#define ATLAS_API 
+	#define ATLAS_API
 #endif
 #else 
 	#error Atlas only supports Windows!
@@ -39,4 +39,6 @@ namespace Atlas
 
 	template<typename T>
 	using Ref = std::shared_ptr<T>;
+
+
 }

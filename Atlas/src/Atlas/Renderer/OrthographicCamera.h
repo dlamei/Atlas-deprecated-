@@ -12,7 +12,6 @@ namespace Atlas {
 		glm::mat4 m_ViewProjectionMatrix;
 
 		glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
-		float m_Zoom = 1.0f;
 		float m_Rotation = 0.0f;
 
 		void RecalculateViewMatrix();
@@ -26,8 +25,7 @@ namespace Atlas {
 		inline const float GetRotation() const { return m_Rotation; }
 		void SetRotation(float rotation) { m_Rotation = rotation; RecalculateViewMatrix(); }
 
-		inline const float GetZoom() const { return m_Zoom; }
-		void SetZoom(const float zoom) { m_Zoom = zoom; RecalculateViewMatrix(); }
+		void SetProjection(float left, float right, float bottom, float top);
 
 		const glm::mat4& GetProjectionMatrix() { return m_ProjectionMatrix; }
 		const glm::mat4& GetViewMatrix() { return m_ViewMatrix; }

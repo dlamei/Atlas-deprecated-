@@ -1,15 +1,15 @@
 #pragma once
 
 // For use by Atlas applications
-#include "Atlas/Application.h"
-#include "Atlas/Layer.h"
-#include "Atlas/Log.h"
+#include "Atlas/Core/Application.h"
+#include "Atlas/Core/Layer.h"
+#include "Atlas/Core/Log.h"
 
 #include "Atlas/Core/Timestep.h"
 
-#include "Atlas/Input.h"
-#include "Atlas/KeyCodes.h"
-#include "Atlas/MouseButtonCodes.h"
+#include "Atlas/Core/Input.h"
+#include "Atlas/Core/KeyCodes.h"
+#include "Atlas/Core/MouseButtonCodes.h"
 
 #include "Atlas/ImGui/ImGuiLayer.h"
 
@@ -22,6 +22,4 @@
 #include "Atlas/Renderer/Texture.h"
 
 #include "Atlas/Renderer/OrthographicCamera.h"
-//--Entry Point--
-#include "Atlas/EntryPoint.h"
-//--Entry Point--
+#include "Atlas/Renderer/OrthographicCameraController.h"

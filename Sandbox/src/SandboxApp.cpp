@@ -1,4 +1,5 @@
 #include <Atlas.h>
+#include <Atlas/Core/EntryPoint.h>
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
@@ -6,6 +7,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "Sandbox2D.h"
 
 class ExampleLayer : public Atlas::Layer
 {
@@ -18,22 +21,14 @@ private:
 	Atlas::Ref<Atlas::Texture2D> m_Texture;
 	Atlas::Ref<Atlas::Texture2D> m_CatTexture;
 
-	Atlas::OrthographicCamera m_Camera;
-	glm::vec3 m_CameraPosition;
-	float m_CameraRotation = 0.0f;
-
-	float m_CameraSpeed = 4.0f;
-	float m_ZoomSpeed = 10.0f;
-	float m_CameraRotationSpeed = 180.0f;
-
-	Atlas::Timestep timestep = 0.0f;
+	Atlas::OrthographicCameraController m_CameraController;
 
 	glm::vec4 m_Color1 = { 0.8f, 0.2f, 0.3f, 1.0f };
 	glm::vec4 m_Color2 = { 0.2f, 0.3f, 0.8f, 1.0f };
 
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f, 0.0f, 0.0f)
+		: Layer("Example"), m_CameraController(1280.0f / 720.0f)
 	{
 		m_VertexArray = Atlas::VertexArray::Create();
 
@@ -119,8 +114,10 @@ public:
 		squareIndexBuffer = Atlas::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
 		m_SquareVertexArray->SetIndexBuffer(squareIndexBuffer);
 
+		//m_FlatColorShader = Atlas::Shader::Create("flatColor", flatVertexSrc, flatFragmentSrc);
 		m_ShaderLibrary.Load("assets/Shaders/FlatColor.glsl");
 
+		//m_TextureShader = Atlas::Shader::Create("assets/Shaders/Texture.glsl");
 		auto textureShader = m_ShaderLibrary.Load("assets/Shaders/Texture.glsl");
 
 		m_CatTexture = Atlas::Texture2D::Create("assets/Textures/cat.png");
@@ -136,44 +133,16 @@ public:
 
 	void OnUpdate(Atlas::Timestep ts) override
 	{
-		timestep = ts;
-
-		if (Atlas::Input::IsKeyPressed(ATL_KEY_D))
-		{
-			m_CameraPosition.x += m_CameraSpeed * timestep;
-		}
-		else if (Atlas::Input::IsKeyPressed(ATL_KEY_A))
-		{
-			m_CameraPosition.x -= m_CameraSpeed * timestep;
-		}
-
-		if (Atlas::Input::IsKeyPressed(ATL_KEY_W))
-		{
-			m_CameraPosition.y += m_CameraSpeed * timestep;
-		}
-		else if (Atlas::Input::IsKeyPressed(ATL_KEY_S))
-		{
-			m_CameraPosition.y -= m_CameraSpeed * timestep;
-		}
-
-		if (Atlas::Input::IsKeyPressed(ATL_KEY_Q))
-		{
-			m_CameraRotation -= m_CameraRotationSpeed * timestep;
-		}
-		else if (Atlas::Input::IsKeyPressed(ATL_KEY_E))
-		{
-			m_CameraRotation += m_CameraRotationSpeed * timestep;
-		}
+		m_CameraController.OnUpdate(ts);
 
 		Atlas::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Atlas::RenderCommand::Clear();
 
-		m_Camera.SetPosition(m_CameraPosition);
-		m_Camera.SetRotation(m_CameraRotation);
-
-		Atlas::Renderer::BeginScene(m_Camera);
+		Atlas::Renderer::BeginScene(m_CameraController.GetCamera());
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+
+		//Atlas::Renderer::Submit(m_Shader, m_VertexArray);
 
 		auto textureShader = m_ShaderLibrary.Get("Texture");
 		auto flatColorShader = m_ShaderLibrary.Get("FlatColor");
@@ -211,19 +180,7 @@ public:
 
 	void OnEvent(Atlas::Event& event) override
 	{
-		if (event.GetEventType() == Atlas::EventType::MouseScrolled)
-		{
-			Atlas::MouseScrolledEvent e = (Atlas::MouseScrolledEvent&)event;
-			if (e.GetYOffset() > 0)
-			{
-				m_Camera.SetZoom(m_Camera.GetZoom() - m_ZoomSpeed * timestep.GetSeconds());
-			}
-			else
-			{
-				m_Camera.SetZoom(m_Camera.GetZoom() + m_ZoomSpeed * timestep.GetSeconds());
-			}
-
-		}
+		m_CameraController.OnEvent(event);
 	}
 
 	void OnImGuiRender() override
@@ -242,6 +199,7 @@ public:
 	Sandbox()
 	{
 		PushLayer(new ExampleLayer());
+		//PushLayer(new Sandbox2D());
 	}
 
 	~Sandbox()

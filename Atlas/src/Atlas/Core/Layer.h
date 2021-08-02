@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Atlas/Core.h"
+#include "Atlas/Core/Core.h"
 #include "Atlas/Events/Event.h"
 
 #include "Atlas/Core/Timestep.h"
 
 namespace Atlas {
 
-	class ATLAS_API Layer
+	class Layer
 	{
 	protected:
 		std::string m_DebugName;

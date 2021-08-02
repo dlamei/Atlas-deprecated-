@@ -1,15 +1,16 @@
 #pragma once
 
-#include "Atlas/Core.h"
+#include "Atlas/Core/Core.h"
 
 namespace Atlas {
 
-	class ATLAS_API Input
+	class Input
 	{
 	private:
 		static Input* s_Instance;
 
 	protected:
+
 		virtual bool IsKeyPressedImpl(int keyCode) = 0;
 		virtual bool IsMouseButtonPressedImpl(int button) = 0;
 		virtual float GetMouseXImpl() = 0;

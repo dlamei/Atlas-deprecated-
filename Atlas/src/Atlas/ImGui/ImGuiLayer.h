@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Atlas/Layer.h"
+#include "Atlas/Core/Layer.h"
 
 #include "Atlas/Events/KeyEvent.h"
 #include "Atlas/Events/MouseEvent.h"
@@ -8,7 +8,7 @@
 
 namespace Atlas {
 
-	class ATLAS_API ImGuiLayer:public Layer
+	class ImGuiLayer:public Layer
 	{
 
 	private:

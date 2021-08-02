@@ -2,7 +2,7 @@
 
 #include "atlpch.h"
 
-#include "Atlas/Core.h"
+#include "Atlas/Core/Core.h"
 #include "Atlas/Events/Event.h"
 
 namespace Atlas {
@@ -19,7 +19,7 @@ namespace Atlas {
 			:Title(title), Width(width), Height(height) {}
 	};
 
-	class ATLAS_API Window
+	class Window
 	{
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;

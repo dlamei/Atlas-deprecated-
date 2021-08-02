@@ -2,6 +2,8 @@
 #include "OpenGLShader.h"
 
 #include <fstream>
+#include <filesystem>
+
 #include <glad/glad.h>
 
 #include <glm/gtc/type_ptr.hpp>
@@ -30,11 +32,8 @@ namespace Atlas {
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
 
-		auto lastSlash = filepath.find_last_of("/\\");
-		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
-		auto lastDot = filepath.rfind(".");
-		auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
-		m_Name = filepath.substr(lastSlash, count);
+		std::filesystem::path path = filepath;
+		m_Name = path.stem().string();
 	}
 
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
@@ -85,11 +84,17 @@ namespace Atlas {
 			size_t begin = pos + typeTokenLength + 1;
 			std::string type = source.substr(begin, eol - begin);
 
-			size_t nextLinePos = source.find_first_not_of("\r\n", eol);
-			pos = source.find(typeToken, nextLinePos);
+			size_t nextLinePos = source.find_first_not_of("\r\n", eol); //Start of shader code after shader type declaration line
+			ATL_CORE_ASSERT(nextLinePos != std::string::npos, "Syntax error");
+			pos = source.find(typeToken, nextLinePos); //Start of next shader type declaration line
 
-			GLenum shaderType = ShaderTypeFromString(type);
-			shaderSources[shaderType] = source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
+			shaderSources[ShaderTypeFromString(type)] = (pos == std::string::npos) ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);
+
+			//size_t nextLinePos = source.find_first_not_of("\r\n", eol);
+			//pos = source.find(typeToken, nextLinePos);
+
+			//GLenum shaderType = ShaderTypeFromString(type);
+			//shaderSources[shaderType] = source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
 		}
 
 		return shaderSources;
@@ -147,6 +152,7 @@ namespace Atlas {
 
 			for (auto shaderID : glShaderIDs)
 			{
+				glDetachShader(program, shaderID);
 				glDeleteShader(shaderID);
 			}
 

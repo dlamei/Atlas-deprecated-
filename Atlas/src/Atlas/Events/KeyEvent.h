@@ -5,7 +5,7 @@
 namespace Atlas {
 
 	//TODO: remove this class
-	class ATLAS_API KeyEvent : public Event
+	class KeyEvent : public Event
 	{
 	protected:
 		int m_KeyCode;
@@ -20,7 +20,7 @@ namespace Atlas {
 
 	};
 
-	class ATLAS_API KeyPressedEvent : public KeyEvent
+	class KeyPressedEvent : public KeyEvent
 	{
 	private:
 		int m_RepeatCount;
@@ -41,7 +41,7 @@ namespace Atlas {
 		EVENT_CLASS_TYPE(KeyPressed)
 	};
 
-	class ATLAS_API KeyReleasedEvent : public KeyEvent
+	class KeyReleasedEvent : public KeyEvent
 	{
 	public:
 		KeyReleasedEvent(int keycode)
@@ -57,7 +57,7 @@ namespace Atlas {
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
 
-	class ATLAS_API KeyTypedEvent : public KeyEvent
+	class KeyTypedEvent : public KeyEvent
 	{
 
 	public:

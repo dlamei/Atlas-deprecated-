@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Atlas/Core.h"
+#include "Atlas/Core/Core.h"
 #include "Layer.h"
 
 #include <vector>
 
 namespace Atlas	{
 
-	class ATLAS_API LayerStack
+	class LayerStack
 	{
 	private:
 		std::vector<Layer*> m_Layers;

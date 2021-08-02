@@ -1,7 +1,7 @@
 #pragma once
 
 #include "atlpch.h"
-#include "Atlas/Core.h"
+#include "Atlas/Core/Core.h"
 
 namespace Atlas
 {
@@ -25,13 +25,13 @@ namespace Atlas
 		EventCategoryMouseButton	= BIT(4)
 	};
 
-#define EVENT_CLASS_TYPE(type)	static EventType GetStaticType() { return EventType::##type; }\
+#define EVENT_CLASS_TYPE(type)	static EventType GetStaticType() { return EventType::type; }\
 								virtual EventType GetEventType() const override { return GetStaticType(); } \
 								virtual const char* GetName() const override { return #type; }
 
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
 
-	class ATLAS_API Event
+	class Event
 	{
 	public:
 		bool Handled = false;
@@ -49,8 +49,8 @@ namespace Atlas
 
 	class EventDispatcher
 	{
-		template<typename T>
-		using EventFn = std::function<bool(T&)>;
+		//template<typename T>
+		//using EventFn = std::function<bool(T&)>;
 
 	private:
 		Event& m_Event;
@@ -59,12 +59,14 @@ namespace Atlas
 		EventDispatcher(Event& event)
 			: m_Event(event) {}
 
-		template<typename T>
-		bool Dispatch(EventFn<T> func)
+		//template<typename T>
+		//bool Dispatch(EventFn<T> func)
+		template<typename T, typename F>
+		bool Dispatch(const F& func)
 		{
 			if (m_Event.GetEventType() == T::GetStaticType())
 			{
-				m_Event.Handled = func(*(T*)& m_Event);
+				m_Event.Handled = func(static_cast<T&> (m_Event));
 				return true;
 			}
 			return false;

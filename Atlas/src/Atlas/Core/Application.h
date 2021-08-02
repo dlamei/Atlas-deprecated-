@@ -3,27 +3,31 @@
 #include "Core.h"
 
 #include "Window.h"
-#include "Events/Event.h"
-#include "Events/ApplicationEvent.h"
+#include "Atlas/Events/Event.h"
+#include "Atlas/Events/ApplicationEvent.h"
 
-#include "Atlas/LayerStack.h"
+#include "Atlas/Core/LayerStack.h"
 #include "Atlas/ImGui/ImGuiLayer.h"
 
 #include "Atlas/Core/Timestep.h"
 
 namespace Atlas {
 
-	class ATLAS_API Application
+	class Application
 	{
 
 
 	private:
 		std::unique_ptr<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
+
 		bool m_Running = true;
+		bool m_Minimized = false;
+
 		LayerStack m_LayerStack;
 
 		bool OnWindowClose(WindowCloseEvent& e);
+		bool OnWindowResize(WindowResizeEvent& e);
 
 		static Application* s_Instance;
 	
