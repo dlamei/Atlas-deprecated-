@@ -1,5 +1,6 @@
 workspace "Atlas"
 	architecture "x64"
+	startproject "Sandbox"
 
 	configurations
 	{
@@ -7,24 +8,28 @@ workspace "Atlas"
 		"Release",
 		"Dist"
 	}
-
-	startproject "Sandbox"
+	
+	flags
+	{
+		"MultiProcessorCompile"
+	}
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+-- Include directories relative to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["GLFW"] = "Atlas/vendor/GLFW/include"
 IncludeDir["Glad"] = "Atlas/vendor/Glad/include"
-IncludeDir["ImGui"] = "Atlas/vendor/ImGui"
-IncludeDir["GLM"] = "Atlas/vendor/GLM"
+IncludeDir["ImGui"] = "Atlas/vendor/imgui"
+IncludeDir["glm"] = "Atlas/vendor/glm"
 IncludeDir["stb_image"] = "Atlas/vendor/stb_image"
 
-group "Dependencies" 
+group "Dependencies"
 	include "Atlas/vendor/GLFW"
 	include "Atlas/vendor/Glad"
-	include "Atlas/vendor/ImGui"
-group""
+	include "Atlas/vendor/imgui"
 
+group ""
 
 project "Atlas"
 	location "Atlas"
@@ -43,10 +48,15 @@ project "Atlas"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/stb_image/**.h",
+		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl"
+		"%{prj.name}/vendor/glm/glm/**.inl",
+	}
+
+	defines
+	{
+		"_CRT_SECURE_NO_WARNINGS"
 	}
 
 	includedirs
@@ -56,7 +66,7 @@ project "Atlas"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.GLM}",
+		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}"
 	}
 
@@ -75,8 +85,7 @@ project "Atlas"
 		{
 			"ATL_PLATFORM_WINDOWS",
 			"ATL_BUILD_DLL",
-			"GLFW_INCLUDE_NONE",
-			"_CRT_SECURE_NO_WARNINGS"
+			"GLFW_INCLUDE_NONE"
 		}
 
 	filter "configurations:Debug"
@@ -95,6 +104,7 @@ project "Atlas"
 		optimize "on"
 
 project "Sandbox"
+	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
@@ -114,7 +124,7 @@ project "Sandbox"
 		"Atlas/vendor/spdlog/include",
 		"Atlas/src",
 		"Atlas/vendor",
-		"%{IncludeDir.GLM}"
+		"%{IncludeDir.glm}"
 	}
 
 	links

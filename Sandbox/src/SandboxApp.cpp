@@ -17,6 +17,7 @@ private:
 	Atlas::Ref<Atlas::VertexArray> m_SquareVertexArray;
 
 	Atlas::Ref<Atlas::Texture2D> m_Texture;
+	Atlas::Ref<Atlas::Texture2D> m_CatTexture;
 
 	Atlas::OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition;
@@ -35,7 +36,7 @@ public:
 	ExampleLayer()
 		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f, 0.0f, 0.0f)
 	{
-		m_VertexArray.reset(Atlas::VertexArray::Create());
+		m_VertexArray = Atlas::VertexArray::Create();
 
 		float vertices[3 * 7] = {
 			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
@@ -44,7 +45,7 @@ public:
 		};
 
 		Atlas::Ref<Atlas::VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(Atlas::VertexBuffer::Create(vertices, sizeof(vertices)));
+		vertexBuffer = Atlas::VertexBuffer::Create(vertices, sizeof(vertices));
 
 		vertexBuffer->SetLayout({
 			{ Atlas::ShaderDataType::Float3, "a_Position" },
@@ -55,7 +56,7 @@ public:
 
 		unsigned int indices[3] = { 0, 1, 2 };
 		Atlas::Ref<Atlas::IndexBuffer> indexBuffer;
-		indexBuffer.reset(Atlas::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		indexBuffer = Atlas::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
 		std::string vertexSrc = R"(
@@ -93,7 +94,7 @@ public:
 			}
 		)";
 
-		m_Shader.reset(Atlas::Shader::Create(vertexSrc, fragmentSrc));
+		m_Shader = Atlas::Shader::Create(vertexSrc, fragmentSrc);
 
 		float squareVertices[4 * 5] = {
 			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
@@ -103,20 +104,20 @@ public:
 		};
 
 		Atlas::Ref<Atlas::VertexBuffer> squareVertexBuffer;
-		squareVertexBuffer.reset(Atlas::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+		squareVertexBuffer = Atlas::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
 
 		squareVertexBuffer->SetLayout({
 			{ Atlas::ShaderDataType::Float3, "a_Position" },
 			{ Atlas::ShaderDataType::Float2, "a_TexCoord" },
 			});
 
-		m_SquareVertexArray.reset(Atlas::VertexArray::Create());
+		m_SquareVertexArray = Atlas::VertexArray::Create();
 		m_SquareVertexArray->AddVertexBuffer(squareVertexBuffer);
 
 		unsigned int squareIndices[] = { 0, 1, 2, 2, 3, 0 };
 
 		Atlas::Ref<Atlas::IndexBuffer> squareIndexBuffer;
-		squareIndexBuffer.reset(Atlas::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+		squareIndexBuffer = Atlas::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
 		m_SquareVertexArray->SetIndexBuffer(squareIndexBuffer);
 
 		std::string flatVertexSrc = R"(
@@ -156,48 +157,18 @@ public:
 			}
 		)";
 
-		m_FlatColorShader.reset(Atlas::Shader::Create(flatVertexSrc, flatFragmentSrc));
+		m_FlatColorShader = Atlas::Shader::Create(flatVertexSrc, flatFragmentSrc);
 
-		std::string texVertexSrc = R"(
-			#version 330 core
+		m_TextureShader = Atlas::Shader::Create("assets/Shaders/Texture.glsl");
 
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec2 a_TexCoord;
+		m_CatTexture = Atlas::Texture2D::Create("assets/Textures/cat.png");
+		m_Texture = Atlas::Texture2D::Create("assets/Textures/colorgrid.png");
 
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
-
-			out vec2 v_TexCoord;
-
-			void main()
-			{
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-				v_TexCoord = a_TexCoord;
-			}
-		)";
-
-		std::string texFragmentSrc = R"(
-			#version 330 core
-
-			layout(location = 0) out vec4 color;
-
-			in vec2 v_TexCoord;
-
-			uniform sampler2D u_Texture;
-
-			void main()
-			{
-				color = texture(u_Texture, v_TexCoord);
-			}
-		)";
-
-		m_TextureShader.reset(Atlas::Shader::Create(texVertexSrc, texFragmentSrc));
-
-		m_Texture = Atlas::Texture2D::Create("Sandbox/assets/textures/Kat.png");
 		m_Texture->Bind();
 
 		std::dynamic_pointer_cast<Atlas::OpenGLShader>(m_TextureShader)->Bind();
 		std::dynamic_pointer_cast<Atlas::OpenGLShader>(m_TextureShader)->SetUnifromInt("u_Texture", 0);
+
 
 	}
 
@@ -245,7 +216,6 @@ public:
 		//Atlas::Renderer::Submit(m_Shader, m_VertexArray);
 
 
-		std::dynamic_pointer_cast<Atlas::OpenGLShader>(m_FlatColorShader)->Bind();
 		for (int i = 0; i < 20; i++)
 		{
 			for (int j = 0; j < 20; j++)
@@ -253,6 +223,7 @@ public:
 				glm::vec3 pos(i * 0.12f, j * 0.12f, 0.0f);
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
 
+				std::dynamic_pointer_cast<Atlas::OpenGLShader>(m_FlatColorShader)->Bind();
 				if ((i + j) % 2 == 0)
 				{
 					std::dynamic_pointer_cast<Atlas::OpenGLShader>(m_FlatColorShader)->SetUnifromFloat4("u_Color", m_Color1);
@@ -263,6 +234,10 @@ public:
 				}
 
 				Atlas::Renderer::Submit(m_FlatColorShader, m_SquareVertexArray, transform);
+
+				std::dynamic_pointer_cast<Atlas::OpenGLShader>(m_TextureShader)->Bind();
+				m_CatTexture->Bind();
+				Atlas::Renderer::Submit(m_TextureShader, m_SquareVertexArray, transform);
 			}
 		}
 
@@ -277,13 +252,13 @@ public:
 		if (event.GetEventType() == Atlas::EventType::MouseScrolled)
 		{
 			Atlas::MouseScrolledEvent e = (Atlas::MouseScrolledEvent&)event;
-			if (e.GetYOffset() == 1)
+			if (e.GetYOffset() > 0)
 			{
-				m_Camera.SetZoom(m_Camera.GetZoom() - m_ZoomSpeed * timestep);
+				m_Camera.SetZoom(m_Camera.GetZoom() - m_ZoomSpeed * timestep.GetSeconds());
 			}
 			else
 			{
-				m_Camera.SetZoom(m_Camera.GetZoom() + m_ZoomSpeed * timestep);
+				m_Camera.SetZoom(m_Camera.GetZoom() + m_ZoomSpeed * timestep.GetSeconds());
 			}
 
 		}
@@ -291,7 +266,6 @@ public:
 
 	void OnImGuiRender() override
 	{
-		//ImGui::ShowDemoWindow();
 		ImGui::Begin("Settings");
 		ImGui::SetWindowFontScale(1.8f);
 		ImGui::ColorEdit3("color1", glm::value_ptr(m_Color1));

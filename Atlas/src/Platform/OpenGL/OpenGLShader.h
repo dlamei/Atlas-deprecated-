@@ -4,6 +4,8 @@
 
 #include <glm/glm.hpp>
 
+typedef unsigned int GLenum;
+
 namespace Atlas {
 
 	class OpenGLShader : public Shader
@@ -11,8 +13,13 @@ namespace Atlas {
 	private:
 		uint32_t m_RendererID = -1;
 
+		void Compile(const std::unordered_map<GLenum, std::string>& shaderSrc);
+		std::unordered_map<GLenum, std::string>  PreProcess(const std::string& source);
+		std::string ReadFile(const std::string& filepath);
+
 	public:
 		OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc);
+		OpenGLShader(const std::string& filepath);
 		virtual ~OpenGLShader();
 
 		virtual void Bind() const override;

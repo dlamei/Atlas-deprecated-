@@ -24,6 +24,8 @@ namespace Atlas {
 		m_Window->SetVSync(false);
 		m_Window->SetEventCallback(ATL_BIND_EVENT_FN(Application::OnEvent));
 
+		Renderer::Init();
+
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 
