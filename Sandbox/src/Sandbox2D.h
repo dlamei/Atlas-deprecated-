@@ -5,8 +5,13 @@
 class Sandbox2D : public Atlas::Layer
 {
 private:
+	Atlas::OrthographicCameraController m_CameraController;
+	Atlas::Ref<Atlas::VertexArray> m_VertexArray;
+	Atlas::Ref<Atlas::Shader> m_Shader;
+	glm::vec4 m_Color = { 0.8f, 0.2f, 0.3f, 1.0f };
 
 public:
+	Sandbox2D();
 	virtual void OnAttach() override;
 	virtual void OnDetach() override;
 

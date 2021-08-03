@@ -114,10 +114,8 @@ public:
 		squareIndexBuffer = Atlas::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
 		m_SquareVertexArray->SetIndexBuffer(squareIndexBuffer);
 
-		//m_FlatColorShader = Atlas::Shader::Create("flatColor", flatVertexSrc, flatFragmentSrc);
 		m_ShaderLibrary.Load("assets/Shaders/FlatColor.glsl");
 
-		//m_TextureShader = Atlas::Shader::Create("assets/Shaders/Texture.glsl");
 		auto textureShader = m_ShaderLibrary.Load("assets/Shaders/Texture.glsl");
 
 		m_CatTexture = Atlas::Texture2D::Create("assets/Textures/cat.png");
@@ -198,8 +196,8 @@ class Sandbox : public Atlas::Application
 public:
 	Sandbox()
 	{
-		PushLayer(new ExampleLayer());
-		//PushLayer(new Sandbox2D());
+		//PushLayer(new ExampleLayer());
+		PushLayer(new Sandbox2D());
 	}
 
 	~Sandbox()
