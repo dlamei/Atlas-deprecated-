@@ -15,6 +15,7 @@ namespace Atlas {
 		virtual void Clear() override;
 
 		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray) override;
+		virtual void DrawIndexedWireframe(const Ref<VertexArray>& vertexArray) override;
 
 	};
 

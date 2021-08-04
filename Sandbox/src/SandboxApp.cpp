@@ -1,8 +1,6 @@
 #include <Atlas.h>
 #include <Atlas/Core/EntryPoint.h>
 
-#include "Platform/OpenGL/OpenGLShader.h"
-
 #include "ImGui/imgui.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -123,8 +121,8 @@ public:
 
 		m_Texture->Bind();
 
-		std::dynamic_pointer_cast<Atlas::OpenGLShader>(textureShader)->Bind();
-		std::dynamic_pointer_cast<Atlas::OpenGLShader>(textureShader)->SetUnifromInt("u_Texture", 0);
+		textureShader->Bind();
+		textureShader->SetInt("u_Texture", 0);
 
 
 	}
@@ -152,19 +150,19 @@ public:
 				glm::vec3 pos(i * 0.12f, j * 0.12f, 0.0f);
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
 
-				std::dynamic_pointer_cast<Atlas::OpenGLShader>(flatColorShader)->Bind();
+				flatColorShader->Bind();
 				if ((i + j) % 2 == 0)
 				{
-					std::dynamic_pointer_cast<Atlas::OpenGLShader>(flatColorShader)->SetUnifromFloat4("u_Color", m_Color1);
+					flatColorShader->SetFloat4("u_Color", m_Color1);
 				}
 				else
 				{
-					std::dynamic_pointer_cast<Atlas::OpenGLShader>(flatColorShader)->SetUnifromFloat4("u_Color", m_Color2);
+					flatColorShader->SetFloat4("u_Color", m_Color2);
 				}
 
 				Atlas::Renderer::Submit(flatColorShader, m_SquareVertexArray, transform);
 
-				std::dynamic_pointer_cast<Atlas::OpenGLShader>(textureShader)->Bind();
+				textureShader->Bind();
 				m_CatTexture->Bind();
 				Atlas::Renderer::Submit(textureShader, m_SquareVertexArray, transform);
 			}

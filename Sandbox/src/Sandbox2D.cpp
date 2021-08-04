@@ -6,8 +6,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Platform/OpenGL/OpenGLShader.h"
-
 Sandbox2D::Sandbox2D()
 	: Layer("Sandbox2D"), m_CameraController(1.0f)
 {
@@ -15,6 +13,7 @@ Sandbox2D::Sandbox2D()
 
 void Sandbox2D::OnAttach()
 {
+	m_Texture = Atlas::Texture2D::Create("assets/Textures/cat.png");
 }
 
 void Sandbox2D::OnDetach()
@@ -30,7 +29,8 @@ void Sandbox2D::OnUpdate(Atlas::Timestep ts)
 
 	Atlas::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
-	Atlas::Renderer2D::DrawRect({ 0.0f, 0.0f }, { 2.0f, 2.0f }, m_Color);
+	Atlas::Renderer2D::DrawRect({ 0.0f, 0.0f }, { 0.8f, 2.0f }, m_Color);
+	Atlas::Renderer2D::DrawRect({ -2.0f, -2.0f }, { 1.0f, 1.0f }, m_Texture);
 
 	Atlas::Renderer2D::EndScene();
 }

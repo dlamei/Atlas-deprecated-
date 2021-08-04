@@ -63,7 +63,7 @@ namespace Atlas {
 		}
 
 		m_VertexBuffers.push_back(vertexBuffer);
-		m_VertexBufferOffset += layout.GetElements().size();
+		m_VertexBufferOffset += (uint32_t) layout.GetElements().size();
 	}
 
 	void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer)

@@ -2,6 +2,8 @@
 
 #include "OrthographicCamera.h"
 
+#include "Texture.h"
+
 namespace Atlas {
 
 	class Renderer2D
@@ -15,6 +17,8 @@ namespace Atlas {
 
 		static void DrawRect(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
 		static void DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
+		static void DrawRect(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture);
+		static void DrawRect(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture);
 	};
 
 }

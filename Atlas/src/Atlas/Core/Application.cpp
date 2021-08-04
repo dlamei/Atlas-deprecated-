@@ -1,8 +1,6 @@
 #include "atlpch.h"
 #include "Application.h"
 
-#include "Atlas/test.h"
-
 #include "Atlas/Events/ApplicationEvent.h"
 #include "Atlas/Core/Log.h"
 
@@ -18,11 +16,14 @@ namespace Atlas {
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application()
+		: Application("Atlas Engine", 1200, 1200) {}
+
+	Application::Application(std::string title, uint32_t width, uint32_t height)
 	{
 		ATL_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
-		m_Window = std::unique_ptr<Window>(Window::Create({ "Test", 1200, 1200 }));
+		m_Window = std::unique_ptr<Window>(Window::Create({ title, width, height }));
 		m_Window->SetVSync(false);
 		m_Window->SetEventCallback(ATL_BIND_EVENT_FN(Application::OnEvent));
 

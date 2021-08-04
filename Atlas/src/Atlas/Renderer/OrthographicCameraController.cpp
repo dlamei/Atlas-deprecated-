@@ -1,12 +1,12 @@
 #include "atlpch.h"
-#include "OrthographicCameraController.h";
+#include "OrthographicCameraController.h"
 #include "Atlas/Core/Input.h"
 #include "Atlas/Core/KeyCodes.h"
 
 namespace Atlas {
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e)
 	{
-		m_ZoomLevel -= e.GetYOffset() * 0.15 * m_ZoomLevel;
+		m_ZoomLevel -= e.GetYOffset() * 0.15f * m_ZoomLevel;
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 		return false;
 	}

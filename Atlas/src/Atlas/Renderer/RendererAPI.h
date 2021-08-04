@@ -25,6 +25,7 @@ namespace Atlas {
 		virtual void Clear() = 0;
 
 		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray) = 0;
+		virtual void DrawIndexedWireframe(const Ref<VertexArray>& vertexArray) = 0;
 
 		inline static API GetAPI() { return s_API; }
 		

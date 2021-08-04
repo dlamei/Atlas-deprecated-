@@ -179,6 +179,41 @@ namespace Atlas {
 		glUseProgram(0);
 	}
 
+	void OpenGLShader::SetInt(const std::string& name, const int value)
+	{
+		SetUnifromInt(name, value);
+	}
+
+	void OpenGLShader::SetFloat(const std::string& name, const float value)
+	{
+		SetUnifromFloat(name, value);
+	}
+
+	void OpenGLShader::SetFloat2(const std::string& name, const glm::vec2& values)
+	{
+		SetUnifromFloat2(name, values);
+	}
+
+	void OpenGLShader::SetFloat3(const std::string& name, const glm::vec3& values)
+	{
+		SetUnifromFloat3(name, values);
+	}
+
+	void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& values)
+	{
+		SetUnifromFloat4(name, values);
+	}
+
+	void OpenGLShader::SetMat3(const std::string& name, const glm::mat3& matrix)
+	{
+		SetUniformMat3(name, matrix);
+	}
+
+	void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& matrix)
+	{
+		SetUniformMat4(name, matrix);
+	}
+
 	void OpenGLShader::SetUnifromInt(const std::string& name, const int value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
