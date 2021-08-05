@@ -10,7 +10,6 @@
 
 #include <GLFW/glfw3.h>
 
-
 namespace Atlas {
 
 	Application* Application::s_Instance = nullptr;
@@ -20,6 +19,8 @@ namespace Atlas {
 
 	Application::Application(std::string title, uint32_t width, uint32_t height)
 	{
+		ATL_PROFILE_FUNCTION();
+
 		ATL_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
@@ -57,24 +58,34 @@ namespace Atlas {
 
 	void Application::Run()
 	{
+		ATL_PROFILE_FUNCTION();
+
 		while (m_Running)
 		{
+			ATL_PROFILE_SCOPE("Run Loop");
+
 			float time = (float)glfwGetTime(); // Platform::GetTime();
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 
 			if (!m_Minimized)
 			{
+				ATL_PROFILE_SCOPE("LayerStack on Update");
+
 				for (Layer* layer : m_LayerStack)
 				{
 					layer->OnUpdate(timestep);
 				}
 			}
 
+
 			m_ImGuiLayer->Begin();
-			for (Layer* layer : m_LayerStack)
 			{
-				layer->OnImGuiRender();
+				ATL_PROFILE_SCOPE("LayerStack on ImGuiRender");
+				for (Layer* layer : m_LayerStack)
+				{
+					layer->OnImGuiRender();
+				}
 			}
 			m_ImGuiLayer->End();
 
@@ -90,6 +101,8 @@ namespace Atlas {
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
+		ATL_PROFILE_FUNCTION();
+
 		if (e.GetWidth() == 0 || e.GetHeight() == 0)
 		{
 			m_Minimized = true;
@@ -104,11 +117,17 @@ namespace Atlas {
 
 	void Application::PushLayer(Layer* layer)
 	{
+		ATL_PROFILE_FUNCTION();
+
 		m_LayerStack.PushLayer(layer);
+		layer->OnAttach();
 	}
 
 	void Application::PushOverlay(Layer* overlay)
 	{
+		ATL_PROFILE_FUNCTION();
+
 		m_LayerStack.PushOverlay(overlay);
+		overlay->OnAttach();
 	}
 }

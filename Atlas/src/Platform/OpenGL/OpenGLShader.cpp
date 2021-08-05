@@ -28,6 +28,8 @@ namespace Atlas {
 
 	OpenGLShader::OpenGLShader(const std::string& filepath)
 	{
+		ATL_PROFILE_FUNCTION();
+
 		std::string source = ReadFile(filepath);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
@@ -39,6 +41,8 @@ namespace Atlas {
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 		: m_Name(name)
 	{
+		ATL_PROFILE_FUNCTION();
+
 		std::unordered_map<GLenum, std::string> sources;
 		sources[GL_VERTEX_SHADER] = vertexSrc;
 		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
@@ -47,11 +51,15 @@ namespace Atlas {
 
 	OpenGLShader::~OpenGLShader()
 	{
+		ATL_PROFILE_FUNCTION();
+
 		glDeleteProgram(m_RendererID);
 	}
 
 	std::string OpenGLShader::ReadFile(const std::string& filepath)
 	{
+		ATL_PROFILE_FUNCTION();
+
 		std::string result;
 		std::ifstream inStream(filepath, std::ios::in | std::ios::binary);
 		if (inStream)
@@ -72,6 +80,8 @@ namespace Atlas {
 
 	std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source)
 	{
+		ATL_PROFILE_FUNCTION();
+
 		std::unordered_map<GLenum, std::string> shaderSources;
 
 		const char* typeToken = "#type";
@@ -102,6 +112,8 @@ namespace Atlas {
 
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
+		ATL_PROFILE_FUNCTION();
+
 		GLuint program = glCreateProgram();
 		std::vector<GLenum> glShaderIDs;
 		glShaderIDs.resize(shaderSources.size());
@@ -171,11 +183,15 @@ namespace Atlas {
 
 	void OpenGLShader::Bind() const
 	{
+		ATL_PROFILE_FUNCTION();
+
 		glUseProgram(m_RendererID);
 	}
 
 	void OpenGLShader::Unbind() const
 	{
+		ATL_PROFILE_FUNCTION();
+
 		glUseProgram(0);
 	}
 

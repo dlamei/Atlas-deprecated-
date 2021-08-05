@@ -11,6 +11,8 @@ namespace Atlas {
 
 	void Renderer::Init()
 	{
+		ATL_PROFILE_FUNCTION();
+
 		RenderCommand::Init();
 		Renderer2D::Init();
 	}

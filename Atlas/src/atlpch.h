@@ -13,6 +13,7 @@
 #include <unordered_set>
 
 #include "Atlas/Core/Log.h"
+#include "Atlas/Debug/Instrumentor.h"
 
 #ifdef ATL_PLATFORM_WINDOWS
 	#include <windows.h>

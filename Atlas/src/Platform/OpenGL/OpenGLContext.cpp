@@ -13,6 +13,8 @@ namespace Atlas {
 
 	void OpenGLContext::Init()
 	{
+		ATL_PROFILE_FUNCTION();
+
 		glfwMakeContextCurrent(m_WindowHandle);
 		int status = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 		ATL_CORE_ASSERT(status, "Failed to initializ Glad!");
@@ -25,6 +27,8 @@ namespace Atlas {
 
 	void OpenGLContext::SwapBuffers()
 	{
+		ATL_PROFILE_FUNCTION();
+
 		glfwSwapBuffers(m_WindowHandle);
 	}
 }

@@ -18,7 +18,7 @@ namespace Atlas {
 
 
 	private:
-		std::unique_ptr<Window> m_Window;
+		Scope<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
 
 		bool m_Running = true;
@@ -47,6 +47,8 @@ namespace Atlas {
 		void PushOverlay(Layer* overlay);
 
 		inline Window& GetWindow() { return *m_Window; }
+		inline uint32_t GetWindowHeight() { return m_Window->GetHeight(); }
+		inline uint32_t GetWindowWidth() { return m_Window->GetWidth(); }
 		static inline Application& Get() { return *s_Instance; }
 
 	};
