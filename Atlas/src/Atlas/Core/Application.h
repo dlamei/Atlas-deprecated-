@@ -33,8 +33,9 @@ namespace Atlas {
 	
 		float m_LastFrameTime;
 
-
 	public:
+		float MouseX, MouseY;
+
 		Application();
 		Application(std::string title, uint32_t width, uint32_t height);
 		virtual ~Application();
@@ -47,8 +48,8 @@ namespace Atlas {
 		void PushOverlay(Layer* overlay);
 
 		inline Window& GetWindow() { return *m_Window; }
-		inline uint32_t GetWindowHeight() { return m_Window->GetHeight(); }
-		inline uint32_t GetWindowWidth() { return m_Window->GetWidth(); }
+		static inline uint32_t GetWindowHeight() { return s_Instance->m_Window->GetHeight(); }
+		static inline uint32_t GetWindowWidth() { return s_Instance->m_Window->GetWidth(); }
 		static inline Application& Get() { return *s_Instance; }
 
 	};

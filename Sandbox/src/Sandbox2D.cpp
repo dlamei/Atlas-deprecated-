@@ -26,19 +26,20 @@ void Sandbox2D::OnUpdate(Atlas::Timestep ts)
 
 	m_CameraController.OnUpdate(ts);
 
-	{
-		ATL_PROFILE_SCOPE("Renderer Prep");
-		Atlas::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
-		Atlas::RenderCommand::Clear();
-	}
+	Atlas::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+	Atlas::RenderCommand::Clear();
+	Atlas::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
+	int count = 100;
+	for (int i = 0; i < count; i++)
 	{
-		ATL_PROFILE_SCOPE("Renderer Draw");
-		Atlas::Renderer2D::BeginScene(m_CameraController.GetCamera());
-		Atlas::Renderer2D::DrawRect({ 1.0f, 1.0f }, { 0.8f, 0.6f }, m_Color);
-		Atlas::Renderer2D::DrawRect({ -0.4f, -0.5f }, { 1.0f, 1.0f }, m_Texture);
-		Atlas::Renderer2D::EndScene();
+		for (int j = 0; j < count; j++)
+		{
+			Atlas::Renderer2D::DrawRect({ i, j }, { 0.8f, 0.8f }, m_Color);
+		}
 	}
+	Atlas::Renderer2D::EndScene();
+
 }
 
 void Sandbox2D::OnImGuiRender()

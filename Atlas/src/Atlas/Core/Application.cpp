@@ -25,7 +25,6 @@ namespace Atlas {
 		s_Instance = this;
 
 		m_Window = std::unique_ptr<Window>(Window::Create({ title, width, height }));
-		m_Window->SetVSync(false);
 		m_Window->SetEventCallback(ATL_BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer::Init();
@@ -63,6 +62,8 @@ namespace Atlas {
 		while (m_Running)
 		{
 			ATL_PROFILE_SCOPE("Run Loop");
+
+			//auto [MouseX, MouseY] = Input::GetMousePos();
 
 			float time = (float)glfwGetTime(); // Platform::GetTime();
 			Timestep timestep = time - m_LastFrameTime;

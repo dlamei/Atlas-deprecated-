@@ -15,7 +15,7 @@ namespace Atlas {
 		float m_ZoomLevel = 1.0f;
 
 		glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
-		bool m_Roation;
+		bool m_Rotation;
 		float m_CameraRotation = 0.0f;
 		float m_CameraTranslationSpeed = 5.0f, m_CameraRotationSpeed = 180.0f;
 
@@ -25,7 +25,7 @@ namespace Atlas {
 		bool OnWindowResized(WindowResizeEvent& e);
 
 	public:
-		OrthographicCameraController(float aspectRation, bool roation = false);
+		OrthographicCameraController(float aspectRatio, bool roation = false);
 
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);

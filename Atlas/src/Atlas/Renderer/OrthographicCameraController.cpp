@@ -19,9 +19,7 @@ namespace Atlas {
 	}
 
 	OrthographicCameraController::OrthographicCameraController(float aspectRatio, bool rotation)
-		: m_AspectRatio(aspectRatio), m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel), m_Roation(rotation)
-	{
-	}
+		: m_AspectRatio(aspectRatio), m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio* m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel), m_Rotation(rotation) {}
 
 	void OrthographicCameraController::OnUpdate(Timestep timestep)
 	{
@@ -43,7 +41,7 @@ namespace Atlas {
 			m_CameraPosition.y -= m_CameraTranslationSpeed * timestep;
 		}
 
-		if (m_Roation)
+		if (m_Rotation)
 		{
 			if (Input::IsKeyPressed(ATL_KEY_Q))
 			{

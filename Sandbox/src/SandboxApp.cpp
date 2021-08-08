@@ -26,7 +26,7 @@ private:
 
 public:
 	ExampleLayer()
-		: Layer("Example"), m_CameraController(1280.0f / 720.0f)
+		: Layer("Example"), m_CameraController(1280.0f)
 	{
 		m_VertexArray = Atlas::VertexArray::Create();
 
@@ -196,6 +196,7 @@ public:
 	{
 		//PushLayer(new ExampleLayer());
 		PushLayer(new Sandbox2D());
+		Atlas::Application::GetWindow().SetVSync(false);
 	}
 
 	~Sandbox()
