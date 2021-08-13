@@ -38,6 +38,7 @@ namespace Atlas {
 		m_Name = path.stem().string();
 	}
 
+
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 		: m_Name(name)
 	{
@@ -94,17 +95,10 @@ namespace Atlas {
 			size_t begin = pos + typeTokenLength + 1;
 			std::string type = source.substr(begin, eol - begin);
 
-			size_t nextLinePos = source.find_first_not_of("\r\n", eol); //Start of shader code after shader type declaration line
+			size_t nextLinePos = source.find_first_not_of("\r\n", eol); 
 			ATL_CORE_ASSERT(nextLinePos != std::string::npos, "Syntax error");
-			pos = source.find(typeToken, nextLinePos); //Start of next shader type declaration line
-
+			pos = source.find(typeToken, nextLinePos); 
 			shaderSources[ShaderTypeFromString(type)] = (pos == std::string::npos) ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);
-
-			//size_t nextLinePos = source.find_first_not_of("\r\n", eol);
-			//pos = source.find(typeToken, nextLinePos);
-
-			//GLenum shaderType = ShaderTypeFromString(type);
-			//shaderSources[shaderType] = source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
 		}
 
 		return shaderSources;
@@ -200,6 +194,11 @@ namespace Atlas {
 		SetUnifromInt(name, value);
 	}
 
+	void OpenGLShader::SetIntArray(const std::string& name, int* values, uint32_t count)
+	{
+		SetUnifromIntArray(name, values, count);
+	}
+
 	void OpenGLShader::SetFloat(const std::string& name, const float value)
 	{
 		SetUnifromFloat(name, value);
@@ -234,6 +233,12 @@ namespace Atlas {
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniform1i(location, value);
+	}
+
+	void OpenGLShader::SetUnifromIntArray(const std::string& name, const int* values, uint32_t count)
+	{
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform1iv(location, count, values);
 	}
 
 	void OpenGLShader::SetUnifromFloat(const std::string& name, const float value)

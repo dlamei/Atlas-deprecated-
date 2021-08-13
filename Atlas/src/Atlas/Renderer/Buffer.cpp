@@ -10,7 +10,7 @@ namespace Atlas {
 	{
 		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::API::None:		ATL_CORE_ASSERT(false, "RendererAPI is no t supported!"); return nullptr;
+			case RendererAPI::API::None:	ATL_CORE_ASSERT(false, "RendererAPI is no t supported!"); return nullptr;
 			case RendererAPI::API::OpenGL:	return std::make_shared<OpenGLVertexBuffer>(size);
 		}
 
@@ -22,8 +22,20 @@ namespace Atlas {
 	{
 		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::API::None:		ATL_CORE_ASSERT(false, "RendererAPI is no t supported!"); return nullptr;
+			case RendererAPI::API::None:	ATL_CORE_ASSERT(false, "RendererAPI is no t supported!"); return nullptr;
 			case RendererAPI::API::OpenGL:	return std::make_shared<OpenGLVertexBuffer>(vertices, size);
+		}
+
+		ATL_CORE_ASSERT(false, "Unknown RendererAPI!")
+		return nullptr;
+	}
+
+	Ref<IndexBuffer> IndexBuffer::Create(uint32_t size)
+	{
+		switch (Renderer::GetAPI())
+		{
+			case RendererAPI::API::None:	ATL_CORE_ASSERT(false, "RendererAPI is no t supported!"); return nullptr;
+			case RendererAPI::API::OpenGL:	return std::make_shared<OpenGLIndexBuffer>(size);
 		}
 
 		ATL_CORE_ASSERT(false, "Unknown RendererAPI!")
@@ -34,7 +46,7 @@ namespace Atlas {
 	{
 		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::API::None:		ATL_CORE_ASSERT(false, "RendererAPI is no t supported!"); return nullptr;
+			case RendererAPI::API::None:	ATL_CORE_ASSERT(false, "RendererAPI is no t supported!"); return nullptr;
 			case RendererAPI::API::OpenGL:	return std::make_shared<OpenGLIndexBuffer>(indices, count);
 		}
 

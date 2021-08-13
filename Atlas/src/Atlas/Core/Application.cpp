@@ -14,6 +14,9 @@ namespace Atlas {
 
 	Application* Application::s_Instance = nullptr;
 
+	Application::Application(Application::AppProps props)
+		: Application(props.m_Title, props.m_Width, props.m_Height) {}
+
 	Application::Application()
 		: Application("Atlas Engine", 1200, 1200) {}
 

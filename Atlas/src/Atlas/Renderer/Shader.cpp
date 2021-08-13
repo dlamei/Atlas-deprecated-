@@ -34,7 +34,6 @@ namespace Atlas {
 		return nullptr;
 	}
 
-
 	void ShaderLibrary::Add(const Ref<Shader>& shader)
 	{
 		Add(shader->GetName(), shader);

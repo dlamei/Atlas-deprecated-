@@ -13,8 +13,16 @@
 
 namespace Atlas {
 
+
 	class Application
 	{
+
+	public:
+		struct AppProps
+		{
+			int m_Width, m_Height;
+			std::string m_Title;
+		};
 
 
 	private:
@@ -37,6 +45,7 @@ namespace Atlas {
 		float MouseX, MouseY;
 
 		Application();
+		Application(AppProps props);
 		Application(std::string title, uint32_t width, uint32_t height);
 		virtual ~Application();
 

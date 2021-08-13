@@ -27,7 +27,8 @@ namespace Atlas {
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		virtual void SetInt(const std::string& name, const int value) override;
+		virtual void SetInt(const std::string& name, int value) override;
+		virtual void SetIntArray(const std::string& name, int* values, uint32_t count) override;
 
 		virtual void SetFloat(const std::string& name, const float value) override;
 		virtual void SetFloat2(const std::string& name, const glm::vec2& values) override;
@@ -40,6 +41,7 @@ namespace Atlas {
 		virtual const std::string& GetName() const override { return m_Name; }
 
 		void SetUnifromInt(const std::string& name, const int value);
+		void SetUnifromIntArray(const std::string& name, const int* values, uint32_t count);
 
 		void SetUnifromFloat(const std::string& name, const float value);
 		void SetUnifromFloat2(const std::string& name, const glm::vec2& values);
