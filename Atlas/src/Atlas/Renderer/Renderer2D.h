@@ -31,6 +31,8 @@ namespace Atlas {
 		static void DrawTri(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec2& pos3, const glm::vec3& color);
 		static void DrawTri(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec2& pos3, const glm::vec4& color);
 
+		static void DrawFrameBuffer(uint32_t id);
+
 		struct RenderStats
 		{
 			uint32_t DrawCalls = 0;

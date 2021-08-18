@@ -27,7 +27,6 @@ group "Dependencies"
 	include "Atlas/vendor/GLFW"
 	include "Atlas/vendor/Glad"
 	include "Atlas/vendor/imgui"
-
 group ""
 
 project "Atlas"
@@ -123,12 +122,14 @@ project "Sandbox"
 		"Atlas/vendor/spdlog/include",
 		"Atlas/src",
 		"Atlas/vendor",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.Glad}"
 	}
 
 	links
 	{
-		"Atlas"
+		"Atlas",
+		"Glad"
 	}
 
 	filter "system:windows"

@@ -17,6 +17,8 @@ namespace Atlas {
 	public:
 		OpenGLTexture2D(const std::string& path);
 		OpenGLTexture2D(uint32_t width, uint32_t height);
+		//Temp
+		OpenGLTexture2D(uint32_t width, uint32_t height, uint32_t id);
 		virtual ~OpenGLTexture2D();
 
 		virtual inline uint32_t GetWidth() const override { return m_Width; }

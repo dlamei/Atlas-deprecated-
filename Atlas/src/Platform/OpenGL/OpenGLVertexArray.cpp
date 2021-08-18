@@ -47,6 +47,13 @@ namespace Atlas {
 		glBindVertexArray(m_RendererID);
 	}
 
+	void OpenGLVertexArray::BindAll() const
+	{
+		Bind();
+		for (Ref<VertexBuffer> vertexBuffer : m_VertexBuffers) vertexBuffer->Bind();
+		m_IndexBuffer->Bind();
+	}
+
 	void OpenGLVertexArray::Unbind() const
 	{
 		ATL_PROFILE_FUNCTION();

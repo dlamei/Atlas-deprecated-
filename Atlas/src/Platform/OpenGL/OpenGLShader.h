@@ -16,8 +16,12 @@ namespace Atlas {
 		uint32_t m_RendererID = -1;
 
 		void Compile(const std::unordered_map<GLenum, std::string>& shaderSrc);
+
 		std::unordered_map<GLenum, std::string>  PreProcess(const std::string& source);
+		std::unordered_map<std::string, int> m_UnifromLocationChache;
 		std::string ReadFile(const std::string& filepath);
+
+		int GetUniformLocation(const std::string& name);
 
 	public:
 		OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);

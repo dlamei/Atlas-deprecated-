@@ -7,7 +7,10 @@ class Sandbox2D : public Atlas::Layer
 {
 private:
 	Atlas::OrthographicCameraController m_CameraController;
-	Atlas::Ref<Atlas::Texture2D> m_Texture;
+	Atlas::Ref<Atlas::Texture2D> m_Texture1;
+	Atlas::Ref<Atlas::Texture2D> m_Texture2;
+	Atlas::Ref<Atlas::FrameBuffer> m_FrameBuffer;
+	uint32_t m_ColorAttachment = 0;
 	glm::vec4 m_Color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 public:

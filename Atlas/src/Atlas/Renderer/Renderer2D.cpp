@@ -10,6 +10,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <glad/glad.h>
 
 namespace Atlas {
 
@@ -30,10 +31,13 @@ namespace Atlas {
 
 		glm::vec4 m_FillColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-		Ref<VertexArray> VertexArray;
+		Ref<VertexArray> TriVertexArray;
 		Ref<VertexBuffer> VertexBuffer;
 		Ref<IndexBuffer> IndexBuffer;
+		Ref<VertexArray> QuadVertexArray;
+
 		Ref<Shader> FlatShader;
+		Ref<Shader> ScreenShader;
 		Ref<Texture2D> WhiteTexture;
 
 		uint32_t IndexCount = 0;
@@ -57,7 +61,26 @@ namespace Atlas {
 	{
 		ATL_PROFILE_FUNCTION();
 
-		s_Data.VertexArray = VertexArray::Create();
+		s_Data.QuadVertexArray = VertexArray::Create();
+		float verts[] = {
+			-1.0f, -1.0f, 0.0f, 0.0f,
+			 1.0f, -1.0f, 1.0f, 0.0f,
+			 1.0f,	1.0f, 1.0f, 1.0f,
+			-1.0f,	1.0f, 0.0f, 1.0f
+		};
+
+		uint32_t indices[] = { 0, 1, 2, 2, 3, 0 };
+
+		Ref<VertexBuffer> quadVertexBuffer = VertexBuffer::Create(verts, 4 * 4 * sizeof(float));
+		quadVertexBuffer->SetLayout({
+			{ ShaderDataType::Float2, "a_Position" },
+			{ ShaderDataType::Float2, "a_TexCoord" },
+			});
+		Ref<IndexBuffer> quadIndexBuffer = IndexBuffer::Create(indices, 6);
+		s_Data.QuadVertexArray->AddVertexBuffer(quadVertexBuffer);
+		s_Data.QuadVertexArray->SetIndexBuffer(quadIndexBuffer);
+
+		s_Data.TriVertexArray = VertexArray::Create();
 
 		s_Data.VertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(Vertex));
 		s_Data.VertexBuffer->SetLayout({
@@ -67,45 +90,48 @@ namespace Atlas {
 			{ ShaderDataType::Float, "aTexIndex" }
 			});
 
-		s_Data.VertexArray->AddVertexBuffer(s_Data.VertexBuffer);
-		s_Data.VertexBufferBase = new Vertex[s_Data.MaxVertices];
-
 		s_Data.IndexBuffer = IndexBuffer::Create(s_Data.MaxIndices);
+
+		s_Data.VertexBufferBase = new Vertex[s_Data.MaxVertices];
 		s_Data.IndexBufferBase = new uint32_t[s_Data.MaxIndices];
-
-		for (int i = 0; i < s_Data.MaxIndices; i++)
-		{
-			s_Data.IndexBufferBase[i] = 0;
-		}
-
-		s_Data.VertexArray->SetIndexBuffer(s_Data.IndexBuffer);
 
 		s_Data.WhiteTexture = Texture2D::Create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
 		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
+
+		s_Data.FlatShader = Atlas::Shader::Create("assets/Shaders/FlatColor.glsl");
+		s_Data.FlatShader->Bind();
+
+		s_Data.ScreenShader = Atlas::Shader::Create("assets/Shaders/Screen.glsl");
 
 		int32_t samplers[s_Data.MaxTextureSlots];
 		for (int32_t i = 0; i < s_Data.MaxTextureSlots; i++)
 		{
 			samplers[i] = i;
 		}
-
-		s_Data.FlatShader = Atlas::Shader::Create("assets/Shaders/Texture.glsl");
-		s_Data.FlatShader->Bind();
 		s_Data.FlatShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 
-		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
-
+		s_Data.TriVertexArray->AddVertexBuffer(s_Data.VertexBuffer);
+		s_Data.TriVertexArray->SetIndexBuffer(s_Data.IndexBuffer);
 	}
 
 	void Renderer2D::Shutdown()
 	{
 		ATL_PROFILE_FUNCTION();
+
+		delete[] s_Data.VertexBufferBase;
+		delete s_Data.VertexBufferPtr;
+
+		delete[] s_Data.IndexBufferBase;
+		delete s_Data.IndexBufferPtr;
 	}
 
 	void Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
 		ATL_PROFILE_FUNCTION();
+		//TODO
+		s_Data.TriVertexArray->BindAll();
 
 		s_Data.FlatShader->Bind();
 		s_Data.FlatShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
@@ -119,6 +145,7 @@ namespace Atlas {
 		s_Data.TextureSlotIndex = 1;
 	}
 
+	//TODO: what if nothing is drawn
 	void Renderer2D::EndScene()
 	{
 		ATL_PROFILE_FUNCTION();
@@ -141,7 +168,7 @@ namespace Atlas {
 			s_Data.TextureSlots[i]->Bind(i);
 		}
 
-		RenderCommand::DrawIndexed(s_Data.VertexArray, s_Data.IndexCount);
+		RenderCommand::DrawIndexed(s_Data.TriVertexArray, s_Data.IndexCount);
 
 		s_Data.Stats.DrawCalls++;
 	}
@@ -242,8 +269,6 @@ namespace Atlas {
 	void Renderer2D::DrawRect(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture)
 	{
 		ATL_PROFILE_FUNCTION();
-
-		texture->Bind();
 
 		if (s_Data.VertexCount + 4 > Renderer2DData::MaxVertices)
 		{
@@ -374,6 +399,18 @@ namespace Atlas {
 
 		s_Data.Stats.TriCount++;
 	}
+
+	void Renderer2D::DrawFrameBuffer(uint32_t id)
+	{
+		glm::mat4 camera = glm::ortho(-1, 1, -1, 1);
+
+		s_Data.ScreenShader->Bind();
+		s_Data.QuadVertexArray->BindAll();
+		glBindTexture(GL_TEXTURE_2D, id);
+		Atlas::RenderCommand::DrawIndexed(s_Data.QuadVertexArray, 6);
+
+		s_Data.FlatShader->Bind();
+	} 
 
 	void Renderer2D::ResetStats()
 	{

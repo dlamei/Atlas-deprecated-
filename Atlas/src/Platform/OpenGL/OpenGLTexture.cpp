@@ -79,6 +79,13 @@ namespace Atlas {
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
 
+	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height, uint32_t id)
+		: m_RendererID(id), m_Width(width), m_Height(height)
+	{
+		m_InternalFormat = GL_RGBA8;
+		m_DataFormat = GL_RGBA;
+	}
+
 	OpenGLTexture2D::~OpenGLTexture2D()
 	{
 		ATL_PROFILE_FUNCTION();

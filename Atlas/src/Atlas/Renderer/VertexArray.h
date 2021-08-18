@@ -11,6 +11,7 @@ namespace Atlas {
 			virtual ~VertexArray() {}
 
 			virtual void Bind() const = 0;
+			virtual void BindAll() const = 0;
 			virtual void Unbind() const = 0;
 
 			virtual void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) = 0;
@@ -18,6 +19,8 @@ namespace Atlas {
 
 			virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const = 0;
 			virtual const Ref<IndexBuffer>& GetIndexBuffer() const = 0;
+
+			virtual const uint32_t GetRendererID() const = 0;
 
 			static Ref<VertexArray> Create();
 	};
