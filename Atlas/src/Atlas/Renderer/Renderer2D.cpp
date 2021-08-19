@@ -12,6 +12,9 @@
 
 #include <glad/glad.h>
 
+//Temp
+#include "Atlas/Core/Application.h"
+
 namespace Atlas {
 
 	struct Vertex
@@ -402,6 +405,7 @@ namespace Atlas {
 
 	void Renderer2D::DrawFrameBuffer(uint32_t id)
 	{
+		RenderCommand::SetViewport(0, 0, Application::GetWindowWidth(), Application::GetWindowHeight());
 		glm::mat4 camera = glm::ortho(-1, 1, -1, 1);
 
 		s_Data.ScreenShader->Bind();

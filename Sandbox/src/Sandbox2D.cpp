@@ -17,8 +17,8 @@ void Sandbox2D::OnAttach()
 	m_Texture2 = Atlas::Texture2D::Create("assets/Textures/colorgrid.png");
 
 	Atlas::FrameBufferSpecs fbSpecs = {
-		Atlas::Application::GetWindowWidth(),
-		Atlas::Application::GetWindowHeight(),
+		Atlas::Application::GetWindowWidth() / 20,
+		Atlas::Application::GetWindowHeight() / 20,
 		{
 			Atlas::FBTextureFormat::RGBA8
 		}
@@ -101,6 +101,6 @@ void Sandbox2D::OnEvent(Atlas::Event& e)
 	if (e.GetEventType() == Atlas::EventType::WindowResize)
 	{
 		Atlas::WindowResizeEvent& resizeEvent = (Atlas::WindowResizeEvent&)e;
-		m_FrameBuffer->Resize(resizeEvent.GetWidth(), resizeEvent.GetHeight());
+		m_FrameBuffer->Resize(resizeEvent.GetWidth() / 20, resizeEvent.GetHeight() / 20);
 	}
 }
