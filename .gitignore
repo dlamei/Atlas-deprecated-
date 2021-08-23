@@ -1,5 +1,6 @@
 # Binaries
 /bin/
+bin/
 bin-int/
 
 # log files
