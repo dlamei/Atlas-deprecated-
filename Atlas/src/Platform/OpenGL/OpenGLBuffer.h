@@ -44,6 +44,7 @@ namespace Atlas {
 		virtual uint32_t GetCount() const override { return m_Count; }
 
 		virtual void SetData(const uint32_t* data, uint32_t size) override;
+		virtual void SetData(const void* data, uint32_t typeSize, uint32_t count) override;
 	};
 
 }

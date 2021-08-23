@@ -58,6 +58,7 @@ namespace Atlas
 		virtual void ClearAttachment(uint32_t indx, int value) = 0;
 
 		virtual uint32_t GetColorAttachmentRendererID(uint32_t index) const = 0;
+		virtual uint32_t GetDepthAttachmentRendererID() const = 0;
 
 	};
 

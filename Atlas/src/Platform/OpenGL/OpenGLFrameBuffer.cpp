@@ -59,7 +59,7 @@ namespace Atlas
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			}
-			glFramebufferTexture2D(GL_FRAMEBUFFER, format, multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, id, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, id, 0);
 		}
 
 		static bool IsDepthFormat(FBTextureFormat format)
@@ -106,7 +106,7 @@ namespace Atlas
 	OpenGLFrameBuffer::~OpenGLFrameBuffer()
 	{
 		glDeleteFramebuffers(1, &m_RendererID);
-		glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
+		glDeleteTextures((int) m_ColorAttachments.size(), m_ColorAttachments.data());
 		glDeleteTextures(1, &m_DepthAttachment);
 	}
 
@@ -115,7 +115,7 @@ namespace Atlas
 		if (m_RendererID)
 		{
 			glDeleteFramebuffers(1, &m_RendererID);
-			glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
+			glDeleteTextures((int) m_ColorAttachments.size(), m_ColorAttachments.data());
 			glDeleteTextures(1, &m_DepthAttachment);
 
 			m_ColorAttachments.clear();
@@ -130,7 +130,7 @@ namespace Atlas
 		if (m_ColorAttachmentSpecs.size())
 		{
 			m_ColorAttachments.resize(m_ColorAttachmentSpecs.size());
-			Utils::CreateTexture(multisample, m_ColorAttachments.data(), m_ColorAttachments.size());
+			Utils::CreateTexture(multisample, m_ColorAttachments.data(), (int) m_ColorAttachments.size());
 
 			for (int i = 0; i < m_ColorAttachments.size(); i++)
 			{
@@ -165,7 +165,7 @@ namespace Atlas
 		{
 			ATL_CORE_ASSERT(m_ColorAttachments.size() <= 4, "Only 4 color attachments are supported!");
 			GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-			glDrawBuffers(m_ColorAttachments.size(), buffers);
+			glDrawBuffers((int) m_ColorAttachments.size(), buffers);
 		}
 		else if (m_ColorAttachments.empty())
 		{

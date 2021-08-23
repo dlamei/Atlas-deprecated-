@@ -99,4 +99,12 @@ namespace Atlas {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size, data);
 	}
+
+	void OpenGLIndexBuffer::SetData(const void* data, uint32_t typeSize, uint32_t count)
+	{
+		m_Count = count;
+		uint32_t size = typeSize * count;
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size, data);
+	}
 }

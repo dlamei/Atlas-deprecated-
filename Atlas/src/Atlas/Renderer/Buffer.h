@@ -130,6 +130,7 @@ namespace Atlas {
 		virtual uint32_t GetCount() const = 0;
 
 		virtual void SetData(const uint32_t* data, uint32_t size) = 0;
+		virtual void SetData(const void* data, uint32_t typeSize, uint32_t count) = 0;
 
 		static Ref<IndexBuffer> Create(uint32_t size);
 		static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
