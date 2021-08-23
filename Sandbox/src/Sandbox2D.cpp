@@ -39,7 +39,6 @@ void Sandbox2D::OnUpdate(Atlas::Timestep ts)
 
 	//m_CameraController.OnUpdate(ts);
 
-	//m_FrameBuffer->Bind();
 	//Atlas::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 	//Atlas::RenderCommand::Clear();
 
@@ -64,12 +63,17 @@ void Sandbox2D::OnUpdate(Atlas::Timestep ts)
 	//m_DepthAttachment = m_FrameBuffer->GetDepthAttachmentRendererID();
 	//Atlas::Renderer2D::DrawFrameBuffer(m_ColorAttachment);
 
+
+	//m_FrameBuffer->Bind();
 	Atlas::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 	Atlas::RenderCommand::Clear();
 
-	Atlas::Renderer3D::BeginScene();
+	Atlas::Renderer3D::BeginScene(m_Camera);
 
 	Atlas::Renderer3D::EndScene();
+	//m_FrameBuffer->Unbind();
+
+	//Atlas::Renderer2D::DrawFrameBuffer(m_FrameBuffer->GetColorAttachmentRendererID(0));
 }
 
 void Sandbox2D::OnImGuiRender()
@@ -77,8 +81,9 @@ void Sandbox2D::OnImGuiRender()
 	ATL_PROFILE_FUNCTION();
 
 	ImGui::Begin("Settings");
-	ImGui::Image((void*)(size_t)m_ColorAttachment, ImVec2(800, 800));
-	ImGui::Image((void*)(size_t)m_DepthAttachment, ImVec2(800, 800));
+	ImGui::SetWindowFontScale(1.8f);
+	//ImGui::Image((void*)(size_t)m_ColorAttachment, ImVec2(800, 800));
+	//ImGui::Image((void*)(size_t)m_DepthAttachment, ImVec2(800, 800));
 	//ImGui::SetWindowFontScale(1.8f);
 
 	//auto stats = Atlas::Renderer2D::GetStats();

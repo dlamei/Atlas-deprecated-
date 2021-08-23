@@ -48,9 +48,6 @@ namespace Atlas {
 			file.close();
 		}
 
-		//ATL_CORE_TRACE("Vertex count: {0}", m_VertexCount);
-		//ATL_CORE_TRACE("Triangle count: {0}", m_TriangleCount);
-
 		m_Vertices = new Vertex[m_VertexCount];
 		m_Triangles = new Triangle[m_TriangleCount];
 
@@ -77,7 +74,6 @@ namespace Atlas {
 				strStream >> c >> x >> y >> z;
 				vertexPtr->Position = { x, y, z };
 				vertexPtr++;
-				//ATL_CORE_TRACE("x: {0} y: {1} z: {2}", x, y, z);
 			}
 			else if (line[0] == 'f')
 			{
@@ -87,7 +83,6 @@ namespace Atlas {
 				trianglePtr->indices[1] = indx[1] - 1;
 				trianglePtr->indices[2] = indx[2] - 1;
 				trianglePtr++;
-				//ATL_CORE_TRACE("i0: {0} i1: {1} i2: {2}", indx[0] - 1, indx[1] - 1, indx[2] - 1);
 			}
 		}
 

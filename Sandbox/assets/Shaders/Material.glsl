@@ -20,9 +20,9 @@ void main()
 	gl_Position = u_ViewProjection * position;
 
 	vec4 normal = u_RotationMatrix * vec4(a_Normal, 1.0);
-	float brightness = dot(vec3(normal), u_LightDir);
+	float brightness = abs(dot(vec3(normal), u_LightDir));
 
-	v_Color = vec4(vec3(brightness), 1.0);
+	v_Color = vec4(vec3(brightness), 1.0) * a_Color;
 
 	v_Position = gl_Position;
 }

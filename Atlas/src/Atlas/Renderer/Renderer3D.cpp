@@ -9,6 +9,9 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+//TEMP
+#include "PerspectiveCamera.h"
+
 namespace Atlas {
 
 	struct Renderer3DData
@@ -28,46 +31,22 @@ namespace Atlas {
 
 		//TEMP
 		//Mesh Object;
-		glm::mat4 ProjMat = glm::mat4(0.0f);
-		glm::mat4 RotMat = glm::mat4(1.0f);
-		glm::mat4 ModelMat = glm::mat4(1.0f);
-		glm::mat4 TransMat = glm::mat4(1.0f);
-		glm::vec3 Camera = glm::vec3(0.0f);
 		glm::vec3 BasicLightDir = glm::normalize(glm::vec3(0.0f, 0.0f, 1.0f));
 		float Angle = 0.0f;
+
 		Ref<Mesh> m_Mesh;
+		PerspectiveCamera Camera = PerspectiveCamera(0.1f, 1000.0f, glm::radians(90.0f), 1.0f);
+
 	};
 
 	static Renderer3DData s_Data;
-
-	void PrintMat4(glm::mat4& matrix)
-	{
-		std::string msg = "";
-		for (int i = 0; i < 4; i++)
-		{
-			for (int j = 0; j < 4; j++)
-			{
-				msg += std::to_string(matrix[i][j]) + ", ";
-			}
-			msg += "\n";
-		}
-		ATL_CORE_TRACE("matrix: \n {0}", msg);
-	}
 
 	void Renderer3D::Init()
 	{
 		ATL_PROFILE_FUNCTION();
 		s_Data.m_Mesh = Mesh::Create("assets/Models/Teapot.obj");
 
-		// camera class
-		float nearPlane = 0.1f;
-		float farPlane = 1000.0f;
-		float fov = 90.0f;
-		float aspectRatio = 1.0f; // should not be hard coded
-		float fovRad = 1.0f / tanf(glm::radians(fov) / 2);
-
-		s_Data.ProjMat = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
-		s_Data.TransMat = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, -0.5f, -7.0f));
+		s_Data.m_Mesh->SetTranslation(glm::vec3(-0.0f, -0.0f, -7.0f));
 
 		s_Data.Shader = Atlas::Shader::Create("assets/Shaders/Material.glsl");
 		s_Data.Shader->Bind();
@@ -78,18 +57,17 @@ namespace Atlas {
 		ATL_PROFILE_FUNCTION();
 	}
 
-	void Renderer3D::BeginScene()
+	void Renderer3D::BeginScene(const PerspectiveCamera& camera)
 	{
 		ATL_PROFILE_FUNCTION();
-		//TODO: 
 		s_Data.Shader->Bind();
 
-		s_Data.RotMat = glm::rotate(glm::mat4(1.0f), glm::radians(s_Data.Angle), glm::vec3(1.0f, 1.0f, 1.0f));
+		s_Data.m_Mesh->SetRotation(glm::vec3(1.0f), s_Data.Angle);
 		s_Data.Angle += 0.5f;
 
-		s_Data.Shader->SetMat4("u_ViewProjection", s_Data.ProjMat);
-		s_Data.Shader->SetMat4("u_RotationMatrix", s_Data.RotMat);
-		s_Data.Shader->SetMat4("u_TranslationMatrix", s_Data.TransMat);
+		s_Data.Shader->SetMat4("u_ViewProjection", camera.GetProjectionMatrix());
+		s_Data.Shader->SetMat4("u_RotationMatrix", s_Data.m_Mesh->GetRotationMatrix());
+		s_Data.Shader->SetMat4("u_TranslationMatrix", s_Data.m_Mesh->GetTranslationMatrix());
 		s_Data.Shader->SetFloat3("u_LightDir", s_Data.BasicLightDir);
 
 	}
