@@ -9,25 +9,31 @@ namespace Atlas
 	{
 		ATL_PROFILE_FUNCTION();
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Position);
-
-		m_ViewMatrix = glm::inverse(transform);
+		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, m_Up);
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
 
 	void PerspectiveCamera::RecalculateProjectionMatrix()
 	{
+		ATL_PROFILE_FUNCTION();
+
 		m_ProjectionMatrix = glm::perspective(m_Fov, m_AspectRatio, m_NearPlane, m_FarPlane);
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
 
 	PerspectiveCamera::PerspectiveCamera(float nearPlane, float farPlane, float fov, float aspectRatio)
 		: m_NearPlane(nearPlane), m_FarPlane(farPlane), m_Fov(fov), m_AspectRatio(aspectRatio),
-		m_ProjectionMatrix(glm::perspective(fov, aspectRatio, nearPlane, farPlane)), m_ViewMatrix(1.0f)
+		m_ProjectionMatrix(glm::perspective(fov, aspectRatio, nearPlane, farPlane))
 	{
-		ATL_PROFILE_FUNCTION();
-
+		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, m_Up);
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+	}
+
+	void PerspectiveCamera::SetFrontVec(const glm::vec3& direction)
+	{
+		m_Front = direction;
+		m_Right = glm::normalize(glm::cross(m_Front, m_Up));
+		RecalculateViewMatrix();
 	}
 
 	void PerspectiveCamera::SetProjection(float nearPlane, float farPlane, float fov, float aspectRatio)

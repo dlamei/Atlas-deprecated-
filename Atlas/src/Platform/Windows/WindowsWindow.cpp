@@ -7,7 +7,6 @@
 
 #include "Platform/OpenGL/OpenGLContext.h"
 
-
 namespace Atlas {
 
 	static bool s_GLFWInitialized = false;
@@ -62,7 +61,7 @@ namespace Atlas {
 		m_Context = new OpenGLContext(m_Window);
 		m_Context->Init();
 
-
+		glfwSetInputMode(m_Window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 
@@ -188,6 +187,15 @@ namespace Atlas {
 	bool WindowsWindow::IsVSync() const
 	{
 		return m_Data.VSync;
+	}
+
+	void WindowsWindow::CaptureMouse(bool enabled) const
+	{
+		if (enabled) 
+		{
+			glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		}
+		else glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
 
 }

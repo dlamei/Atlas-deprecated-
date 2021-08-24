@@ -9,9 +9,6 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-//TEMP
-#include "PerspectiveCamera.h"
-
 namespace Atlas {
 
 	struct Renderer3DData
@@ -30,7 +27,6 @@ namespace Atlas {
 		uint32_t VertexCount = 0;
 
 		//TEMP
-		//Mesh Object;
 		glm::vec3 BasicLightDir = glm::normalize(glm::vec3(0.0f, 0.0f, 1.0f));
 		float Angle = 0.0f;
 
@@ -46,7 +42,7 @@ namespace Atlas {
 		ATL_PROFILE_FUNCTION();
 		s_Data.m_Mesh = Mesh::Create("assets/Models/Teapot.obj");
 
-		s_Data.m_Mesh->SetTranslation(glm::vec3(-0.0f, -0.0f, -7.0f));
+		s_Data.m_Mesh->SetTranslation(glm::vec3(0.0f, 0.0f, -7.0f));
 
 		s_Data.Shader = Atlas::Shader::Create("assets/Shaders/Material.glsl");
 		s_Data.Shader->Bind();
@@ -65,10 +61,27 @@ namespace Atlas {
 		s_Data.m_Mesh->SetRotation(glm::vec3(1.0f), s_Data.Angle);
 		s_Data.Angle += 0.5f;
 
-		s_Data.Shader->SetMat4("u_ViewProjection", camera.GetProjectionMatrix());
-		s_Data.Shader->SetMat4("u_RotationMatrix", s_Data.m_Mesh->GetRotationMatrix());
+		//s_Data.Shader->SetMat4("m_Camera", camera.GetViewProjectionMatrix());
+		s_Data.Shader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+		//s_Data.Shader->SetMat4("u_ViewProjection", s_Data.Camera.GetViewProjectionMatrix());
+		//s_Data.Shader->SetMat4("u_RotationMatrix", s_Data.m_Mesh->GetRotationMatrix());
+		s_Data.Shader->SetMat4("u_RotationMatrix", glm::mat4(1.0f));
+		//s_Data.Shader->SetMat4("u_RotationMatrix", glm::inverse(camera.GetViewMatrix()));
 		s_Data.Shader->SetMat4("u_TranslationMatrix", s_Data.m_Mesh->GetTranslationMatrix());
-		s_Data.Shader->SetFloat3("u_LightDir", s_Data.BasicLightDir);
+		//s_Data.Shader->SetFloat3("u_LightDir", s_Data.BasicLightDir);
+
+		s_Data.Shader->SetFloat3("u_ViewPosition", camera.GetPosition());
+
+		s_Data.Shader->SetFloat3("material.AmbientColor", { 0.6f, 0.0f, 0.3f });
+		s_Data.Shader->SetFloat3("material.DiffuseColor", { 0.6f, 0.0f, 0.3f });
+		s_Data.Shader->SetFloat3("material.SpecularColor", { 0.5f, 0.5f, 0.5f });
+		s_Data.Shader->SetFloat("material.Shininess", 32.0f);
+
+		s_Data.Shader->SetFloat3("light.Position", glm::vec3(0.0f, 2.0f, -4.0f));
+		s_Data.Shader->SetFloat3("light.AmbientColor", { 0.4f, 0.4f, 0.4f });
+		s_Data.Shader->SetFloat3("light.DiffuseColor", { 0.5f, 0.5f, 0.5f });
+		s_Data.Shader->SetFloat3("light.SpecularColor", { 1.0f, 1.0f, 1.0f });
+
 
 	}
 

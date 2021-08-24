@@ -37,7 +37,7 @@ void Sandbox2D::OnUpdate(Atlas::Timestep ts)
 	ATL_PROFILE_FUNCTION();
 
 
-	//m_CameraController.OnUpdate(ts);
+	m_CameraController.OnUpdate(ts);
 
 	//Atlas::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 	//Atlas::RenderCommand::Clear();
@@ -68,7 +68,8 @@ void Sandbox2D::OnUpdate(Atlas::Timestep ts)
 	Atlas::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 	Atlas::RenderCommand::Clear();
 
-	Atlas::Renderer3D::BeginScene(m_Camera);
+	m_CameraController.SetFov(glm::radians(m_Fov));
+	Atlas::Renderer3D::BeginScene(m_CameraController.GetCamera());
 
 	Atlas::Renderer3D::EndScene();
 	//m_FrameBuffer->Unbind();
@@ -82,6 +83,7 @@ void Sandbox2D::OnImGuiRender()
 
 	ImGui::Begin("Settings");
 	ImGui::SetWindowFontScale(1.8f);
+	ImGui::SliderFloat("Fov:", &m_Fov, 0, 180, "%.f deg", 1);
 	//ImGui::Image((void*)(size_t)m_ColorAttachment, ImVec2(800, 800));
 	//ImGui::Image((void*)(size_t)m_DepthAttachment, ImVec2(800, 800));
 	//ImGui::SetWindowFontScale(1.8f);

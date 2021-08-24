@@ -73,5 +73,6 @@ namespace Atlas {
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<MouseScrolledEvent>(ATL_BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
-		dispatcher.Dispatch<WindowResizeEvent>(ATL_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized)); }
+		dispatcher.Dispatch<WindowResizeEvent>(ATL_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized)); 
+	}
 }

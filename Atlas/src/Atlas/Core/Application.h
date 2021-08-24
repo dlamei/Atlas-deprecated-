@@ -57,6 +57,7 @@ namespace Atlas {
 		void PushOverlay(Layer* overlay);
 
 		inline Window& GetWindow() { return *m_Window; }
+		static inline Scope<Window>& GetWindowScope() { return s_Instance->m_Window; }
 		static inline uint32_t GetWindowHeight() { return s_Instance->m_Window->GetHeight(); }
 		static inline uint32_t GetWindowWidth() { return s_Instance->m_Window->GetWidth(); }
 		static inline Application& Get() { return *s_Instance; }

@@ -94,7 +94,6 @@ namespace Atlas {
 		vertexBuffer->SetLayout({
 				{ ShaderDataType::Float3, "a_Position" },
 				{ ShaderDataType::Float3, "a_Normal" },
-				{ ShaderDataType::Float4, "a_Color" }
 			});
 		vertexBuffer->SetData(m_Vertices, m_VertexCount * sizeof(Vertex));
 

@@ -14,12 +14,14 @@ namespace Atlas {
 		auto state = glfwGetKey(window, keyCode);
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
+
 	bool WindowsInput::IsMouseButtonPressedImpl(int button)
 	{
 		GLFWwindow* window = static_cast<GLFWwindow*> (Application::Get().GetWindow().GetNativeWindow());
 		auto state = glfwGetMouseButton(window, button);
 		return state == GLFW_PRESS;
 	}
+
 	std::pair<float, float> WindowsInput::GetMousePosImpl()
 	{
 		GLFWwindow* window = static_cast<GLFWwindow*> (Application::Get().GetWindow().GetNativeWindow());
@@ -27,11 +29,13 @@ namespace Atlas {
 		glfwGetCursorPos(window, &MouseX, &MouseY);
 		return { (float)MouseX, (float)MouseY };
 	}
+
 	float WindowsInput::GetMouseXImpl()
 	{
 		auto [x, y] = GetMousePosImpl();
 		return x;
 	}
+
 	float WindowsInput::GetMouseYImpl()
 	{
 		auto [x, y] = GetMousePosImpl();

@@ -15,7 +15,6 @@ namespace Atlas {
 	{
 		glm::vec3 Position;
 		glm::vec3 Normal = glm::vec3(0.0f);
-		glm::vec4 Color = { 1.0f, 0.0f, 0.0f, 1.0f };
 	};
 
 	struct Triangle
@@ -29,6 +28,8 @@ namespace Atlas {
 		uint32_t m_VertexCount = 0, m_TriangleCount = 0;
 		Triangle* m_Triangles = nullptr;
 		Vertex* m_Vertices = nullptr;
+
+		glm::vec4 m_Color = { 0.6f, 0.0f, 0.8f, 1.0f };
 
 		glm::mat4 m_TranslationMatrix = glm::mat4(1.0f), m_RotationMatrix = glm::mat4(1.0f);
 
@@ -53,6 +54,9 @@ namespace Atlas {
 
 		inline glm::mat4& GetTranslationMatrix() { return m_TranslationMatrix; }
 		inline glm::mat4& GetRotationMatrix() { return m_RotationMatrix; }
+
+		inline const glm::vec4& GetColor() const { return m_Color; }
+		inline const void SetColor(const glm::vec4& color) { m_Color = color; }
 
 		inline void SetTranslation(const glm::vec3 position) { m_TranslationMatrix = glm::translate(glm::mat4(1.0f), position); }
 		inline void SetRotation(const glm::vec3 axis, const float angle) { m_RotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis); }

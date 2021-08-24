@@ -15,6 +15,7 @@ namespace Atlas {
 
 		GLFWwindow* m_Window;
 		GraphicsContext* m_Context;
+		RECT* m_ClippingRect = nullptr;
 
 		struct WindowData
 		{
@@ -37,8 +38,9 @@ namespace Atlas {
 		inline uint32_t GetHeight() const override { return m_Data.Height; }
 
 		inline void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
-		void SetVSync(bool enabled) override;
-		bool IsVSync() const override;
+		virtual void SetVSync(bool enabled) override;
+		virtual bool IsVSync() const override;
+		virtual void CaptureMouse(bool enabled) const override;
 
 		inline virtual void* GetNativeWindow() const { return m_Window; }
 	};

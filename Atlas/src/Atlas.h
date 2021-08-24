@@ -26,3 +26,5 @@
 
 #include "Atlas/Renderer/OrthographicCamera.h"
 #include "Atlas/Renderer/OrthographicCameraController.h"
+#include "Atlas/Renderer/PerspectiveCamera.h"
+#include "Atlas/Renderer/PerspectiveCameraController.h"
