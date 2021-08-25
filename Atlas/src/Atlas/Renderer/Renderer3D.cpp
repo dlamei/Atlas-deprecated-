@@ -40,7 +40,7 @@ namespace Atlas {
 	void Renderer3D::Init()
 	{
 		ATL_PROFILE_FUNCTION();
-		s_Data.m_Mesh = Mesh::Create("assets/Models/Teapot.obj");
+		s_Data.m_Mesh = Mesh::Create("assets/Models/Hand.obj");
 
 		s_Data.m_Mesh->SetTranslation(glm::vec3(0.0f, 0.0f, -7.0f));
 
@@ -53,10 +53,12 @@ namespace Atlas {
 		ATL_PROFILE_FUNCTION();
 	}
 
-	void Renderer3D::BeginScene(const PerspectiveCamera& camera)
+	void Renderer3D::BeginScene(const PerspectiveCamera& camera, bool shading)
 	{
 		ATL_PROFILE_FUNCTION();
 		s_Data.Shader->Bind();
+
+		s_Data.m_Mesh->SetShading(shading);
 
 		s_Data.m_Mesh->SetRotation(glm::vec3(1.0f), s_Data.Angle);
 		s_Data.Angle += 0.5f;
@@ -75,7 +77,7 @@ namespace Atlas {
 		s_Data.Shader->SetFloat3("material.AmbientColor", { 0.6f, 0.0f, 0.3f });
 		s_Data.Shader->SetFloat3("material.DiffuseColor", { 0.6f, 0.0f, 0.3f });
 		s_Data.Shader->SetFloat3("material.SpecularColor", { 0.5f, 0.5f, 0.5f });
-		s_Data.Shader->SetFloat("material.Shininess", 32.0f);
+		s_Data.Shader->SetFloat("material.Shininess", 16.0f);
 
 		s_Data.Shader->SetFloat3("light.Position", glm::vec3(0.0f, 2.0f, -4.0f));
 		s_Data.Shader->SetFloat3("light.AmbientColor", { 0.4f, 0.4f, 0.4f });

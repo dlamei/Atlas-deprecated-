@@ -1,6 +1,8 @@
 #pragma once
 
 #include "PerspectiveCamera.h"
+//TEMP
+#include "Mesh.h"
 
 namespace Atlas {
 
@@ -13,7 +15,7 @@ namespace Atlas {
 		static void Init();
 		static void Shutdown();
 
-		static void BeginScene(const PerspectiveCamera& camera);
+		static void BeginScene(const PerspectiveCamera& camera, bool shading);
 		static void EndScene();
 		static void Flush();
 	};

@@ -13,8 +13,14 @@ namespace Atlas {
 
 	struct Vertex
 	{
-		glm::vec3 Position;
+		glm::vec3 Position = glm::vec3(0.0f);
 		glm::vec3 Normal = glm::vec3(0.0f);
+		glm::vec2 TextureCoord = glm::vec2(0.0f);
+	};
+
+	struct VertexTriangle
+	{
+		Vertex Vertices[3];
 	};
 
 	struct Triangle
@@ -25,9 +31,12 @@ namespace Atlas {
 	class Mesh
 	{
 	private:
-		uint32_t m_VertexCount = 0, m_TriangleCount = 0;
-		Triangle* m_Triangles = nullptr;
-		Vertex* m_Vertices = nullptr;
+		bool m_HasTexCoords = false;
+		bool m_SmoothShading = true;
+
+		uint32_t m_VertexCount = 0, m_TriangleCount = 0, m_TexterCoordCount = 0;
+		VertexTriangle* m_VertexTriangles = nullptr;
+		uint32_t* m_Indices = nullptr;
 
 		glm::vec4 m_Color = { 0.6f, 0.0f, 0.8f, 1.0f };
 
@@ -44,12 +53,12 @@ namespace Atlas {
 		bool Load(const char* path);
 		void Invalidate();
 		void CalculateNormals();
+		void SetShading(bool smooth);
 
 		inline uint32_t GetTriangleCount() const { return m_TriangleCount; }
 		inline uint32_t GetIndexCount() const { return m_TriangleCount * 3; }
-		inline uint32_t GetVertexCount() const { return m_VertexCount; }
-		inline Triangle* GetTriangles() const { return m_Triangles; }
-		inline Vertex* GetVertex(const uint32_t index) const { ATL_CORE_ASSERT(!(index >= m_VertexCount), "Index: out of bounds!"); return &m_Vertices[index]; }
+		inline uint32_t GetVertexCount() const { return m_TriangleCount * 3; }
+		inline VertexTriangle* GetTriangles() const { return m_VertexTriangles; }
 		inline Ref<VertexArray> GetVertexArray() const { return m_VertexArray; }
 
 		inline glm::mat4& GetTranslationMatrix() { return m_TranslationMatrix; }

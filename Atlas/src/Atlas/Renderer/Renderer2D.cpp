@@ -103,7 +103,7 @@ namespace Atlas {
 		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 
-		s_Data.FlatShader = Atlas::Shader::Create("assets/Shaders/FlatColor.glsl");
+		s_Data.FlatShader = Atlas::Shader::Create("assets/Shaders/2DShader.glsl");
 		s_Data.FlatShader->Bind();
 
 		s_Data.ScreenShader = Atlas::Shader::Create("assets/Shaders/Screen.glsl");

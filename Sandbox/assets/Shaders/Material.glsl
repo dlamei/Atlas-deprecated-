@@ -3,6 +3,7 @@
 
 layout(location = 0) in vec3 a_Position;
 layout (location = 1) in vec3 a_Normal;
+layout (location = 2) in vec2 a_TexCoord;
 
 uniform mat4 m_Camera;
 uniform mat4 u_ViewProjection;
@@ -14,6 +15,7 @@ uniform mat4 u_ModelMat;
 
 out vec3 v_VertexPosition;
 out vec3 v_Normal;
+out vec4 v_Color;
 
 void main()
 {
@@ -24,6 +26,7 @@ void main()
 
 	v_VertexPosition = vec3(position);
 	v_Normal = vec3(normal);
+	v_Color = vec4(a_TexCoord, 0.0, 1.0);
 }
 
 #type fragment
@@ -50,6 +53,7 @@ struct Light
 
 in vec3 v_VertexPosition;
 in vec3 v_Normal;
+in vec4 v_Color;
 
 uniform Material material;
 uniform Light light;
