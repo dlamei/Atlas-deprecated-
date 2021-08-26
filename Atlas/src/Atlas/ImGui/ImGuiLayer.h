@@ -8,7 +8,7 @@
 
 namespace Atlas {
 
-	class ImGuiLayer:public Layer
+	class ImGuiLayer : public Layer
 	{
 
 	private:

@@ -3,13 +3,26 @@
 #include "Atlas/Core/Core.h"
 
 #include <string>
+#include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Atlas/Core/Core.h"
-#include "Atlas/Renderer/VertexArray.h"
+#include "VertexArray.h"
+#include "Texture.h"
 
 namespace Atlas {
+
+	namespace Utils {
+
+		enum TextureType
+		{
+			DIFFUSE = 0,
+			SPECULAR,
+			NONE
+			
+		};
+	}
 
 	struct Vertex
 	{
@@ -43,6 +56,7 @@ namespace Atlas {
 		glm::mat4 m_TranslationMatrix = glm::mat4(1.0f), m_RotationMatrix = glm::mat4(1.0f);
 
 		Ref<VertexArray> m_VertexArray;
+		Ref<Texture>* m_Textures = new Ref<Texture>[Utils::NONE];
 
 	public:
 		Mesh(const char* path);
@@ -69,6 +83,9 @@ namespace Atlas {
 
 		inline void SetTranslation(const glm::vec3 position) { m_TranslationMatrix = glm::translate(glm::mat4(1.0f), position); }
 		inline void SetRotation(const glm::vec3 axis, const float angle) { m_RotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis); }
+
+		inline void addTexture(const Ref<Texture2D> texture, Utils::TextureType type) { if (type != Utils::NONE) m_Textures[type] = texture; }
+		inline void BindTexture(Utils::TextureType type) { m_Textures[type]->Bind(type); }
 	};
 
 }

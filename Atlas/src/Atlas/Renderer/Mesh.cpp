@@ -28,14 +28,7 @@ namespace std {
 namespace Atlas {
 	Ref<Mesh> Mesh::Create(const char* path)
 	{
-		switch (Renderer::GetAPI())
-		{
-		case RendererAPI::API::None:	ATL_CORE_ASSERT(false, "RendererAPI is not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:	return std::make_shared<Mesh>(path);
-		}
-
-		ATL_CORE_ASSERT(false, "Unknown RendererAPI!")
-			return nullptr;
+		return std::make_shared<Mesh>(path);
 	}
 
 	Mesh::Mesh(const char* path)
@@ -46,6 +39,8 @@ namespace Atlas {
 	Mesh::~Mesh()
 	{
 		delete[] m_VertexTriangles;
+		delete[] m_Indices;
+		delete[] m_Textures;
 	}
 
 	bool Mesh::Load(const char* path)
@@ -89,10 +84,10 @@ namespace Atlas {
 		std::vector<std::tuple<int, int, int>> trianglePosIndices;
 		std::vector<std::tuple<int, int, int>> triangleTexCoordIndices;
 
-		vertexPos.resize(m_VertexCount);
-		vertexTexCoords.resize(m_TexterCoordCount);
-		trianglePosIndices.resize(m_TriangleCount);
-		triangleTexCoordIndices.resize(m_TriangleCount);
+		vertexPos.reserve(m_VertexCount);
+		vertexTexCoords.reserve(m_TexterCoordCount);
+		trianglePosIndices.reserve(m_TriangleCount);
+		triangleTexCoordIndices.reserve(m_TriangleCount);
 
 		while (!file.eof())
 		{

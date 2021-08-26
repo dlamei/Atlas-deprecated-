@@ -15,7 +15,7 @@ uniform mat4 u_ModelMat;
 
 out vec3 v_VertexPosition;
 out vec3 v_Normal;
-out vec4 v_Color;
+out vec2 v_TexCoord;
 
 void main()
 {
@@ -26,7 +26,7 @@ void main()
 
 	v_VertexPosition = vec3(position);
 	v_Normal = vec3(normal);
-	v_Color = vec4(a_TexCoord, 0.0, 1.0);
+	v_TexCoord = a_TexCoord;
 }
 
 #type fragment
@@ -36,6 +36,8 @@ layout(location = 0) out vec4 color;
 
 struct Material 
 {
+	sampler2D DiffuseTexture;
+	sampler2D SpecularTexture;
 	vec3 AmbientColor;
 	vec3 DiffuseColor;
 	vec3 SpecularColor;
@@ -53,7 +55,7 @@ struct Light
 
 in vec3 v_VertexPosition;
 in vec3 v_Normal;
-in vec4 v_Color;
+in vec2 v_TexCoord;
 
 uniform Material material;
 uniform Light light;
@@ -70,9 +72,12 @@ void main()
 	vec3 reflectionDirection = reflect(-lightDirection, v_Normal);
 	float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), material.Shininess);
 
-	vec3 ambientColor  = light.AmbientColor  * material.AmbientColor;
-	vec3 diffuseColor  = light.DiffuseColor  * (diff * material.DiffuseColor);
-	vec3 specularColor = light.SpecularColor * (spec * material.SpecularColor);
+	//vec3 ambientColor  = light.AmbientColor  * material.AmbientColor;
+	//vec3 diffuseColor  = light.DiffuseColor  * (diff * material.DiffuseColor);
+	//vec3 specularColor = light.SpecularColor * (spec * material.SpecularColor);
+	vec3 diffuseColor  = light.DiffuseColor  * diff * vec3(texture(material.DiffuseTexture, v_TexCoord));
+	vec3 ambientColor  = light.AmbientColor  * vec3(texture(material.DiffuseTexture, v_TexCoord));
+	vec3 specularColor = light.SpecularColor * spec * vec3(texture(material.SpecularTexture, v_TexCoord));
 
 	color = vec4(ambientColor + diffuseColor + specularColor, 1.0);
 }

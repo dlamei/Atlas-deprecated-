@@ -27,6 +27,12 @@ void Sandbox2D::OnAttach()
 	};
 
 	m_FrameBuffer = Atlas::FrameBuffer::Create(fbSpecs);
+
+	m_Scene = Atlas::Scene::Create(Atlas::PerspectiveCameraController(1.0f));
+	m_Scene->SetMesh(Atlas::Mesh::Create("assets/Models/Box.obj"));
+	m_Scene->GetMesh()->addTexture(Atlas::Texture2D::Create("assets/Textures/Box.png"), Atlas::Utils::TextureType::DIFFUSE);
+	m_Scene->GetMesh()->addTexture(Atlas::Texture2D::Create("assets/Textures/Box_Specular.png"), Atlas::Utils::TextureType::SPECULAR);
+	m_Scene->SetLight({ 0.0f, 3.0f, -2.0f });
 }
 
 void Sandbox2D::OnDetach()
@@ -39,6 +45,7 @@ void Sandbox2D::OnUpdate(Atlas::Timestep ts)
 
 
 	m_CameraController.OnUpdate(ts);
+	m_Scene->GetActiveCamera().OnUpdate(ts);
 
 	//Atlas::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 	//Atlas::RenderCommand::Clear();
@@ -70,9 +77,8 @@ void Sandbox2D::OnUpdate(Atlas::Timestep ts)
 	Atlas::RenderCommand::Clear();
 
 	m_CameraController.SetFov(glm::radians(m_Fov));
-	Atlas::Renderer3D::BeginScene(m_CameraController.GetCamera(), m_Shading);
-
-	Atlas::Renderer3D::EndScene();
+	//Atlas::Renderer3D::BeginScene(m_CameraController.GetCamera(), m_Shading);
+	Atlas::Renderer3D::DrawScene(m_Scene);
 	//m_FrameBuffer->Unbind();
 
 	//Atlas::Renderer2D::DrawFrameBuffer(m_FrameBuffer->GetColorAttachmentRendererID(0));
@@ -85,6 +91,7 @@ void Sandbox2D::OnImGuiRender()
 	ImGui::Begin("Settings");
 	ImGui::SetWindowFontScale(1.8f);
 	ImGui::Checkbox("Smooth Shading", &m_Shading);
+	m_Scene->GetMesh()->SetShading(m_Shading);
 	ImGui::SliderFloat("Fov:", &m_Fov, 0, 180, "%.f deg", 1);
 	//ImGui::Image((void*)(size_t)m_ColorAttachment, ImVec2(800, 800));
 	//ImGui::Image((void*)(size_t)m_DepthAttachment, ImVec2(800, 800));
@@ -105,7 +112,8 @@ void Sandbox2D::OnImGuiRender()
 
 void Sandbox2D::OnEvent(Atlas::Event& e)
 {
-	m_CameraController.OnEvent(e);
+	//m_CameraController.OnEvent(e);
+	m_Scene->GetActiveCamera().OnEvent(e);
 
 	if (e.GetEventType() == Atlas::EventType::WindowResize)
 	{
