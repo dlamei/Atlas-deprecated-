@@ -6,7 +6,6 @@ class Sandbox2D : public Atlas::Layer
 {
 private:
 	Atlas::PerspectiveCameraController m_CameraController;
-	float m_Fov = 90;
 	bool m_Shading = true;
 
 	Atlas::Ref<Atlas::Texture2D> m_Texture1;

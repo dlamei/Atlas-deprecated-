@@ -64,7 +64,6 @@ uniform vec3 u_ViewPosition;
 
 void main()
 {
-
 	vec3 lightDirection = normalize(light.Position - v_VertexPosition);
 	float diff = max(dot(v_Normal, lightDirection), 0.0);
 

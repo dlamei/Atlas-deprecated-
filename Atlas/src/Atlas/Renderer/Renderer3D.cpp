@@ -43,8 +43,8 @@ namespace Atlas {
 		s_Data.m_Mesh = Mesh::Create("assets/Models/Box.obj");
 
 		s_Data.m_Mesh->SetTranslation(glm::vec3(0.0f, 0.0f, -1.0f));
-		s_Data.m_Mesh->addTexture(Texture2D::Create("assets/Textures/Box.png"), Utils::TextureType::DIFFUSE);
-		s_Data.m_Mesh->addTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);
+		s_Data.m_Mesh->AddTexture(Texture2D::Create("assets/Textures/Box.png"), Utils::TextureType::DIFFUSE);
+		s_Data.m_Mesh->AddTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);
 
 		s_Data.Shader = Atlas::Shader::Create("assets/Shaders/Material.glsl");
 		s_Data.Shader->Bind();
@@ -107,5 +107,6 @@ namespace Atlas {
 		scene->GetMesh()->GetVertexArray()->BindAll();
 
 		RenderCommand::DrawIndexed(scene->GetMesh()->GetVertexArray(), scene->GetMesh()->GetTriangleCount() * 3);
+		//RenderCommand::DrawIndexedWireframe(scene->GetMesh()->GetVertexArray(), scene->GetMesh()->GetTriangleCount() * 3);
 	}
 }

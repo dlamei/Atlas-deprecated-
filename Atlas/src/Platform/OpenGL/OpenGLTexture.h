@@ -29,6 +29,8 @@ namespace Atlas {
 		virtual void Bind(uint32_t slot) const override;
 		virtual void Unbind(uint32_t slot) const override;
 
+		inline virtual uint32_t GetRendererID() override { return m_RendererID; }
+
 		virtual bool operator==(const Texture& other) const override
 		{
 			return m_RendererID == ((OpenGLTexture2D&)other).m_RendererID;
