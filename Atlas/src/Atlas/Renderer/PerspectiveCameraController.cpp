@@ -52,8 +52,14 @@ namespace Atlas
 		return false;
 	}
 
+	bool PerspectiveCameraController::OnWindowResized(WindowResizeEvent& e)
+	{
+		m_Camera.SetAspecRatio((float)e.GetWidth() / (float)e.GetHeight());
+		return false;
+	}
+
 	PerspectiveCameraController::PerspectiveCameraController(float aspecRatio)
-		: m_Camera(0.1f, 1000.0f, glm::radians(m_Fov), aspecRatio), m_AspectRatio(aspecRatio)
+		: m_Camera(0.1f, 1000.0f, glm::radians(90.0f), aspecRatio)
 	{
 	}
 
@@ -103,5 +109,6 @@ namespace Atlas
 		dispatcher.Dispatch<MouseMovedEvent>(ATL_BIND_EVENT_FN(PerspectiveCameraController::OnMouseMoved));
 		dispatcher.Dispatch<MouseButtonPressedEvent>(ATL_BIND_EVENT_FN(PerspectiveCameraController::OnMousePressed));
 		dispatcher.Dispatch<MouseButtonReleasedEvent>(ATL_BIND_EVENT_FN(PerspectiveCameraController::OnMouseReleased));
+		dispatcher.Dispatch<WindowResizeEvent>(ATL_BIND_EVENT_FN(PerspectiveCameraController::OnWindowResized));
 	}
 }

@@ -13,11 +13,6 @@ namespace Atlas {
 
 	struct Renderer3DData
 	{
-		static const uint32_t MaxQuads = 10000;
-		static const uint32_t MaxVertices = MaxQuads * 4;
-		static const uint32_t MaxIndices = MaxQuads * 6;
-		static const uint32_t MaxTextureSlots = 32;
-
 		Ref<VertexArray> VertexArray;
 		Ref<VertexBuffer> VertexBuffer;
 		Ref<IndexBuffer> IndexBuffer;
@@ -27,12 +22,7 @@ namespace Atlas {
 		uint32_t VertexCount = 0;
 
 		//TEMP
-		glm::vec3 BasicLightDir = glm::normalize(glm::vec3(0.0f, 0.0f, 1.0f));
 		float Angle = 0.0f;
-
-		Ref<Mesh> m_Mesh;
-		PerspectiveCamera Camera = PerspectiveCamera(0.1f, 1000.0f, glm::radians(90.0f), 1.0f);
-
 	};
 
 	static Renderer3DData s_Data;
@@ -40,13 +30,8 @@ namespace Atlas {
 	void Renderer3D::Init()
 	{
 		ATL_PROFILE_FUNCTION();
-		s_Data.m_Mesh = Mesh::Create("assets/Models/Box.obj");
 
-		s_Data.m_Mesh->SetTranslation(glm::vec3(0.0f, 0.0f, -1.0f));
-		s_Data.m_Mesh->AddTexture(Texture2D::Create("assets/Textures/Box.png"), Utils::TextureType::DIFFUSE);
-		s_Data.m_Mesh->AddTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);
-
-		s_Data.Shader = Atlas::Shader::Create("assets/Shaders/Material.glsl");
+		s_Data.Shader = Shader::Create("assets/Shaders/Material.glsl");
 		s_Data.Shader->Bind();
 	}
 
@@ -60,21 +45,15 @@ namespace Atlas {
 	{
 		ATL_PROFILE_FUNCTION();
 		s_Data.Shader->Bind();
-		//s_Data.m_Mesh->BindTexture(Utils::TextureType::DIFFUSE);
-		//s_Data.m_Mesh->BindTexture(Utils::TextureType::SPECULAR);
-		scene->GetMesh()->BindTexture(Utils::TextureType::DIFFUSE);
-		scene->GetMesh()->BindTexture(Utils::TextureType::SPECULAR);
+
 
 		//s_Data.m_Mesh->SetShading(shading);
 
-		s_Data.m_Mesh->SetRotation(glm::vec3(1.0f), s_Data.Angle);
-		s_Data.Angle += 0.5f;
+		//scene->GetMesh()->SetRotation(glm::vec3(1.0f), s_Data.Angle);
+		//s_Data.Angle += 0.5f;
 
 		//s_Data.Shader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 		s_Data.Shader->SetMat4("u_ViewProjection", scene->getCamera().GetViewProjectionMatrix());
-		s_Data.Shader->SetMat4("u_RotationMatrix", glm::mat4(1.0f));
-		s_Data.Shader->SetMat4("u_TranslationMatrix", s_Data.m_Mesh->GetTranslationMatrix());
-
 		s_Data.Shader->SetFloat3("u_ViewPosition", scene->getCamera().GetPosition());
 
 		s_Data.Shader->SetInt("material.DiffuseTexture", Utils::TextureType::DIFFUSE);
@@ -90,7 +69,20 @@ namespace Atlas {
 		s_Data.Shader->SetFloat3("light.DiffuseColor", { 0.5f, 0.5f, 0.5f });
 		s_Data.Shader->SetFloat3("light.SpecularColor", { 1.0f, 1.0f, 1.0f });
 
-		Flush(scene);
+		for (auto& mesh : scene->GetMeshVector())
+		{
+			Renderer3D::DrawMesh(mesh);
+		}
+	}
+
+	void Renderer3D::DrawMesh(const Ref<Mesh>& mesh)
+	{
+		s_Data.Shader->SetMat4("u_RotationMatrix", mesh->GetRotationMatrix());
+		s_Data.Shader->SetMat4("u_TranslationMatrix", mesh->GetTranslationMatrix());
+
+		mesh->BindTexture(Utils::TextureType::DIFFUSE);
+		mesh->BindTexture(Utils::TextureType::SPECULAR);
+		Renderer3D::Flush(mesh);
 
 	}
 
@@ -100,13 +92,13 @@ namespace Atlas {
 		//Flush();
 	}
 
-	void Renderer3D::Flush(const Ref<Scene> scene)
+	void Renderer3D::Flush(const Ref<Mesh>& mesh)
 	{
 		ATL_PROFILE_FUNCTION();
 		//s_Data.m_Mesh->GetVertexArray()->BindAll();
-		scene->GetMesh()->GetVertexArray()->BindAll();
+		mesh->GetVertexArray()->BindAll();
 
-		RenderCommand::DrawIndexed(scene->GetMesh()->GetVertexArray(), scene->GetMesh()->GetTriangleCount() * 3);
+		RenderCommand::DrawIndexed(mesh->GetVertexArray(), mesh->GetTriangleCount() * 3);
 		//RenderCommand::DrawIndexedWireframe(scene->GetMesh()->GetVertexArray(), scene->GetMesh()->GetTriangleCount() * 3);
 	}
 }

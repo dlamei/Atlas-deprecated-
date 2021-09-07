@@ -39,6 +39,8 @@ namespace Atlas {
 		Ref<IndexBuffer> IndexBuffer;
 		Ref<VertexArray> QuadVertexArray;
 
+		Ref<Shader> ActiveShader;
+
 		Ref<Shader> FlatShader;
 		Ref<Shader> ScreenShader;
 		Ref<Texture2D> WhiteTexture;
@@ -117,6 +119,8 @@ namespace Atlas {
 
 		s_Data.TriVertexArray->AddVertexBuffer(s_Data.VertexBuffer);
 		s_Data.TriVertexArray->SetIndexBuffer(s_Data.IndexBuffer);
+
+		s_Data.ActiveShader = s_Data.FlatShader;
 	}
 
 	void Renderer2D::Shutdown()
@@ -136,6 +140,7 @@ namespace Atlas {
 		//TODO
 		s_Data.TriVertexArray->BindAll();
 
+		s_Data.ActiveShader = s_Data.FlatShader;
 		s_Data.FlatShader->Bind();
 		s_Data.FlatShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 
@@ -146,6 +151,26 @@ namespace Atlas {
 		s_Data.IndexBufferPtr = s_Data.IndexBufferBase;
 
 		s_Data.TextureSlotIndex = 1;
+	}
+
+	void Renderer2D::SetFlatShader()
+	{
+		if (s_Data.ActiveShader != s_Data.FlatShader)
+		{
+			s_Data.ActiveShader = s_Data.FlatShader;
+			s_Data.FlatShader->Bind();
+			FlushReset();
+		}
+	}
+
+	void Renderer2D::SetShader(const Ref<Shader>& shader)
+	{
+		if (s_Data.ActiveShader != shader)
+		{
+			s_Data.ActiveShader = shader;
+			shader->Bind();
+			FlushReset();
+		}
 	}
 
 	//TODO: what if nothing is drawn
@@ -405,13 +430,15 @@ namespace Atlas {
 
 	void Renderer2D::DrawFrameBuffer(uint32_t id)
 	{
+		//TEMP
 		RenderCommand::SetViewport(0, 0, Application::GetWindowWidth(), Application::GetWindowHeight());
 		glm::mat4 camera = glm::ortho(-1, 1, -1, 1);
 
 		s_Data.ScreenShader->Bind();
 		s_Data.QuadVertexArray->BindAll();
-		glBindTexture(GL_TEXTURE_2D, id);
-		Atlas::RenderCommand::DrawIndexed(s_Data.QuadVertexArray, 6);
+
+		RenderCommand::Bind2DTexture(id);
+		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, 6);
 
 		s_Data.FlatShader->Bind();
 	} 

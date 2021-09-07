@@ -11,10 +11,8 @@ namespace Atlas
 	class PerspectiveCameraController
 	{
 	private:
-		float m_AspectRatio;
 		float m_CameraMoveSpeed = 5.0f, m_CamearSensitivity = 0.2f;
 		float m_Yaw = -90.0f, m_Pitch = 0.0f;
-		float m_Fov = 90;
 
 		float m_PMouseX = 0.0f, m_PMouseY = 0.0f;
 		bool firstMouseMove = true;
@@ -27,6 +25,7 @@ namespace Atlas
 		bool OnMouseMoved(MouseMovedEvent& e);
 		bool OnMousePressed(MouseButtonPressedEvent& e);
 		bool OnMouseReleased(MouseButtonReleasedEvent& e);
+		bool OnWindowResized(WindowResizeEvent& e);
 
 	public:
 		PerspectiveCameraController(float aspecRatio);
@@ -34,8 +33,10 @@ namespace Atlas
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);
 
-		inline void SetFov(float fov) { m_Fov = fov; m_Camera.SetFov(fov); }
-		inline float GetFov() { return m_Fov; }
+		inline void SetFov(float fov) { m_Camera.SetFov(fov); }
+		inline void SetAspectRatio(float aspectRatio) { m_Camera.SetAspecRatio(aspectRatio); }
+
+		inline float GetFov() { return m_Camera.GetFov(); }
 
 		inline const PerspectiveCamera& GetCamera() { return m_Camera; }
 	};

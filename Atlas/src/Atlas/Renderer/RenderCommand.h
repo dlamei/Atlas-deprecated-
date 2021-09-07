@@ -16,6 +16,7 @@ namespace Atlas {
 		inline static void Clear() { s_RendererAPI->Clear(); }
 		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray, const uint32_t indexSize = 0) { s_RendererAPI->DrawIndexed(vertexArray, indexSize); }
 		inline static void DrawIndexedWireframe(const Ref<VertexArray>& vertexArray, const uint32_t indexSize = 0) { s_RendererAPI->DrawIndexedWireframe(vertexArray, indexSize); }
+		inline static void Bind2DTexture(uint32_t id) { s_RendererAPI->Bind2DTexture(id); }
 
 	};
 

@@ -29,6 +29,7 @@ namespace Atlas
 		void SetFrontVec(const glm::vec3& direction);
 		void SetProjection(float nearPlane, float farPlane, float fov, float aspectRatio);
 		void SetFov(float fov) { m_Fov = fov; RecalculateProjectionMatrix(); }
+		void SetAspecRatio(float aspectRatio) { m_AspectRatio = aspectRatio; RecalculateProjectionMatrix(); }
 
 		inline const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
 		inline const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
@@ -37,6 +38,8 @@ namespace Atlas
 		inline const glm::vec3& GetFrontVec() const { return m_Front; }
 		inline const glm::vec3& GetPosition() const { return m_Position; }
 		inline const glm::vec3 GetRightVec() const { return m_Right; }
+
+		inline float GetFov() { return m_AspectRatio; }
 
 	};
 }

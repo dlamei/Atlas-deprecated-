@@ -54,6 +54,16 @@ namespace Atlas {
 
 		void SetUniformMat3(const std::string& name, const glm::mat3& matrix);
 		void SetUniformMat4(const std::string& name, const glm::mat4& matrix);
+
+		virtual bool operator==(const Shader& other) const override
+		{
+			return m_RendererID == ((OpenGLShader&)other).m_RendererID;
+		}
+
+		virtual bool operator!=(const Shader& other) const override
+		{
+			return m_RendererID != ((OpenGLShader&)other).m_RendererID;
+		}
 	};
 
 }

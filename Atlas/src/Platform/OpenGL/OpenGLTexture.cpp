@@ -5,13 +5,13 @@
 
 
 namespace Atlas {
-	OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
+	OpenGLTexture2D::OpenGLTexture2D(const std::string& path, bool flipped)
 		: m_Path(path)
 	{
 		ATL_PROFILE_FUNCTION();
 
 		int width, height, channels;
-		//stbi_set_flip_vertically_on_load(1);
+		if (flipped) stbi_set_flip_vertically_on_load(1);
 		stbi_uc* data = nullptr;
 
 		{ 
@@ -106,14 +106,12 @@ namespace Atlas {
 	void OpenGLTexture2D::Bind(uint32_t slot) const
 	{
 		ATL_PROFILE_FUNCTION();
-
 		glBindTextureUnit(slot, m_RendererID);
 	}
 
 	void OpenGLTexture2D::Unbind(uint32_t slot) const
 	{
 		ATL_PROFILE_FUNCTION();
-
 		glBindTextureUnit(slot, 0);
 	}
 }

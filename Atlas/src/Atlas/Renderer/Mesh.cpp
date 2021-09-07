@@ -3,6 +3,8 @@
 #include "Mesh.h"
 #include "Renderer.h"
 
+#include <thread>
+
 namespace std {
 	template <>
 	struct hash<glm::vec3>
@@ -33,6 +35,14 @@ namespace Atlas {
 
 	Mesh::Mesh(const char* path)
 	{
+		uint32_t whiteTextureData = 0xffffffff;
+		Ref<Texture2D> whiteTexture = Texture2D::Create(1, 1);
+		whiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+
+		m_Textures[Utils::TextureType::DIFFUSE] = whiteTexture;
+		m_Textures[Utils::TextureType::SPECULAR] = whiteTexture;
+		m_Textures[Utils::TextureType::NORMAL] = whiteTexture;
+
 		Load(path);
 	}
 
@@ -43,42 +53,9 @@ namespace Atlas {
 		delete[] m_Textures;
 	}
 
-	bool Mesh::Load(const char* path)
+	void Mesh::Load(const char* path)
 	{
 		ATL_PROFILE_FUNCTION();
-
-		/*
-		{
-			ATL_PROFILE_SCOPE("first vertex count");
-
-			std::ifstream file(path);
-
-			if (!file.is_open())
-			{
-				ATL_CORE_WARN("Could not open file: {0}", path);
-				return false;
-			}
-
-			while (!file.eof())
-			{
-				char line[128];
-				file.getline(line, 128);
-				if (line[0] == 'v')
-				{
-					if (line[1] == 't') m_TextureCoordCount++;
-					else m_VertexCount++;
-				}
-				else if (line[0] == 'f') m_TriangleCount++;
-			}
-			file.close();
-		}
-		*/
-
-
-		std::ifstream file(path);
-
-		file.seekg(0);
-		file.clear();
 
 		std::vector<glm::vec3> vertexPos;
 		std::vector<glm::vec3> vertexNormals;
@@ -89,10 +66,11 @@ namespace Atlas {
 
 		bool hasVertexNormals = false;
 
-		//vertexPos.reserve(m_VertexCount);
-		//vertexTexCoords.reserve(m_TextureCoordCount);
-		//trianglePosIndices.reserve(m_TriangleCount);
-		//triangleTexCoordIndices.reserve(m_TriangleCount);
+		std::fstream file;
+		{
+			ATL_PROFILE_SCOPE("read obj file");
+			file = std::fstream(path);
+		}
 
 		std::string line;
 		std::string numbers;
@@ -323,13 +301,11 @@ namespace Atlas {
 		vertexBuffer->SetData(m_VertexTriangles, m_TriangleCount * 3 * sizeof(Vertex));
 
 		Ref<IndexBuffer> indexBuffer = IndexBuffer::Create(m_TriangleCount * 3 * sizeof(uint32_t));
-		indexBuffer->SetData(m_Indices, sizeof(uint32_t), m_TriangleCount * 3);
 
 		m_VertexArray = VertexArray::Create();
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
 		m_VertexArray->SetIndexBuffer(indexBuffer);
-
-		return true;
+		indexBuffer->SetData(m_Indices, sizeof(uint32_t), m_TriangleCount * 3);
 	}
 
 	void Mesh::Invalidate()

@@ -65,7 +65,7 @@ namespace Atlas {
 
 		static Ref<Mesh> Create(const char* path);
 
-		bool Load(const char* path);
+		void Load(const char* path);
 		void Invalidate();
 		void CalculateNormals();
 		void SetShading(bool smooth);

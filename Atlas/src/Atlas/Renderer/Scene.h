@@ -11,7 +11,7 @@ namespace Atlas {
 	class Scene
 	{
 	private:
-		Ref<Mesh> m_Mesh;
+		std::vector<Ref<Mesh>> m_Meshes;
 		glm::vec3 m_Light = glm::vec3(0.0f);
 		PerspectiveCameraController m_ActiveCamera;
 
@@ -21,10 +21,11 @@ namespace Atlas {
 		
 		static Ref<Scene> Create(PerspectiveCameraController& camera);
 
-		inline void SetMesh(const Ref<Mesh> mesh) { m_Mesh = mesh; }
+		inline void AddMesh(const Ref<Mesh> mesh) { m_Meshes.push_back(mesh); }
 		inline void SetLight(const glm::vec3& light) { m_Light = light; }
 
-		inline Ref<Mesh> GetMesh() { return m_Mesh; }
+		inline Ref<Mesh> GetMesh(uint32_t indx) { return m_Meshes.at(indx); }
+		inline std::vector<Ref<Mesh>>& GetMeshVector() { return m_Meshes; }
 		inline glm::vec3& GetLight() { return m_Light; }
 
 		inline void SetActiveCamera(PerspectiveCameraController& camera) { m_ActiveCamera = camera; }

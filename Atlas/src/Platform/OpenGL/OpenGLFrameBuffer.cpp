@@ -51,7 +51,7 @@ namespace Atlas
 			}
 			else
 			{
-				glTexImage2D(GL_TEXTURE_2D, 1, format, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
+				glTexStorage2D(GL_TEXTURE_2D, 1, format, width, height);
 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -66,7 +66,7 @@ namespace Atlas
 		{
 			switch (format)
 			{
-				case FBTextureFormat::DEPTH24STENCIL8: return false;
+				case FBTextureFormat::DEPTH24STENCIL8: return true;
 			}
 
 			return false;

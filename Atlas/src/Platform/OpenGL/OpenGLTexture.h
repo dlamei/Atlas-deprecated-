@@ -15,7 +15,7 @@ namespace Atlas {
 		GLenum m_DataFormat, m_InternalFormat;
 
 	public:
-		OpenGLTexture2D(const std::string& path);
+		OpenGLTexture2D(const std::string& path, bool flipped);
 		OpenGLTexture2D(uint32_t width, uint32_t height);
 		//Temp
 		OpenGLTexture2D(uint32_t width, uint32_t height, uint32_t id);

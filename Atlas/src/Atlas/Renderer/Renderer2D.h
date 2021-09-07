@@ -3,6 +3,7 @@
 #include "OrthographicCamera.h"
 
 #include "Texture.h"
+#include "Shader.h"
 
 namespace Atlas {
 
@@ -18,6 +19,9 @@ namespace Atlas {
 		static void BeginScene(const OrthographicCamera& camera);
 		static void EndScene();
 		static void Flush();
+
+		static void SetFlatShader();
+		static void SetShader(const Ref<Shader>& shader);
 
 		static void SetFill(const glm::vec3& color);
 		static void SetFill(const glm::vec4& color);

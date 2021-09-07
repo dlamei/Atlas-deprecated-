@@ -17,12 +17,12 @@ namespace Atlas {
 		return nullptr;
 	}
 
-	Ref<Texture2D> Texture2D::Create(const std::string& path)
+	Ref<Texture2D> Texture2D::Create(const std::string& path, bool flipped)
 	{
 		switch (Renderer::GetAPI())
 		{
 			case RendererAPI::API::None:	ATL_CORE_ASSERT(false, "RendererAPI is not supported!"); return nullptr;
-			case RendererAPI::API::OpenGL:	return CreateRef<OpenGLTexture2D>(path);
+			case RendererAPI::API::OpenGL:	return CreateRef<OpenGLTexture2D>(path, flipped);
 		}
 
 		ATL_CORE_ASSERT(false, "Unknown RendererAPI!");

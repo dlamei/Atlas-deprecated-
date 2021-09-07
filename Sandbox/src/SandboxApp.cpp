@@ -6,14 +6,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Sandbox2D.h"
+#include "Sandbox3D.h"
 
 class Sandbox : public Atlas::Application
 {
 public:
 	Sandbox()
+		: Application("test", 1200, 1200)
 	{
-		PushLayer(new Sandbox2D());
+		PushLayer(new Sandbox3D());
 		Atlas::Application::GetWindow().SetVSync(false);
 	}
 
