@@ -36,7 +36,7 @@ namespace Atlas
 		inline void SetFov(float fov) { m_Camera.SetFov(fov); }
 		inline void SetAspectRatio(float aspectRatio) { m_Camera.SetAspecRatio(aspectRatio); }
 
-		inline float GetFov() { return m_Camera.GetFov(); }
+		inline float GetAspecRatio() { return m_Camera.GetAspectRatio(); }
 
 		inline const PerspectiveCamera& GetCamera() { return m_Camera; }
 	};

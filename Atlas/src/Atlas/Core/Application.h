@@ -9,6 +9,8 @@
 #include "Atlas/Core/LayerStack.h"
 #include "Atlas/ImGui/ImGuiLayer.h"
 
+#include "Atlas/Editor/EditorLayer.h"
+
 #include "Atlas/Core/Timestep.h"
 
 namespace Atlas {
@@ -28,6 +30,8 @@ namespace Atlas {
 	private:
 		Scope<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
+		EditorLayer* m_EditorLayer;
+		
 
 		bool m_Running = true;
 		bool m_Minimized = false;
@@ -61,6 +65,8 @@ namespace Atlas {
 		static inline uint32_t GetWindowHeight() { return s_Instance->m_Window->GetHeight(); }
 		static inline uint32_t GetWindowWidth() { return s_Instance->m_Window->GetWidth(); }
 		static inline Application& Get() { return *s_Instance; }
+
+		static inline glm::vec2& GetViewportSize() { return s_Instance->m_EditorLayer->GetViewportSize(); }
 
 	};
 

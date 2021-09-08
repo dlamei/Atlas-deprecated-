@@ -48,31 +48,34 @@ void Sandbox3D::OnUpdate(Atlas::Timestep ts)
 	m_Scene->GetActiveCamera().OnUpdate(ts);
 
 
-	glEnable(GL_DEPTH_TEST);
-	m_FrameBuffer->Bind();
+	//glEnable(GL_DEPTH_TEST);
+	//m_FrameBuffer->Bind();
 
 	Atlas::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 	Atlas::RenderCommand::Clear();
 	Atlas::Renderer3D::DrawScene(m_Scene);
 
-	m_FrameBuffer->Unbind();
-	glDisable(GL_DEPTH_TEST);
+	//m_FrameBuffer->Unbind();
+	//glDisable(GL_DEPTH_TEST);
 
-	Atlas::Renderer2D::DrawFrameBuffer(m_FrameBuffer->GetColorAttachmentRendererID());
+	//Atlas::Renderer2D::DrawFrameBuffer(m_FrameBuffer->GetColorAttachmentRendererID());
 }
 
 void Sandbox3D::OnImGuiRender()
 {
 	ATL_PROFILE_FUNCTION();
 
-	ImGui::Begin("Settings");
-	ImGui::SetWindowFontScale(1.8f);
-	ImGui::Checkbox("Smooth Shading", &m_Shading);
-	ImGui::Image((void*)(size_t)m_FrameBuffer->GetColorAttachmentRendererID(), ImVec2(800, 800), ImVec2(0, 1), ImVec2(1, 0));
-	ImGui::Image((void*)(size_t)m_FrameBuffer->GetDepthAttachmentRendererID(), ImVec2(800, 800), ImVec2(0, 1), ImVec2(1, 0));
-	m_Scene->GetMesh(0)->SetShading(m_Shading);
-	ImGui::End();
+	//ImGui::ShowDemoWindow();
+	ImGuiIO& io = ImGui::GetIO(); //(void)io;
 
+	ImGui::Begin("Settings");
+	ImGui::DragFloat("global scale", &io.FontGlobalScale, 0.005f, 1, 10, "%.2f", ImGuiSliderFlags_AlwaysClamp); // Scale everything
+	//ImGui::SetWindowFontScale(1.8f);
+	////ImGui::Checkbox("Smooth Shading", &m_Shading);
+	//ImGui::Image((void*)(size_t)m_FrameBuffer->GetColorAttachmentRendererID(), ImVec2(800, 800), ImVec2(0, 1), ImVec2(1, 0));
+	//ImGui::Image((void*)(size_t)m_FrameBuffer->GetDepthAttachmentRendererID(), ImVec2(800, 800), ImVec2(0, 1), ImVec2(1, 0));
+	//m_Scene->GetMesh(0)->SetShading(m_Shading);
+	ImGui::End();
 }
 
 void Sandbox3D::OnEvent(Atlas::Event& e)

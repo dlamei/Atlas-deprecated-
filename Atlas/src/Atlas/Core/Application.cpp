@@ -35,6 +35,8 @@ namespace Atlas {
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 
+		m_EditorLayer = new EditorLayer();
+		PushOverlay(m_EditorLayer);
 	}
 
 	Application::~Application()
@@ -72,6 +74,7 @@ namespace Atlas {
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 
+			m_EditorLayer->GetFrameBuffer()->Bind();
 			if (!m_Minimized)
 			{
 				ATL_PROFILE_SCOPE("LayerStack on Update");
@@ -81,9 +84,11 @@ namespace Atlas {
 					layer->OnUpdate(timestep);
 				}
 			}
+			m_EditorLayer->GetFrameBuffer()->Unbind();
 
 
 			m_ImGuiLayer->Begin();
+			m_EditorLayer->Begin();
 			{
 				ATL_PROFILE_SCOPE("LayerStack on ImGuiRender");
 				for (Layer* layer : m_LayerStack)
@@ -91,6 +96,7 @@ namespace Atlas {
 					layer->OnImGuiRender();
 				}
 			}
+			m_EditorLayer->End();
 			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();

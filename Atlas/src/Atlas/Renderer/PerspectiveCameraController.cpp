@@ -9,7 +9,7 @@ namespace Atlas
 {
 	bool PerspectiveCameraController::OnMouseMoved(MouseMovedEvent& e)
 	{
-		if (!Atlas::Input::IsMouseButtonPressed(0)) return false;
+		if (!Atlas::Input::IsMouseButtonPressed(1)) return false;
 
 		if (firstMouseMove)
 		{
@@ -40,7 +40,7 @@ namespace Atlas
 	bool PerspectiveCameraController::OnMousePressed(MouseButtonPressedEvent& e)
 	{
 		Scope<Window>& window = Application::GetWindowScope();
-		window->CaptureMouse(true);
+		if (e.GetMouseButton() == 1) window->CaptureMouse(true);
 		return false;
 	}
 
@@ -101,6 +101,14 @@ namespace Atlas
 		}
 
 		if (updated) m_Camera.SetPositionVec(m_CameraPosition);
+
+		glm::vec2& viewportSize = Application::GetViewportSize();
+		float aspecRatio = viewportSize.x / viewportSize.y;
+		if (aspecRatio != m_Camera.GetAspectRatio()) 
+		{
+			m_Camera.SetAspecRatio(aspecRatio);
+		}
+
 	}
 
 	void PerspectiveCameraController::OnEvent(Event& e)
@@ -109,6 +117,6 @@ namespace Atlas
 		dispatcher.Dispatch<MouseMovedEvent>(ATL_BIND_EVENT_FN(PerspectiveCameraController::OnMouseMoved));
 		dispatcher.Dispatch<MouseButtonPressedEvent>(ATL_BIND_EVENT_FN(PerspectiveCameraController::OnMousePressed));
 		dispatcher.Dispatch<MouseButtonReleasedEvent>(ATL_BIND_EVENT_FN(PerspectiveCameraController::OnMouseReleased));
-		dispatcher.Dispatch<WindowResizeEvent>(ATL_BIND_EVENT_FN(PerspectiveCameraController::OnWindowResized));
+		//dispatcher.Dispatch<WindowResizeEvent>(ATL_BIND_EVENT_FN(PerspectiveCameraController::OnWindowResized));
 	}
 }

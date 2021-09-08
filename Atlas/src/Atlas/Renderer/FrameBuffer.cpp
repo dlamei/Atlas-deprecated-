@@ -17,4 +17,16 @@ namespace Atlas
 		ATL_CORE_ASSERT(false, "Unknown RendererAPI!")
 			return nullptr;
 	}
+
+	Scope<FrameBuffer> FrameBuffer::CreateScope(const FrameBufferSpecs& specs)
+	{
+		switch (Renderer::GetAPI())
+		{
+		case RendererAPI::API::None:	ATL_CORE_ASSERT(false, "RendererAPI is not supported!"); return nullptr;
+		case RendererAPI::API::OpenGL:	return std::make_unique<OpenGLFrameBuffer>(specs);
+		}
+
+		ATL_CORE_ASSERT(false, "Unknown RendererAPI!")
+			return nullptr;
+	}
 }

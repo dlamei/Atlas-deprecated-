@@ -39,7 +39,7 @@ namespace Atlas
 		inline const glm::vec3& GetPosition() const { return m_Position; }
 		inline const glm::vec3 GetRightVec() const { return m_Right; }
 
-		inline float GetFov() { return m_AspectRatio; }
+		inline float GetAspectRatio() { return m_AspectRatio; }
 
 	};
 }

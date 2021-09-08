@@ -49,6 +49,7 @@ namespace Atlas
 		virtual const FrameBufferSpecs& GetSpecs() const = 0;
 
 		static Ref<FrameBuffer> Create(const FrameBufferSpecs& specs);
+		static Scope<FrameBuffer> CreateScope(const FrameBufferSpecs& specs);
 
 		virtual void Bind() = 0;
 		virtual void Unbind() = 0;
