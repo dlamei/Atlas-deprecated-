@@ -3,12 +3,12 @@
 
 #include "imgui.h"
 
-#include "Atlas/Core/Application.h"
+#include "Atlas/Core/Core.h"
 
 namespace Atlas {
 
 	EditorLayer::EditorLayer()
-		: Layer("EditorLayer"), m_ViewportSize({ Application::GetWindowWidth(), Application::GetWindowHeight() })
+		: Layer("EditorLayer")
 	{
 	}
 
@@ -17,13 +17,15 @@ namespace Atlas {
 		ATL_PROFILE_FUNCTION();
 
 		ImGuiStyle& style = ImGui::GetStyle();
-		style.ScaleAllSizes(1.8f);
 
 		m_ViewportFrameBuffer = FrameBuffer::Create({
-				1200,
-				1200,
+				(uint32_t)m_ViewportSize.x,
+				(uint32_t)m_ViewportSize.y,
 				{ FBTextureFormat::RGBA8, FBTextureFormat::DEPTH24STENCIL8 }
 			});
+
+		m_ActiveScene = CreateRef<Scene>();
+		m_SceneHierarchy.SetContext(m_ActiveScene);
 
 	}
 
@@ -40,9 +42,11 @@ namespace Atlas {
 		ImGui::Begin("Viewport");
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportSize.x, viewportSize.y };
-		ImGui::Image((void*)(size_t)m_ViewportFrameBuffer->GetColorAttachmentRendererID(), ImVec2(viewportSize.x, viewportSize.y), ImVec2(0.0f, 1.0f) , ImVec2(1.0f, 0.0f));
+		ImGui::Image((void*)(size_t)m_ViewportFrameBuffer->GetColorAttachmentRendererID(), viewportSize, ImVec2(0.0f, 1.0f) , ImVec2(1.0f, 0.0f));
 		ImGui::End();
 		ImGui::PopStyleVar();
+
+		m_SceneHierarchy.OnImGuiRender();
 	}
 
 	void EditorLayer::OnEvent(Event& event)
@@ -52,13 +56,16 @@ namespace Atlas {
 	void EditorLayer::Begin()
 	{
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+
+		ImGuiIO& io = ImGui::GetIO();
+		io.FontGlobalScale = 1.8f;
 	}
 
 	void EditorLayer::OnUpdate(Timestep ts)
 	{
 		FrameBufferSpecs specs = m_ViewportFrameBuffer->GetSpecs();
 
-		if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && (specs.Width != m_ViewportSize.x || specs.Height != m_ViewportSize.y))
+		if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && (specs.Width != (uint32_t)m_ViewportSize.x || specs.Height != (uint32_t)m_ViewportSize.y))
 		{
 			m_ViewportFrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}

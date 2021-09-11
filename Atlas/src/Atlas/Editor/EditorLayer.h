@@ -4,9 +4,12 @@
 
 #include "Atlas/Renderer/FrameBuffer.h"
 #include "Atlas/Events/Event.h"
+#include "Atlas/Scene/Scene.h"
 
 #include <memory>
 #include <glm/glm.hpp>
+
+#include "SceneHierarchy.h"
 
 namespace Atlas {
 
@@ -14,7 +17,11 @@ namespace Atlas {
 	{
 	private:
 		Ref<FrameBuffer> m_ViewportFrameBuffer;
-		glm::vec2 m_ViewportSize;
+		Ref<Scene> m_ActiveScene;
+
+		SceneHierarchy m_SceneHierarchy;
+
+		glm::vec2 m_ViewportSize = { 1.0f, 1.0f };
 		float m_GlobalFontScale = 1.0f;
 
 	public:
@@ -32,6 +39,7 @@ namespace Atlas {
 		void End();
 
 		inline Ref<FrameBuffer>& GetFrameBuffer() { return m_ViewportFrameBuffer; }
+		inline Ref<Scene>& GetActiveScene() { return m_ActiveScene; }
 		inline glm::vec2& GetViewportSize() { return m_ViewportSize; }
 
 	};

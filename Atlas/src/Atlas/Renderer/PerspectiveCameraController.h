@@ -28,7 +28,7 @@ namespace Atlas
 		bool OnWindowResized(WindowResizeEvent& e);
 
 	public:
-		PerspectiveCameraController(float aspecRatio);
+		PerspectiveCameraController(float aspecRatio = 1.5707f);
 
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);

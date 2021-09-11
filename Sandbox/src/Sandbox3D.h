@@ -13,8 +13,6 @@ private:
 	uint32_t m_DepthAttachment = 0;
 	glm::vec4 m_Color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	Atlas::Ref<Atlas::Scene> m_Scene;
-
 public:
 	Sandbox3D();
 	virtual void OnAttach() override;

@@ -1,6 +1,5 @@
 #pragma once
 
-// For use by Atlas applications
 #include "Atlas/Core/Application.h"
 #include "Atlas/Core/Layer.h"
 #include "Atlas/Core/Log.h"
@@ -29,4 +28,4 @@
 #include "Atlas/Renderer/PerspectiveCamera.h"
 #include "Atlas/Renderer/PerspectiveCameraController.h"
 
-#include "Atlas/Renderer/Scene.h"
+#include "Atlas/Scene/Scene.h"

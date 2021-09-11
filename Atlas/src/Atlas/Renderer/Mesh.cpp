@@ -4,6 +4,7 @@
 #include "Renderer.h"
 
 #include <thread>
+#include <filesystem>
 
 namespace std {
 	template <>
@@ -33,7 +34,18 @@ namespace Atlas {
 		return std::make_shared<Mesh>(path);
 	}
 
-	Mesh::Mesh(const char* path)
+	Mesh::Mesh()
+	{
+		uint32_t whiteTextureData = 0xffffffff;
+		Ref<Texture2D> whiteTexture = Texture2D::Create(1, 1);
+		whiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+
+		m_Textures[Utils::TextureType::DIFFUSE] = whiteTexture;
+		m_Textures[Utils::TextureType::SPECULAR] = whiteTexture;
+		m_Textures[Utils::TextureType::NORMAL] = whiteTexture;
+	}
+
+	Mesh::Mesh(const std::string& path)
 	{
 		uint32_t whiteTextureData = 0xffffffff;
 		Ref<Texture2D> whiteTexture = Texture2D::Create(1, 1);
@@ -44,6 +56,7 @@ namespace Atlas {
 		m_Textures[Utils::TextureType::NORMAL] = whiteTexture;
 
 		Load(path);
+
 	}
 
 	Mesh::~Mesh()
@@ -53,8 +66,11 @@ namespace Atlas {
 		delete[] m_Textures;
 	}
 
-	void Mesh::Load(const char* path)
+	void Mesh::Load(const std::string& path)
 	{
+		std::filesystem::path filepath = path;
+		m_Name = filepath.stem().string();
+
 		ATL_PROFILE_FUNCTION();
 
 		std::vector<glm::vec3> vertexPos;

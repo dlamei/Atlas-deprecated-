@@ -6,6 +6,8 @@
 #include "Atlas/Events/Event.h"
 #include "Atlas/Events/ApplicationEvent.h"
 
+#include "Atlas/Scene/Scene.h"
+
 #include "Atlas/Core/LayerStack.h"
 #include "Atlas/ImGui/ImGuiLayer.h"
 
@@ -67,6 +69,8 @@ namespace Atlas {
 		static inline Application& Get() { return *s_Instance; }
 
 		static inline glm::vec2& GetViewportSize() { return s_Instance->m_EditorLayer->GetViewportSize(); }
+		//TEMP
+		static inline Ref<Scene>& GetActiveScene() { return s_Instance->m_EditorLayer->GetActiveScene(); }
 
 	};
 

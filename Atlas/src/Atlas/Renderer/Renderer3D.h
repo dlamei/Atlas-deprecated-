@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PerspectiveCamera.h"
-#include "Scene.h"
+#include "Atlas/Scene/Scene.h"
 #include "Mesh.h"
 
 namespace Atlas {

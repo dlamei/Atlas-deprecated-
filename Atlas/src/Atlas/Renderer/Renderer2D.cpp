@@ -17,7 +17,7 @@
 
 namespace Atlas {
 
-	struct Vertex
+	struct Vertex2D
 	{
 		glm::vec2 Position;
 		glm::vec4 Color;
@@ -48,8 +48,8 @@ namespace Atlas {
 		uint32_t IndexCount = 0;
 		uint32_t VertexCount = 0;
 
-		Vertex* VertexBufferBase = nullptr;
-		Vertex* VertexBufferPtr = nullptr;
+		Vertex2D* VertexBufferBase = nullptr;
+		Vertex2D* VertexBufferPtr = nullptr;
 
 		uint32_t* IndexBufferBase = nullptr;
 		uint32_t* IndexBufferPtr = nullptr;
@@ -87,7 +87,7 @@ namespace Atlas {
 
 		s_Data.TriVertexArray = VertexArray::Create();
 
-		s_Data.VertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(Vertex));
+		s_Data.VertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(Vertex2D));
 		s_Data.VertexBuffer->SetLayout({
 			{ ShaderDataType::Float2, "a_Position" },
 			{ ShaderDataType::Float4, "a_Color" },
@@ -97,7 +97,7 @@ namespace Atlas {
 
 		s_Data.IndexBuffer = IndexBuffer::Create(s_Data.MaxIndices);
 
-		s_Data.VertexBufferBase = new Vertex[s_Data.MaxVertices];
+		s_Data.VertexBufferBase = new Vertex2D[s_Data.MaxVertices];
 		s_Data.IndexBufferBase = new uint32_t[s_Data.MaxIndices];
 
 		s_Data.WhiteTexture = Texture2D::Create(1, 1);

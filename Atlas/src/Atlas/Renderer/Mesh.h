@@ -48,6 +48,8 @@ namespace Atlas {
 		bool m_HasTexCoords = false;
 		bool m_SmoothShading = true;
 
+		std::string m_Name;
+
 		uint32_t m_VertexCount = 0, m_TriangleCount = 0, m_TextureCoordCount = 0;
 		VertexTriangle* m_VertexTriangles = nullptr;
 		uint32_t* m_Indices = nullptr;
@@ -60,12 +62,13 @@ namespace Atlas {
 		Ref<Texture2D>* m_Textures = new Ref<Texture2D>[Utils::NONE];
 
 	public:
-		Mesh(const char* path);
+		Mesh();
+		Mesh(const std::string& path);
 		~Mesh();
 
 		static Ref<Mesh> Create(const char* path);
 
-		void Load(const char* path);
+		void Load(const std::string& path);
 		void Invalidate();
 		void CalculateNormals();
 		void SetShading(bool smooth);
@@ -84,6 +87,8 @@ namespace Atlas {
 
 		inline void SetTranslation(const glm::vec3 position) { m_TranslationMatrix = glm::translate(glm::mat4(1.0f), position); }
 		inline void SetRotation(const glm::vec3 axis, const float angle) { m_RotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis); }
+
+		inline std::string& GetName() { return m_Name; }
 
 		inline void AddTexture(const Ref<Texture2D> texture, const Utils::TextureType type) { if (type != Utils::NONE) m_Textures[type] = texture; }
 		inline Ref<Texture2D> GetTexture(const Utils::TextureType type) { return m_Textures[type]; }
