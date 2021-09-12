@@ -17,7 +17,6 @@ namespace Atlas {
 		static void Shutdown();
 
 		static void DrawScene(const Ref<Scene> scene);
-		static void EndScene();
 		static void Flush(const Ref<Mesh>& scene);
 
 	};

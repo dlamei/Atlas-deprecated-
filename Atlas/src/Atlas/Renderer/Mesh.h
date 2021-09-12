@@ -7,7 +7,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Atlas/Core/Core.h"
 #include "VertexArray.h"
 #include "Texture.h"
 
@@ -65,8 +64,6 @@ namespace Atlas {
 		Mesh();
 		Mesh(const std::string& path);
 		~Mesh();
-
-		static Ref<Mesh> Create(const char* path);
 
 		void Load(const std::string& path);
 		void Invalidate();

@@ -15,11 +15,6 @@ namespace std {
 			using std::size_t;
 			using std::hash;
 			using std::string;
-
-			// Compute individual hash values for first,
-			// second and third and combine them using XOR
-			// and bit shifting:
-
 			return ((hash<float>()(k.x)
 				^ (hash<float>()(k.y) << 1)) >> 1)
 				^ (hash<float>()(k.z) << 1);
@@ -29,10 +24,6 @@ namespace std {
 }
 
 namespace Atlas {
-	Ref<Mesh> Mesh::Create(const char* path)
-	{
-		return std::make_shared<Mesh>(path);
-	}
 
 	Mesh::Mesh()
 	{

@@ -3,6 +3,7 @@
 #include "ECSEntity.h"
 #include <array>
 #include <unordered_map>
+#include <utility>
 
 namespace ECS {
 
@@ -13,17 +14,68 @@ namespace ECS {
 		virtual void EntityDestroyed(ECS::Entity entity) = 0;
 	};
 
-	template<typename T>
+	template<typename T, size_t Size>
 	class ComponentArray : public IComponentArray
 	{
-	private:
-		std::array<T, ECS::MAX_ENTITIES> m_ComponentArray;
+	public:
+		struct Iterator
+		{
+		public:
+			using iterator_category = std::forward_iterator_tag;
+			using difference_type = std::ptrdiff_t;
+			using value_type = T;
+			using Pointer = T*;
+			using Reference = T&;
+
+		private:
+			Pointer m_Ptr;
+
+		public:
+
+			Iterator(Pointer ptr)
+				: m_Ptr(ptr) {}
+
+			Reference operator*() const { return *m_Ptr; }
+			Pointer operator->() { return m_Ptr; }
+
+			Iterator& operator++()
+			{
+				m_Ptr++;
+				return *this;
+			}
+
+			Iterator operator++(int)
+			{
+				Iterator tmp = *this;
+				++(*this);
+				return tmp;
+			}
+
+			friend bool operator== (const Iterator& a, const Iterator& b)
+			{
+				return a.m_Ptr == b.m_Ptr;
+			}
+
+			friend bool operator!= (const Iterator& a, const Iterator& b)
+			{
+				return a.m_Ptr != b.m_Ptr;
+			}
+
+		};
+
+
+	public:
+		//TODO: maybe use std::vector
+		T m_ComponentArray[Size];
 		std::unordered_map<ECS::Entity, size_t> m_EntityIndexMap;
 		std::unordered_map<size_t, ECS::Entity> m_IndexEntityMap;
 
-		size_t m_Size;
+		size_t m_Size = 0;
 
 	public:
+
+		Iterator begin() { return Iterator(&m_ComponentArray[0]); }
+		Iterator end() { return Iterator(&m_ComponentArray[m_Size]); }
 
 		void InsertData(ECS::Entity entity, T component)
 		{
@@ -33,6 +85,19 @@ namespace ECS {
 			m_IndexEntityMap[m_Size] = entity;
 			m_ComponentArray[m_Size] = component;
 			m_Size++;
+		}
+
+		template<typename... Args>
+		T& CreateData(ECS::Entity entity, Args&&... args)
+		{
+			ATL_CORE_ASSERT(m_EntityIndexMap.find(entity) == m_EntityIndexMap.end(), "Component can only be added once to an entity");
+
+			m_EntityIndexMap[entity] = m_Size;
+			m_IndexEntityMap[m_Size] = entity;
+			m_ComponentArray[m_Size] = T(args...);
+			m_Size++;
+
+			return m_ComponentArray[m_Size - 1];
 		}
 
 		void RemoveData(ECS::Entity entity)

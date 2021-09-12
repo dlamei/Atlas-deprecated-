@@ -10,54 +10,56 @@
 
 #include "Atlas/Renderer/Mesh.h"
 
+using namespace Atlas;
+
 Sandbox3D::Sandbox3D()
 	: Layer("Sandbox2D"), m_CameraController(1.0f) {}
 
 void Sandbox3D::OnAttach()
 {
-	m_FrameBuffer = Atlas::FrameBuffer::Create({
-			Atlas::Application::GetWindowWidth(),
-			Atlas::Application::GetWindowHeight(),
-			{ Atlas::FBTextureFormat::RGBA8, Atlas::FBTextureFormat::DEPTH24STENCIL8 }
+	m_FrameBuffer = FrameBuffer::Create({
+			Application::GetWindowWidth(),
+			Application::GetWindowHeight(),
+			{ FBTextureFormat::RGBA8, FBTextureFormat::DEPTH24STENCIL8 }
 		});
 
-	Atlas::Ref<Atlas::Scene> scene = Atlas::Application::GetActiveScene();
+	Ref<Scene> scene = Application::GetActiveScene();
 
-	scene->SetActiveCamera(Atlas::PerspectiveCameraController(1.0f));
+	scene->SetActiveCamera(PerspectiveCameraController(1.0f));
 
-	Atlas::Ref<Atlas::Mesh> mesh = Atlas::Mesh::Create("assets/Models/Box.obj");
-	mesh->AddTexture(Atlas::Texture2D::Create("assets/Textures/Box_Diffuse.png"), Atlas::Utils::TextureType::DIFFUSE);
-	mesh->AddTexture(Atlas::Texture2D::Create("assets/Textures/Box_Specular.png"), Atlas::Utils::TextureType::SPECULAR);
-	scene->AddMesh(mesh);
+	ECS::Entity entity = scene->CreateEntity();
+	auto& boxComponent = scene->CreateComponent<MeshComponent>(entity, "assets/Models/Box.obj");
+	scene->CreateComponent<int>(entity, 34);
+	boxComponent.Mesh->AddTexture(Texture2D::Create("assets/Textures/Box_Diffuse.png"), Utils::TextureType::DIFFUSE);
+	boxComponent.Mesh->AddTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);
 
-	mesh = Atlas::Mesh::Create("assets/Models/Hand.obj");
-	mesh->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), 20);
-	mesh->SetTranslation(glm::vec3(0.0f, 0.0f, -5.0f));
-	scene->AddMesh(mesh);
+	entity = scene->CreateEntity();
+	auto& handComponent = scene->CreateComponent<MeshComponent>(entity, "assets/Models/Hand.obj");
+	handComponent.Mesh->SetTranslation(glm::vec3(0.0f, 0.0f, -5.0f));
 
+	scene->CreateEntity("Test");
 
 	scene->SetLight({ 0.0f, 3.0f, -2.0f });
 
-	ECS::Entity entity = scene->CreateEntity("test Entity");
 }
 
 void Sandbox3D::OnDetach()
 {
 }
 
-void Sandbox3D::OnUpdate(Atlas::Timestep ts)
+void Sandbox3D::OnUpdate(Timestep ts)
 {
 	ATL_PROFILE_FUNCTION();
 
-	Atlas::Application::GetActiveScene()->GetActiveCamera().OnUpdate(ts);
+	Application::GetActiveScene()->GetActiveCamera().OnUpdate(ts);
 
 
 	//glEnable(GL_DEPTH_TEST);
 	//m_FrameBuffer->Bind();
 
-	Atlas::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-	Atlas::RenderCommand::Clear();
-	Atlas::Renderer3D::DrawScene(Atlas::Application::GetActiveScene());
+	RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+	RenderCommand::Clear();
+	Renderer3D::DrawScene(Application::GetActiveScene());
 
 	//m_FrameBuffer->Unbind();
 	//glDisable(GL_DEPTH_TEST);
@@ -82,13 +84,13 @@ void Sandbox3D::OnImGuiRender()
 	////ImGui::End();
 }
 
-void Sandbox3D::OnEvent(Atlas::Event& e)
+void Sandbox3D::OnEvent(Event& e)
 {
-	Atlas::Application::GetActiveScene()->GetActiveCamera().OnEvent(e);
+	Application::GetActiveScene()->GetActiveCamera().OnEvent(e);
 
-	if (e.GetEventType() == Atlas::EventType::WindowResize)
+	if (e.GetEventType() == EventType::WindowResize)
 	{
-		Atlas::WindowResizeEvent& resizeEvent = (Atlas::WindowResizeEvent&)e;
+		WindowResizeEvent& resizeEvent = (WindowResizeEvent&)e;
 		m_FrameBuffer->Resize(resizeEvent.GetWidth(), resizeEvent.GetHeight());
 	}
 }

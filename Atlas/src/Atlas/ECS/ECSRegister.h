@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <utility>
 
 #include "ComponentManager.h"
 #include "EntityManager.h"
@@ -47,6 +48,18 @@ namespace ECS {
 			m_EntityManager->SetSignature(entity, signature);
 		}
 
+		template<typename T, typename... Args>
+		T& CreateComponent(Entity entity, Args&&... args)
+		{
+			T& component = m_ComponentManager->CreateComponent<T>(entity, std::forward<Args>(args)...);
+
+			Signature signature = m_EntityManager->GetSignature(entity);
+			signature.set(m_ComponentManager->GetComponentType<T>(), true);
+			m_EntityManager->SetSignature(entity, signature);
+
+			return component;
+		}
+
 		template<typename T>
 		void RemoveComponent(Entity entity)
 		{
@@ -60,6 +73,12 @@ namespace ECS {
 		T& GetComponent(Entity entity)
 		{
 			return m_ComponentManager->GetComponent<T>(entity);
+		}
+
+		template<typename T>
+		std::shared_ptr<ComponentArray<T, ECS::MAX_ENTITIES>> GetComponentArray()
+		{
+			return m_ComponentManager->GetComponentArray<T>();
 		}
 
 		template<typename T>

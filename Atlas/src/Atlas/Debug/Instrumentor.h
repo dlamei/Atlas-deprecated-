@@ -125,7 +125,7 @@ namespace Atlas {
     };
 }
 
-//#define ATL_PROFILE 1
+#define ATL_PROFILE 0
 #if ATL_PROFILE
     #define ATL_PROFILE_BEGIN_SESSION(name, filepath) ::Atlas::Instrumentor::Get().BeginSession(name, filepath)
     #define ATL_PROFILE_END_SESSION() ::Atlas::Instrumentor::Get().EndSession()

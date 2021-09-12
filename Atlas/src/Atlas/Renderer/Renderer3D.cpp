@@ -13,16 +13,7 @@ namespace Atlas {
 
 	struct Renderer3DData
 	{
-		Ref<VertexArray> VertexArray;
-		Ref<VertexBuffer> VertexBuffer;
-		Ref<IndexBuffer> IndexBuffer;
 		Ref<Shader> Shader;
-
-		uint32_t IndexCount = 0;
-		uint32_t VertexCount = 0;
-
-		//TEMP
-		float Angle = 0.0f;
 	};
 
 	static Renderer3DData s_Data;
@@ -40,19 +31,11 @@ namespace Atlas {
 		ATL_PROFILE_FUNCTION();
 	}
 
-	//void Renderer3D::BeginScene(const PerspectiveCamera& camera, bool shading)
 	void Renderer3D::DrawScene(const Ref<Scene> scene)
 	{
 		ATL_PROFILE_FUNCTION();
 		s_Data.Shader->Bind();
 
-
-		//s_Data.m_Mesh->SetShading(shading);
-
-		//scene->GetMesh()->SetRotation(glm::vec3(1.0f), s_Data.Angle);
-		//s_Data.Angle += 0.5f;
-
-		//s_Data.Shader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 		s_Data.Shader->SetMat4("u_ViewProjection", scene->getCamera().GetViewProjectionMatrix());
 		s_Data.Shader->SetFloat3("u_ViewPosition", scene->getCamera().GetPosition());
 
@@ -69,10 +52,12 @@ namespace Atlas {
 		s_Data.Shader->SetFloat3("light.DiffuseColor", { 0.5f, 0.5f, 0.5f });
 		s_Data.Shader->SetFloat3("light.SpecularColor", { 1.0f, 1.0f, 1.0f });
 
-		for (auto& mesh : scene->GetMeshVector())
+		for (MeshComponent& mesh : scene->GetComponentGroup<MeshComponent>())
 		{
-			Renderer3D::DrawMesh(mesh);
+			DrawMesh(mesh);
 		}
+
+
 	}
 
 	void Renderer3D::DrawMesh(const Ref<Mesh>& mesh)
@@ -86,19 +71,11 @@ namespace Atlas {
 
 	}
 
-	void Renderer3D::EndScene()
-	{
-		ATL_PROFILE_FUNCTION();
-		//Flush();
-	}
-
 	void Renderer3D::Flush(const Ref<Mesh>& mesh)
 	{
 		ATL_PROFILE_FUNCTION();
-		//s_Data.m_Mesh->GetVertexArray()->BindAll();
 		mesh->GetVertexArray()->BindAll();
 
 		RenderCommand::DrawIndexed(mesh->GetVertexArray(), mesh->GetTriangleCount() * 3);
-		//RenderCommand::DrawIndexedWireframe(scene->GetMesh()->GetVertexArray(), scene->GetMesh()->GetTriangleCount() * 3);
 	}
 }
