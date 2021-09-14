@@ -5,23 +5,19 @@ namespace ECS {
 
 	EntityManager::EntityManager()
 	{
+		for (Entity entity = 0; entity < MAX_ENTITIES; ++entity)
+		{
+			m_AvailableEntities.push(entity);
+		}
 	}
 
 	ECS::Entity EntityManager::CreateEntity()
 		{
 			ATL_CORE_ASSERT(m_EntityCount < ECS::MAX_ENTITIES, "Too many Entities");
 
-			ECS::Entity e;
-			if (m_RemovedEntities.empty())
-			{
-				e = m_EntityCount;
-				m_EntityCount++;
-			}
-			else
-			{
-				e = m_RemovedEntities.front();
-				m_RemovedEntities.pop();
-			}
+			Entity e = m_AvailableEntities.front();
+			m_AvailableEntities.pop();
+			m_EntityCount++;
 
 			return e;
 		}
@@ -31,7 +27,8 @@ namespace ECS {
 			ATL_CORE_ASSERT(entity < ECS::MAX_ENTITIES, "Entity out of range");
 
 			m_Signatures[entity].reset();
-			m_RemovedEntities.push(entity);
+			m_AvailableEntities.push(entity);
+
 			m_EntityCount--;
 		}
 

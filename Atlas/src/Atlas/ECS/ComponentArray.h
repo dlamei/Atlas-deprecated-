@@ -18,29 +18,52 @@ namespace ECS {
 	class ComponentArray : public IComponentArray
 	{
 	public:
+		
+		struct EntityObj
+		{
+			T* Component;
+			ECS::Entity EntityHandle;
+
+			EntityObj() = default;
+			EntityObj(T* component, ECS::Entity entity)
+				: Component(component), EntityHandle(entity) {}
+
+			operator T& ()
+			{
+				return *Component;
+			}
+		};
+
 		struct Iterator
 		{
 		public:
 			using iterator_category = std::forward_iterator_tag;
 			using difference_type = std::ptrdiff_t;
-			using value_type = T;
-			using Pointer = T*;
-			using Reference = T&;
+			using value_type = EntityObj;
+			using Pointer = value_type*;
+			using Reference = value_type&;
 
 		private:
-			Pointer m_Ptr;
-
+			value_type m_Pair;
+			T* m_Ptr;
+			int m_Index = 0;
+			std::unordered_map<size_t, ECS::Entity> m_IndexEntityMap;
 		public:
 
-			Iterator(Pointer ptr)
-				: m_Ptr(ptr) {}
+			Iterator(T* ptr, std::unordered_map<size_t, ECS::Entity> indexEntityMap)
+				: m_Ptr(ptr), m_IndexEntityMap(indexEntityMap), m_Pair(value_type(ptr, indexEntityMap[m_Index]))
+			{
+			}
 
-			Reference operator*() const { return *m_Ptr; }
-			Pointer operator->() { return m_Ptr; }
+			Reference operator*() { return m_Pair; }
+			Pointer operator->() { return &m_Ptr; }
 
 			Iterator& operator++()
 			{
 				m_Ptr++;
+				m_Index++;
+				m_Pair.Component = m_Ptr;
+				m_Pair.EntityHandle = m_IndexEntityMap[m_Index];
 				return *this;
 			}
 
@@ -60,7 +83,6 @@ namespace ECS {
 			{
 				return a.m_Ptr != b.m_Ptr;
 			}
-
 		};
 
 
@@ -74,8 +96,8 @@ namespace ECS {
 
 	public:
 
-		Iterator begin() { return Iterator(&m_ComponentArray[0]); }
-		Iterator end() { return Iterator(&m_ComponentArray[m_Size]); }
+		Iterator begin() { return Iterator(&m_ComponentArray[0], m_IndexEntityMap); }
+		Iterator end() { return Iterator(&m_ComponentArray[m_Size], m_IndexEntityMap); }
 
 		void InsertData(ECS::Entity entity, T component)
 		{

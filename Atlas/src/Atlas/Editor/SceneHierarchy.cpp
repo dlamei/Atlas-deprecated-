@@ -1,9 +1,30 @@
 #include "atlpch.h"
 #include "SceneHierarchy.h"
 
+#include "AtlasImGui.h"
+
 #include <imgui.h>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Atlas {
+
+	template<typename T, typename Function>
+	inline void SceneHierarchy::DrawComponent(const char* name, ECS::Entity entity, Function function)
+	{
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth;
+		if (m_Context->HasComponent<T>(entity))
+		{
+			T& component = m_Context->GetComponent<T>(entity);
+			bool opened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), flags, name);
+
+			if (opened)
+			{
+				function(component);
+				ImGui::TreePop();
+			}
+		}
+	}
+
 	SceneHierarchy::SceneHierarchy(const Ref<Scene>& context)
 		: m_Context(context)
 	{
@@ -11,12 +32,8 @@ namespace Atlas {
 
 	void SceneHierarchy::OnImGuiRender()
 	{
-		ImGui::Begin("Inspector");
+		ImGui::Begin("Scene Inspector");
 
-		//for (ECS::Entity entity : m_Context->GetEntities())
-		//{
-		//	if (m_Context->HasComponent<TagComponent>(entity)) DrawEntityNode(entity);
-		//}
 		auto& entities = m_Context->GetEntities();
 		std::for_each(entities.begin(), entities.end(), [&](ECS::Entity entity)
 			{
@@ -51,10 +68,7 @@ namespace Atlas {
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 		ImGui::TreeNodeEx((void*)(size_t)entity, flags, tag);
 
-		if (ImGui::IsItemClicked())
-		{
-			m_SelectedEntity = entity;
-		}
+		if (ImGui::IsItemClicked()) m_SelectedEntity = entity;
 
 		bool entityDeleted = false;
 		if (ImGui::BeginPopupContextItem())
@@ -66,13 +80,9 @@ namespace Atlas {
 
 		if (entityDeleted)
 		{
-			if (m_SelectedEntity == entity)
-			{
-				m_SelectedEntity = ECS::null;
-			}
+			if (m_SelectedEntity == entity) m_SelectedEntity = ECS::null;
 			m_Context->TagToRemove(entity);
 		}
-
 	}
 
 	void SceneHierarchy::DrawComponents(ECS::Entity entity)
@@ -83,11 +93,22 @@ namespace Atlas {
 			char buffer[256];
 			memset(buffer, 0, sizeof(buffer));
 			std::strncpy(buffer, tag, sizeof(buffer));
+
+			ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
 			if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
 			{
 				tag = { buffer };
 			}
+			ImGui::PopItemWidth();
+
+			DrawComponent<TransformComponent>("Transform", entity, [](TransformComponent& component)
+				{
+					AtlasImGui::DrawVec3("Translation", glm::value_ptr(component.Translation));
+					glm::vec3 rotation = glm::degrees(component.Rotation);
+					AtlasImGui::DrawVec3("Rotation", glm::value_ptr(rotation));
+					component.Rotation = glm::radians(rotation);
+					AtlasImGui::DrawVec3("Scale", glm::value_ptr(component.Scale), 1.0f);
+				});
 		}
 	}
-
 }

@@ -31,9 +31,9 @@ namespace Atlas {
 		Ref<Texture2D> whiteTexture = Texture2D::Create(1, 1);
 		whiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
-		m_Textures[Utils::TextureType::DIFFUSE] = whiteTexture;
-		m_Textures[Utils::TextureType::SPECULAR] = whiteTexture;
-		m_Textures[Utils::TextureType::NORMAL] = whiteTexture;
+		m_Textures[(int)Utils::TextureType::DIFFUSE] = whiteTexture;
+		m_Textures[(int)Utils::TextureType::SPECULAR] = whiteTexture;
+		m_Textures[(int)Utils::TextureType::NORMAL] = whiteTexture;
 	}
 
 	Mesh::Mesh(const std::string& path)
@@ -42,9 +42,9 @@ namespace Atlas {
 		Ref<Texture2D> whiteTexture = Texture2D::Create(1, 1);
 		whiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
-		m_Textures[Utils::TextureType::DIFFUSE] = whiteTexture;
-		m_Textures[Utils::TextureType::SPECULAR] = whiteTexture;
-		m_Textures[Utils::TextureType::NORMAL] = whiteTexture;
+		m_Textures[(int)Utils::TextureType::DIFFUSE] = whiteTexture;
+		m_Textures[(int)Utils::TextureType::SPECULAR] = whiteTexture;
+		m_Textures[(int)Utils::TextureType::NORMAL] = whiteTexture;
 
 		Load(path);
 

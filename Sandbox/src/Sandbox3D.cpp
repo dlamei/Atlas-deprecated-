@@ -29,9 +29,9 @@ void Sandbox3D::OnAttach()
 
 	ECS::Entity entity = scene->CreateEntity();
 	auto& boxComponent = scene->CreateComponent<MeshComponent>(entity, "assets/Models/Box.obj");
-	scene->CreateComponent<int>(entity, 34);
 	boxComponent.Mesh->AddTexture(Texture2D::Create("assets/Textures/Box_Diffuse.png"), Utils::TextureType::DIFFUSE);
 	boxComponent.Mesh->AddTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);
+	scene->CreateComponent<TransformComponent>(entity);
 
 	entity = scene->CreateEntity();
 	auto& handComponent = scene->CreateComponent<MeshComponent>(entity, "assets/Models/Hand.obj");
@@ -71,7 +71,7 @@ void Sandbox3D::OnImGuiRender()
 {
 	ATL_PROFILE_FUNCTION();
 
-	//ImGui::ShowDemoWindow();
+
 	//ImGuiIO& io = ImGui::GetIO(); //(void)io;
 
 	//ImGui::Begin("Settings");

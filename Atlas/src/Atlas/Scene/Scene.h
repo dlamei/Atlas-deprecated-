@@ -58,9 +58,13 @@ namespace Atlas {
 		PerspectiveCameraController& GetActiveCamera() { return m_ActiveCamera; }
 		const PerspectiveCamera& getCamera() { return m_ActiveCamera.GetCamera(); }
 
+		void OnUpdateEditor();
+
 		const ECS::Entity CreateEntity(const char* tag = {})
 		{
+
 			ECS::Entity entity = m_Register.CreateEntity();
+
 			m_Register.CreateComponent<TagComponent>(entity, tag ? tag : "Entity");
 
 			m_Entities.insert(entity);
@@ -77,7 +81,6 @@ namespace Atlas {
 		{
 			for (ECS::Entity entity : m_ToRemove)
 			{
-				m_Entities.erase(entity);
 				RemoveEntity(entity);
 			}
 			m_ToRemove.clear();

@@ -14,7 +14,7 @@ namespace Atlas {
 
 	namespace Utils {
 
-		enum TextureType
+		enum class TextureType
 		{
 			DIFFUSE = 0,
 			SPECULAR,
@@ -58,7 +58,9 @@ namespace Atlas {
 		glm::mat4 m_TranslationMatrix = glm::mat4(1.0f), m_RotationMatrix = glm::mat4(1.0f);
 
 		Ref<VertexArray> m_VertexArray;
-		Ref<Texture2D>* m_Textures = new Ref<Texture2D>[Utils::NONE];
+		//TODO replace with std::array
+		Ref<Texture2D>* m_Textures = new Ref<Texture2D>[(int)Utils::TextureType::NONE];
+
 
 	public:
 		Mesh();
@@ -87,9 +89,9 @@ namespace Atlas {
 
 		inline std::string& GetName() { return m_Name; }
 
-		inline void AddTexture(const Ref<Texture2D> texture, const Utils::TextureType type) { if (type != Utils::NONE) m_Textures[type] = texture; }
-		inline Ref<Texture2D> GetTexture(const Utils::TextureType type) { return m_Textures[type]; }
-		inline void BindTexture(Utils::TextureType type) { m_Textures[type]->Bind(type); }
+		inline void AddTexture(const Ref<Texture2D> texture, const Utils::TextureType type) { if (type != Utils::TextureType::NONE) m_Textures[(int)type] = texture; }
+		inline Ref<Texture2D> GetTexture(const Utils::TextureType type) { return m_Textures[(int)type]; }
+		inline void BindTexture(Utils::TextureType type) { m_Textures[(int)type]->Bind((int)type); }
 	};
 
 }

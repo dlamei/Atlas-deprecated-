@@ -10,6 +10,8 @@
 #include <glm/glm.hpp>
 
 #include "SceneHierarchy.h"
+#include "AtlasLog.h"
+
 
 namespace Atlas {
 

@@ -47,6 +47,9 @@ namespace Atlas {
 		ImGui::PopStyleVar();
 
 		m_SceneHierarchy.OnImGuiRender();
+
+		Log::GetAtlasLogger().Draw("Atlas Log");
+
 	}
 
 	void EditorLayer::OnEvent(Event& event)

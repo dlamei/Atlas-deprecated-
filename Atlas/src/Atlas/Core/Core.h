@@ -22,7 +22,7 @@
 
 #ifdef ATL_ENABLE_ASSERTS
 	#define ATL_ASSERT(x, ...) { if(!(x)) { ATL_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); }}
-	#define ATL_CORE_ASSERT(x, ...) { if(!(x)) { ATL_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); }}
+	#define ATL_CORE_ASSERT(x, ...) { if(!(x)) { ATL_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); }}
 #else
 	#define ATL_ASSERT(x, ...)
 	#define ATL_CORE_ASSERT(x, ...)

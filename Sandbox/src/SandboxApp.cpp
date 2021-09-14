@@ -14,7 +14,7 @@ class Sandbox : public Atlas::Application
 {
 public:
 	Sandbox()
-		: Application("test", 1200, 1200)
+		: Application("Atlas Engine", 2100, 1200)
 	{
 		PushLayer(new Sandbox3D());
 		Atlas::Application::GetWindow().SetVSync(false);

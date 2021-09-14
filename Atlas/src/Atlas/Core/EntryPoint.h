@@ -2,12 +2,16 @@
 
 #ifdef ATL_PLATFORM_WINDOWS
 
+#include <Windows.h>
+
+
+
 extern Atlas::Application* Atlas::CreateApplication();
 
 int main(int argc, char** argv)
 {
 	Atlas::Log::Init();
-	ATL_CORE_INFO("Welcome to Atlas engine!");
+	ATL_CORE_INFO("Welcome to Atlas enigne!");
 
 	ATL_PROFILE_BEGIN_SESSION("Startup", "AtlasProfile-Startup.json");
 	auto app = Atlas::CreateApplication();

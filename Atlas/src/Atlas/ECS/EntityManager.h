@@ -13,7 +13,7 @@ namespace ECS {
 	private:
 		ECS::Entity m_EntityCount = 0;
 		std::array<ECS::Signature, ECS::MAX_ENTITIES> m_Signatures;
-		std::queue<ECS::Entity> m_RemovedEntities;
+		std::queue<ECS::Entity> m_AvailableEntities;
 
 	public:
 

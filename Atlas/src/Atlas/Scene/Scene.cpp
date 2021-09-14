@@ -15,6 +15,13 @@ namespace Atlas {
 	{
 	}
 
+	void Scene::OnUpdateEditor()
+	{
+		//for (auto& component : GetComponentGroup<TransformComponent>())
+		//{
+		//}
+	}
+
 
 	/*
 	* TODO Delete all entities when scene is destroyed

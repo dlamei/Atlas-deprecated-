@@ -11,6 +11,9 @@ namespace Atlas {
 		Ref<Scene> m_Context;
 		ECS::Entity m_SelectedEntity = ECS::null;
 
+		template<typename T, typename Function>
+		void DrawComponent(const char* name, ECS::Entity entity, Function function);
+
 	public:
 		SceneHierarchy() = default;
 		SceneHierarchy(const Ref<Scene>& context);
@@ -22,5 +25,6 @@ namespace Atlas {
 		void DrawComponents(ECS::Entity entity);
 
 	};
+
 
 }

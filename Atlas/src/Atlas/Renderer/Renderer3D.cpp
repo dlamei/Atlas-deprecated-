@@ -39,12 +39,12 @@ namespace Atlas {
 		s_Data.Shader->SetMat4("u_ViewProjection", scene->getCamera().GetViewProjectionMatrix());
 		s_Data.Shader->SetFloat3("u_ViewPosition", scene->getCamera().GetPosition());
 
-		s_Data.Shader->SetInt("material.DiffuseTexture", Utils::TextureType::DIFFUSE);
-		s_Data.Shader->SetInt("material.SpecularTexture", Utils::TextureType::SPECULAR);
+		s_Data.Shader->SetInt("material.DiffuseTexture", (int)Utils::TextureType::DIFFUSE);
+		s_Data.Shader->SetInt("material.SpecularTexture", (int)Utils::TextureType::SPECULAR);
 
-		s_Data.Shader->SetFloat3("material.AmbientColor", { 0.6f, 0.0f, 0.3f });
-		s_Data.Shader->SetFloat3("material.DiffuseColor", { 0.6f, 0.0f, 0.3f });
-		s_Data.Shader->SetFloat3("material.SpecularColor", { 0.5f, 0.5f, 0.5f });
+		//s_Data.Shader->SetFloat3("material.AmbientColor", { 0.6f, 0.0f, 0.3f });
+		//s_Data.Shader->SetFloat3("material.DiffuseColor", { 0.6f, 0.0f, 0.3f });
+		//s_Data.Shader->SetFloat3("material.SpecularColor", { 0.5f, 0.5f, 0.5f });
 		s_Data.Shader->SetFloat("material.Shininess", 16.0f);
 
 		s_Data.Shader->SetFloat3("light.Position", glm::vec3(0.0f, 4.0f, -3.0f));
