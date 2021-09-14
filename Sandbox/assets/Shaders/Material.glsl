@@ -7,8 +7,9 @@ layout (location = 2) in vec2 a_TexCoord;
 
 uniform mat4 m_Camera;
 uniform mat4 u_ViewProjection;
-uniform mat4 u_RotationMatrix;
-uniform mat4 u_TranslationMatrix;
+//uniform mat4 u_RotationMatrix;
+//uniform mat4 u_TranslationMatrix;
+uniform mat4 u_TransformMatrix;
 uniform mat4 u_ModelMat;
 
 //uniform vec3 u_LightDir;
@@ -19,10 +20,11 @@ out vec2 v_TexCoord;
 
 void main()
 {
-	vec4 position = u_TranslationMatrix * u_RotationMatrix * vec4(a_Position, 1.0);
+	//vec4 position = u_TranslationMatrix * u_RotationMatrix * vec4(a_Position, 1.0);
+	vec4 position = u_TransformMatrix * vec4(a_Position, 1.0);
 	gl_Position =  u_ViewProjection * position;
 
-	vec4 normal = normalize(u_RotationMatrix * vec4(a_Normal, 1.0));
+	vec4 normal = normalize(transpose(inverse(u_TransformMatrix)) * vec4(a_Normal, 1.0));
 
 	v_VertexPosition = vec3(position);
 	v_Normal = vec3(normal);

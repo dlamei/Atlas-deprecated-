@@ -1,12 +1,68 @@
 #include "atlpch.h"
 #include "SceneHierarchy.h"
 
-#include "AtlasImGui.h"
+#include "Atlas/ImGui/CustomImGui.h"
+#include "Atlas/ImGui/AtlasTheme.h"
 
 #include <imgui.h>
+#include <imgui_internal.h>
+
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Atlas {
+
+	void DrawVec3(const char* label, float* values, float speed = 0.1f, float resetValue = 0.0f, float columnWidth = 100.0f)
+	{
+
+		ImGuiIO& io = ImGui::GetIO();
+		auto boldFont = io.Fonts->Fonts[0];
+
+		ImGui::PushID(label);
+		ImGui::Text(label);
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 10, 0 });
+
+		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 1.0f;
+		ImVec2 buttonSize = { lineHeight, lineHeight };
+		buttonSize.x *= io.FontGlobalScale;
+		buttonSize.y *= io.FontGlobalScale;
+
+		Atlas::PushButtonStyle(Atlas::ATL_RED_COL);
+		ImGui::PushFont(boldFont);
+		if (ImGui::Button("X", buttonSize))
+			values[0] = resetValue;
+		ImGui::PopFont();
+		Atlas::PopButtonStyle();
+
+		ImGui::SameLine();
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10.0f);
+		ImGui::DragFloat("##X", &values[0], speed, 0.0f, 0.0f, "%.2f", 0, ImDrawFlags_RoundCornersTop);
+		ImGui::PopStyleVar();
+
+		Atlas::PushButtonStyle(Atlas::ATL_GREEN_COL);
+		ImGui::PushFont(boldFont);
+		if (ImGui::Button("Y", buttonSize))
+			values[1] = resetValue;
+		ImGui::PopFont();
+		Atlas::PopButtonStyle();
+
+		ImGui::SameLine();
+		ImGui::DragFloat("##Y", &values[1], speed, 0.0f, 0.0f, "%.2f");
+
+		Atlas::PushButtonStyle(Atlas::ATL_BLUE_COL);
+		ImGui::PushFont(boldFont);
+		if (ImGui::Button("Z", buttonSize))
+			values[2] = resetValue;
+		ImGui::PopFont();
+		Atlas::PopButtonStyle();
+
+		ImGui::SameLine();
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10.0f);
+		ImGui::DragFloat("##Z", &values[2], speed, 0.0f, 0.0f, "%.2f", 0, ImDrawFlags_RoundCornersBottom);
+		ImGui::PopStyleVar();
+
+		ImGui::PopStyleVar();
+		ImGui::PopID();
+	}
 
 	template<typename T, typename Function>
 	inline void SceneHierarchy::DrawComponent(const char* name, ECS::Entity entity, Function function)
@@ -103,12 +159,14 @@ namespace Atlas {
 
 			DrawComponent<TransformComponent>("Transform", entity, [](TransformComponent& component)
 				{
-					AtlasImGui::DrawVec3("Translation", glm::value_ptr(component.Translation));
+					DrawVec3("Translation", glm::value_ptr(component.Translation), 0.01f);
 					glm::vec3 rotation = glm::degrees(component.Rotation);
-					AtlasImGui::DrawVec3("Rotation", glm::value_ptr(rotation));
+					DrawVec3("Rotation", glm::value_ptr(rotation));
 					component.Rotation = glm::radians(rotation);
-					AtlasImGui::DrawVec3("Scale", glm::value_ptr(component.Scale), 1.0f);
+					DrawVec3("Scale", glm::value_ptr(component.Scale), 0.01f, 1.0f);
 				});
 		}
 	}
+
+
 }

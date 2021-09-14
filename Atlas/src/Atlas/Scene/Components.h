@@ -30,6 +30,7 @@ namespace Atlas {
 			: Mesh(CreateRef<Atlas::Mesh>(path)) {}
 
 		operator Ref<Atlas::Mesh>& () { return Mesh; }
+		operator Atlas::Mesh& () { return *Mesh; }
 	};
 
 	struct TransformComponent

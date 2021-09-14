@@ -19,7 +19,7 @@ namespace Atlas {
 	class AtlasLog
 	{
 	private:
-		const size_t MAX_LOG_MESSAGES = 5000;
+		const uint32_t MAX_LOG_MESSAGES = 5000;
 		bool m_AutoScroll;
 
 	public:

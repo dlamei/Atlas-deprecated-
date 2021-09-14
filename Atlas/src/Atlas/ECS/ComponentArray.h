@@ -28,10 +28,8 @@ namespace ECS {
 			EntityObj(T* component, ECS::Entity entity)
 				: Component(component), EntityHandle(entity) {}
 
-			operator T& ()
-			{
-				return *Component;
-			}
+			operator T&() { return *Component; }
+			operator ECS::Entity() { return EntityHandle; }
 		};
 
 		struct Iterator

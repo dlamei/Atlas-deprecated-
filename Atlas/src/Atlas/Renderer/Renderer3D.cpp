@@ -62,8 +62,7 @@ namespace Atlas {
 
 	void Renderer3D::DrawMesh(const Ref<Mesh>& mesh)
 	{
-		s_Data.Shader->SetMat4("u_RotationMatrix", mesh->GetRotationMatrix());
-		s_Data.Shader->SetMat4("u_TranslationMatrix", mesh->GetTranslationMatrix());
+		s_Data.Shader->SetMat4("u_TransformMatrix", mesh->GetTransformMatrix());
 
 		mesh->BindTexture(Utils::TextureType::DIFFUSE);
 		mesh->BindTexture(Utils::TextureType::SPECULAR);

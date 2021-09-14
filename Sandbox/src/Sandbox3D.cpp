@@ -27,20 +27,12 @@ void Sandbox3D::OnAttach()
 
 	scene->SetActiveCamera(PerspectiveCameraController(1.0f));
 
-	ECS::Entity entity = scene->CreateEntity();
-	auto& boxComponent = scene->CreateComponent<MeshComponent>(entity, "assets/Models/Box.obj");
-	boxComponent.Mesh->AddTexture(Texture2D::Create("assets/Textures/Box_Diffuse.png"), Utils::TextureType::DIFFUSE);
-	boxComponent.Mesh->AddTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);
-	scene->CreateComponent<TransformComponent>(entity);
-
-	entity = scene->CreateEntity();
-	auto& handComponent = scene->CreateComponent<MeshComponent>(entity, "assets/Models/Hand.obj");
-	handComponent.Mesh->SetTranslation(glm::vec3(0.0f, 0.0f, -5.0f));
-
-	scene->CreateEntity("Test");
+	scene->LoadMesh("assets/Models/Hand.obj");
+	Atlas::Mesh& mesh = scene->LoadMesh("assets/Models/Box.obj");
+	mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Diffuse.png"), Utils::TextureType::DIFFUSE);
+	mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);
 
 	scene->SetLight({ 0.0f, 3.0f, -2.0f });
-
 }
 
 void Sandbox3D::OnDetach()

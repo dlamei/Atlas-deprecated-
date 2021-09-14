@@ -2,6 +2,7 @@
 #include "EditorLayer.h"
 
 #include "imgui.h"
+#include "Atlas/ImGui/AtlasTheme.h"
 
 #include "Atlas/Core/Core.h"
 
@@ -16,7 +17,7 @@ namespace Atlas {
 	{
 		ATL_PROFILE_FUNCTION();
 
-		ImGuiStyle& style = ImGui::GetStyle();
+		Atlas::SetAtlasTheme();
 
 		m_ViewportFrameBuffer = FrameBuffer::Create({
 				(uint32_t)m_ViewportSize.x,
@@ -49,6 +50,8 @@ namespace Atlas {
 		m_SceneHierarchy.OnImGuiRender();
 
 		Log::GetAtlasLogger().Draw("Atlas Log");
+
+		m_ActiveScene->OnUpdateEditor();
 
 	}
 

@@ -15,11 +15,24 @@ namespace Atlas {
 	{
 	}
 
+	MeshComponent& Scene::LoadMesh(const char* path)
+	{
+		ECS::Entity entity = CreateEntity();
+		auto& component = CreateComponent<MeshComponent>(entity, path);
+		CreateComponent<TransformComponent>(entity);
+		return component;
+	}
+
 	void Scene::OnUpdateEditor()
 	{
-		//for (auto& component : GetComponentGroup<TransformComponent>())
-		//{
-		//}
+		for (auto& entity : GetComponentGroup<TransformComponent>())
+		{
+			if (HasComponent<MeshComponent>(entity))
+			{
+				Mesh& mesh = GetComponent<MeshComponent>(entity);
+				mesh.SetTransfrom(entity.Component->GetTransform());
+			}
+		}
 	}
 
 

@@ -48,7 +48,8 @@ namespace Atlas {
 		Scene(PerspectiveCameraController& camera);
 		~Scene() = default;
 
-		inline std::set<ECS::Entity>& GetEntities() { return m_Entities; }
+		std::set<ECS::Entity>& GetEntities() { return m_Entities; }
+		MeshComponent& LoadMesh(const char* path);
 
 		void SetLight(const glm::vec3& light) { m_Light = light; }
 
@@ -64,11 +65,8 @@ namespace Atlas {
 		{
 
 			ECS::Entity entity = m_Register.CreateEntity();
-
 			m_Register.CreateComponent<TagComponent>(entity, tag ? tag : "Entity");
-
 			m_Entities.insert(entity);
-
 			return entity;
 		}
 

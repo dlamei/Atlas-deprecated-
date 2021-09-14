@@ -1,12 +1,10 @@
 #include "atlpch.h"
 #include "AtlasLog.h"
 
-#include <stdarg.h>
+#include "Atlas/ImGui/AtlasTheme.h"
+
 #include <string>
 #include <deque>
-
-#include "imgui.h"
-#include "imgui_internal.h"
 
 namespace Atlas {
 
@@ -21,9 +19,9 @@ namespace Atlas {
 	{
 		m_AutoScroll = true;
 		m_Colors[(size_t)Utils::LogLevel::ATL_TRACE] = { 1.0f, 1.0f, 1.0f, 1.0f };
-		m_Colors[(size_t)Utils::LogLevel::ATL_INFO]	 = { 0.0f, 1.0f, 0.0f, 1.0f };
-		m_Colors[(size_t)Utils::LogLevel::ATL_WARN]	 = { 1.0f, 1.0f, 0.0f, 1.0f };
-		m_Colors[(size_t)Utils::LogLevel::ATL_ERROR] = { 1.0f, 0.0f, 0.0f, 1.0f };
+		m_Colors[(size_t)Utils::LogLevel::ATL_INFO]	 = Atlas::ATL_LIGHT_GREEN_COL;
+		m_Colors[(size_t)Utils::LogLevel::ATL_WARN]	 = Atlas::ATL_LIGHT_YELLOW_COL;
+		m_Colors[(size_t)Utils::LogLevel::ATL_ERROR] = Atlas::ATL_LIGHT_RED_COL;
 	}
 
 	void AtlasLog::Clear()
@@ -83,7 +81,7 @@ namespace Atlas {
 				if (m_Filter.PassFilter(m_Buffer[line_no].c_str()))
 				{
 					ImGui::PushStyleColor(ImGuiCol_Text, m_Colors[(size_t)m_LogLevels[line_no]]);
-					ImGui::TextUnformatted(m_Buffer[line_no].c_str());
+					ImGui::TextWrapped(m_Buffer[line_no].c_str());
 					ImGui::PopStyleColor();
 				}
 			}
@@ -99,7 +97,7 @@ namespace Atlas {
 				for (int line_no = clipper.DisplayStart; line_no < clipper.DisplayEnd; line_no++)
 				{
 					ImGui::PushStyleColor(ImGuiCol_Text, m_Colors[(size_t)m_LogLevels[line_no]]);
-					ImGui::TextUnformatted(m_Buffer[line_no].c_str());
+					ImGui::TextWrapped(m_Buffer[line_no].c_str());
 					ImGui::PopStyleColor();
 				}
 			}

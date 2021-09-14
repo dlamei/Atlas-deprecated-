@@ -2,8 +2,6 @@
 
 #ifdef ATL_PLATFORM_WINDOWS
 
-#include <Windows.h>
-
 
 
 extern Atlas::Application* Atlas::CreateApplication();

@@ -1,5 +1,6 @@
 #include "atlpch.h"
 #include "CustomImGui.h"
+#include "AtlasTheme.h"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include<imgui.h>
@@ -131,3 +132,5 @@ bool ImGui::DragFloat(const char* label, float* v, float v_speed, float v_min, f
 {
 	return ::DragScalar(label, ImGuiDataType_Float, v, v_speed, &v_min, &v_max, format, flags, drawFlags);
 }
+
+
