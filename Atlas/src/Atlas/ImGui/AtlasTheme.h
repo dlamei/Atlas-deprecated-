@@ -6,7 +6,7 @@
 
 namespace Atlas {
 
-	static ImVec4 ATL_BLACK_COL		 = ImVec4(0.08f, 0.08f, 0.08f, 1.0f);
+	static ImVec4 ATL_BLACK_COL		 = ImVec4(0.09f, 0.09f, 0.09f, 1.0f);
 	static ImVec4 ATL_DARK_GREY_COL	 = ImVec4( 0.1f,  0.1f,  0.1f, 1.0f);
 	static ImVec4 ATL_GREY_COL		 = ImVec4( 0.2f,  0.2f,  0.2f, 1.0f);
 	static ImVec4 ATL_LIGHT_GREY_COL = ImVec4(0.27f, 0.27f, 0.27f, 1.0f);

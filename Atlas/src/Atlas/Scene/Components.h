@@ -2,6 +2,7 @@
 
 #include "Atlas/Core/Core.h"
 #include "Atlas/Renderer/Mesh.h"
+#include "Atlas/Renderer/Shader.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -44,6 +45,32 @@ namespace Atlas {
 		glm::mat4 GetTransform() const
 		{
 			return glm::translate(glm::mat4(1.0f), Translation) * glm::toMat4(glm::quat(Rotation)) * glm::scale(glm::mat4(1.0f), Scale);
+		}
+	};
+
+	struct PointLightComponent
+	{
+		glm::vec3 Position = glm::vec3(0.0f);
+		glm::vec3 Ambient = glm::vec3(0.2f);
+		glm::vec3 Diffuse = glm::vec3(0.5f);
+		glm::vec3 Specular = glm::vec3(1.0f);
+
+		float Constant = 1.0f;
+		float Linear = 0.7f;
+		float Quadratic = 1.8f;
+
+		PointLightComponent() = default;
+
+		void SetUniform(Ref<Shader> shader, int index)
+		{
+			std::string uniformName = "pointLights[" + std::to_string(index) + "]";
+			shader->SetFloat3(uniformName + ".Position", Position);
+			shader->SetFloat3(uniformName + ".Ambient", Ambient);
+			shader->SetFloat3(uniformName + ".Diffuse", Diffuse);
+			shader->SetFloat3(uniformName + ".Specular", Specular);
+			shader->SetFloat(uniformName + ".Constant", Constant);
+			shader->SetFloat(uniformName + ".Linear", Linear);
+			shader->SetFloat(uniformName + ".Quadratic", Quadratic);
 		}
 	};
 

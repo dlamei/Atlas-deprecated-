@@ -20,6 +20,7 @@ namespace Atlas {
 	private:
 		Ref<FrameBuffer> m_ViewportFrameBuffer;
 		Ref<Scene> m_ActiveScene;
+		bool m_ShowEditor = true;
 
 		SceneHierarchy m_SceneHierarchy;
 
@@ -30,6 +31,8 @@ namespace Atlas {
 
 		EditorLayer();
 		virtual ~EditorLayer() = default;
+
+		inline void ToggleEditor(bool toggle) { m_ShowEditor = toggle; }
 
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;

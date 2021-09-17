@@ -67,17 +67,43 @@ namespace Atlas {
 	template<typename T, typename Function>
 	inline void SceneHierarchy::DrawComponent(const char* name, ECS::Entity entity, Function function)
 	{
-		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth;
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed;
 		if (m_Context->HasComponent<T>(entity))
 		{
 			T& component = m_Context->GetComponent<T>(entity);
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 10, 10 });
+			float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+			ImGui::PopStyleVar();
+
+			ImGui::Separator();
 			bool opened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), flags, name);
+
+
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x - lineHeight * 0.5f);
+			if (ImGui::Button("+", ImVec2{ lineHeight, lineHeight }))
+			{
+				ImGui::OpenPopup("Component settings");
+			}
+
+			bool removeComponent = false;
+			if (ImGui::BeginPopup("Component settings"))
+			{
+				if (ImGui::MenuItem("Remove component"))
+				{
+					removeComponent = true;
+				}
+
+				ImGui::EndPopup();
+			}
 
 			if (opened)
 			{
 				function(component);
 				ImGui::TreePop();
 			}
+
+			ImGui::NewLine();
 		}
 	}
 
@@ -157,15 +183,27 @@ namespace Atlas {
 			}
 			ImGui::PopItemWidth();
 
-			DrawComponent<TransformComponent>("Transform", entity, [](TransformComponent& component)
-				{
-					DrawVec3("Translation", glm::value_ptr(component.Translation), 0.01f);
-					glm::vec3 rotation = glm::degrees(component.Rotation);
-					DrawVec3("Rotation", glm::value_ptr(rotation));
-					component.Rotation = glm::radians(rotation);
-					DrawVec3("Scale", glm::value_ptr(component.Scale), 0.01f, 1.0f);
-				});
 		}
+
+		DrawComponent<TransformComponent>("Transform", entity, [](TransformComponent& component)
+			{
+				DrawVec3("Translation", glm::value_ptr(component.Translation), 0.01f);
+				glm::vec3 rotation = glm::degrees(component.Rotation);
+				DrawVec3("Rotation", glm::value_ptr(rotation));
+				component.Rotation = glm::radians(rotation);
+				DrawVec3("Scale", glm::value_ptr(component.Scale), 0.01f, 1.0f);
+			});
+
+		DrawComponent<PointLightComponent>("Point light", entity, [](PointLightComponent& component)
+			{
+				ImGui::ColorEdit4("Ambient", glm::value_ptr(component.Ambient), ImGuiColorEditFlags_NoInputs);
+				ImGui::ColorEdit4("Diffuse", glm::value_ptr(component.Diffuse), ImGuiColorEditFlags_NoInputs);
+				ImGui::ColorEdit4("Specular", glm::value_ptr(component.Specular), ImGuiColorEditFlags_NoInputs);
+				ImGui::Text("Falloff");
+				ImGui::DragFloat("Constant", &component.Constant, 0.1f);
+				ImGui::DragFloat("Linear", &component.Linear, 0.1f);
+				ImGui::DragFloat("Quadratic", &component.Quadratic, 0.1f);
+			});
 	}
 
 

@@ -7,6 +7,9 @@
 
 #include "Platform/OpenGL/OpenGLContext.h"
 
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+
 namespace Atlas {
 
 	static bool s_GLFWInitialized = false;
@@ -48,7 +51,6 @@ namespace Atlas {
 
 		if (!s_GLFWInitialized)
 		{
-			//TODO: terminate glfw on system shutdown
 			int success = glfwInit();
 			ATL_CORE_ASSERT(success, "Could not intialize GLFW!");
 			glfwSetErrorCallback(GLFWErrorCallback);
@@ -153,6 +155,21 @@ namespace Atlas {
 				MouseMovedEvent event((float)xPos, (float)yPos);
 				data.EventCallback(event);
 		});
+
+
+		HWND hwnd = glfwGetWin32Window(m_Window);
+
+		//EndPaint(hwnd, &paint);
+		
+		//MARGINS margins;
+		//margins.cxLeftWidth = 8;      // 8
+		//margins.cxRightWidth = 8;    // 8
+		//margins.cyBottomHeight = 20; // 20
+		//margins.cyTopHeight = 27;       // 27
+
+		//DwmExtendFrameIntoClientArea(hwnd, &margins);
+		
+
 	}
 
 	void WindowsWindow::Shutdown()

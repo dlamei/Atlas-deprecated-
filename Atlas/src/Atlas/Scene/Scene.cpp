@@ -32,6 +32,12 @@ namespace Atlas {
 				Mesh& mesh = GetComponent<MeshComponent>(entity);
 				mesh.SetTransfrom(entity.Component->GetTransform());
 			}
+
+			if (HasComponent<PointLightComponent>(entity))
+			{
+				PointLightComponent& light = GetComponent<PointLightComponent>(entity);
+				light.Position = entity.Component->Translation;
+			}
 		}
 	}
 

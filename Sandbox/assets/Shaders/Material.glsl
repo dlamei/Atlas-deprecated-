@@ -7,26 +7,21 @@ layout (location = 2) in vec2 a_TexCoord;
 
 uniform mat4 m_Camera;
 uniform mat4 u_ViewProjection;
-//uniform mat4 u_RotationMatrix;
-//uniform mat4 u_TranslationMatrix;
 uniform mat4 u_TransformMatrix;
 uniform mat4 u_ModelMat;
 
-//uniform vec3 u_LightDir;
-
-out vec3 v_VertexPosition;
+out vec3 v_FragPosition;
 out vec3 v_Normal;
 out vec2 v_TexCoord;
 
 void main()
 {
-	//vec4 position = u_TranslationMatrix * u_RotationMatrix * vec4(a_Position, 1.0);
 	vec4 position = u_TransformMatrix * vec4(a_Position, 1.0);
 	gl_Position =  u_ViewProjection * position;
 
 	vec4 normal = normalize(transpose(inverse(u_TransformMatrix)) * vec4(a_Normal, 1.0));
 
-	v_VertexPosition = vec3(position);
+	v_FragPosition = vec3(position);
 	v_Normal = vec3(normal);
 	v_TexCoord = a_TexCoord;
 }
@@ -46,39 +41,89 @@ struct Material
 	float Shininess;
 };
 
-struct Light
+struct DirLight
 {
-	vec3 Position;
-	vec3 AmbientColor;
-	vec3 DiffuseColor;
-	vec3 SpecularColor;
+	vec3 Direction;
+	vec3 Ambient;
+	vec3 Diffuse;
+	vec3 Specular;
 };
 
+struct PointLight
+{
+	vec3 Position;
 
-in vec3 v_VertexPosition;
+	float Constant;
+	float Linear;
+	float Quadratic;
+
+	vec3 Ambient;
+	vec3 Diffuse;
+	vec3 Specular;
+};
+
+#define MAX_POINT_LIGHTS 4
+
+
+in vec3 v_FragPosition;
 in vec3 v_Normal;
 in vec2 v_TexCoord;
 
 uniform Material material;
-uniform Light light;
+uniform DirLight dirLight;
+uniform PointLight pointLights[MAX_POINT_LIGHTS];
 
 uniform vec3 u_ViewPosition;
 
+uniform int u_PointLightCount;
+
+vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
+
 void main()
 {
-	vec3 lightDirection = normalize(light.Position - v_VertexPosition);
-	float diff = max(dot(v_Normal, lightDirection), 0.0);
+	vec3 viewDirection = normalize(u_ViewPosition - v_FragPosition);
 
-	vec3 viewDirection = normalize(u_ViewPosition - v_VertexPosition);
-	vec3 reflectionDirection = reflect(-lightDirection, v_Normal);
-	float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), material.Shininess);
+	vec3 result = CalcDirLight(dirLight, v_Normal, viewDirection);
 
-	//vec3 ambientColor  = light.AmbientColor  * material.AmbientColor;
-	//vec3 diffuseColor  = light.DiffuseColor  * (diff * material.DiffuseColor);
-	//vec3 specularColor = light.SpecularColor * (spec * material.SpecularColor);
-	vec3 diffuseColor  = light.DiffuseColor  * diff * vec3(texture(material.DiffuseTexture, v_TexCoord));
-	vec3 ambientColor  = light.AmbientColor  * vec3(texture(material.DiffuseTexture, v_TexCoord));
-	vec3 specularColor = light.SpecularColor * spec * vec3(texture(material.SpecularTexture, v_TexCoord));
+	for (int i = 0; i < u_PointLightCount; i++)
+	{
+		result += CalcPointLight(pointLights[i], v_Normal, v_FragPosition, viewDirection);
+	}
 
-	color = vec4(ambientColor + diffuseColor + specularColor, 1.0);
+	color = vec4(result, 1.0);
 }
+
+vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
+{
+    vec3 lightDir = normalize(-light.Direction);
+    float diff = max(dot(normal, lightDir), 0.0);
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.Shininess);
+
+    vec3 ambient  = light.Ambient  * vec3(texture(material.DiffuseTexture, v_TexCoord));
+    vec3 diffuse  = light.Diffuse  * diff * vec3(texture(material.DiffuseTexture, v_TexCoord));
+    vec3 specular = light.Specular * spec * vec3(texture(material.SpecularTexture, v_TexCoord));
+    return (ambient + diffuse + specular);
+} 
+
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPosition, vec3 viewDirection)
+{
+	vec3 lightDir = normalize(light.Position - fragPosition);
+	vec3 reflectDir = reflect(-lightDir, normal);
+
+	float diffuseStrength = max(dot(normal, lightDir), 0.0);
+	float specularStrength = pow(max(dot(viewDirection, reflectDir), 0.0), material.Shininess);
+
+	float dist = length(light.Position - fragPosition);
+	float attenuation = 1.0 / (light.Constant + light.Linear * dist + light.Quadratic * (dist * dist));
+
+	vec3 Ambient = light.Ambient * vec3(texture(material.DiffuseTexture, v_TexCoord));
+	vec3 Diffuse = light.Diffuse * diffuseStrength * vec3(texture(material.DiffuseTexture, v_TexCoord));
+	vec3 Specular = light.Specular * specularStrength * vec3(texture(material.SpecularTexture, v_TexCoord));
+	Ambient *= attenuation;
+	Diffuse *= attenuation;
+	Specular *= attenuation;
+
+	return (Ambient + Diffuse + Specular);
+};

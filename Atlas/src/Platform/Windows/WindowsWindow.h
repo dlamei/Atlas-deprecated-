@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Atlas/Core/Window.h"
+
 #include <GLFW/glfw3.h>
 
 #include "Atlas/Renderer/GraphicsContext.h"
+
 
 namespace Atlas {
 
@@ -15,7 +17,6 @@ namespace Atlas {
 
 		GLFWwindow* m_Window;
 		GraphicsContext* m_Context;
-		RECT* m_ClippingRect = nullptr;
 
 		struct WindowData
 		{

@@ -42,15 +42,21 @@ namespace Atlas {
 		s_Data.Shader->SetInt("material.DiffuseTexture", (int)Utils::TextureType::DIFFUSE);
 		s_Data.Shader->SetInt("material.SpecularTexture", (int)Utils::TextureType::SPECULAR);
 
-		//s_Data.Shader->SetFloat3("material.AmbientColor", { 0.6f, 0.0f, 0.3f });
-		//s_Data.Shader->SetFloat3("material.DiffuseColor", { 0.6f, 0.0f, 0.3f });
-		//s_Data.Shader->SetFloat3("material.SpecularColor", { 0.5f, 0.5f, 0.5f });
-		s_Data.Shader->SetFloat("material.Shininess", 16.0f);
+		s_Data.Shader->SetFloat("material.Shininess", 8.0f);
 
-		s_Data.Shader->SetFloat3("light.Position", glm::vec3(0.0f, 4.0f, -3.0f));
-		s_Data.Shader->SetFloat3("light.AmbientColor", { 0.4f, 0.4f, 0.4f });
-		s_Data.Shader->SetFloat3("light.DiffuseColor", { 0.5f, 0.5f, 0.5f });
-		s_Data.Shader->SetFloat3("light.SpecularColor", { 1.0f, 1.0f, 1.0f });
+		s_Data.Shader->SetFloat3("dirLight.Direction", {-0.2f, -1.0f, -0.3f});
+		s_Data.Shader->SetFloat3("dirLight.Ambient",   { 0.2f,  0.2f,  0.2f });
+		s_Data.Shader->SetFloat3("dirLight.Diffuse",   { 1.0f, 1.0f, 1.0f });
+		s_Data.Shader->SetFloat3("dirLight.Specular",  { 1.0f,  1.0f,  1.0f });
+
+		int lightCount = 0;
+		for (PointLightComponent& light : scene->GetComponentGroup<PointLightComponent>())
+		{
+			if (lightCount >= 4) break;
+			light.SetUniform(s_Data.Shader, lightCount);
+			lightCount++;
+		}
+		s_Data.Shader->SetInt("u_PointLightCount", lightCount);
 
 		for (MeshComponent& mesh : scene->GetComponentGroup<MeshComponent>())
 		{

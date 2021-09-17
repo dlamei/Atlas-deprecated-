@@ -51,22 +51,21 @@ namespace Atlas {
 
 		uint32_t m_VertexCount = 0, m_TriangleCount = 0, m_TextureCoordCount = 0;
 		VertexTriangle* m_VertexTriangles = nullptr;
-		//TODO replace with std::array
 		uint32_t* m_Indices = nullptr;
 
-		glm::vec4 m_Color = { 0.6f, 0.0f, 0.8f, 1.0f };
 
 		glm::mat4 m_Transform = glm::mat4(1.0f);
 
 		Ref<VertexArray> m_VertexArray;
-		//TODO replace with std::array
-		Ref<Texture2D>* m_Textures = new Ref<Texture2D>[(int)Utils::TextureType::NONE];
+		std::array<Ref<Texture2D>, (int)Utils::TextureType::NONE> m_Textures;
 
 
 	public:
 		Mesh();
 		Mesh(const std::string& path);
 		~Mesh();
+
+		void InitTextures();
 
 		void Load(const std::string& path);
 		void Invalidate();
@@ -80,9 +79,6 @@ namespace Atlas {
 		inline Ref<VertexArray> GetVertexArray() const { return m_VertexArray; }
 
 		glm::mat4& GetTransformMatrix() { return m_Transform; }
-
-		inline const glm::vec4& GetColor() const { return m_Color; }
-		inline const void SetColor(const glm::vec4& color) { m_Color = color; }
 
 		void SetTransfrom(const glm::mat4 transform) { m_Transform = transform; }
 

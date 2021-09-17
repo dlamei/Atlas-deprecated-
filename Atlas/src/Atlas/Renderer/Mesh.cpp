@@ -25,27 +25,25 @@ namespace std {
 
 namespace Atlas {
 
-	Mesh::Mesh()
+	void Mesh::InitTextures()
 	{
 		uint32_t whiteTextureData = 0xffffffff;
 		Ref<Texture2D> whiteTexture = Texture2D::Create(1, 1);
 		whiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
-		m_Textures[(int)Utils::TextureType::DIFFUSE] = whiteTexture;
-		m_Textures[(int)Utils::TextureType::SPECULAR] = whiteTexture;
-		m_Textures[(int)Utils::TextureType::NORMAL] = whiteTexture;
+		Mesh::m_Textures[(int)Utils::TextureType::DIFFUSE] = whiteTexture;
+		Mesh::m_Textures[(int)Utils::TextureType::SPECULAR] = whiteTexture;
+		Mesh::m_Textures[(int)Utils::TextureType::NORMAL] = whiteTexture;
+	}
+
+	Mesh::Mesh()
+	{
+		InitTextures();
 	}
 
 	Mesh::Mesh(const std::string& path)
 	{
-		uint32_t whiteTextureData = 0xffffffff;
-		Ref<Texture2D> whiteTexture = Texture2D::Create(1, 1);
-		whiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
-
-		m_Textures[(int)Utils::TextureType::DIFFUSE] = whiteTexture;
-		m_Textures[(int)Utils::TextureType::SPECULAR] = whiteTexture;
-		m_Textures[(int)Utils::TextureType::NORMAL] = whiteTexture;
-
+		InitTextures();
 		Load(path);
 
 	}
@@ -54,7 +52,6 @@ namespace Atlas {
 	{
 		delete[] m_VertexTriangles;
 		delete[] m_Indices;
-		delete[] m_Textures;
 	}
 
 	void Mesh::Load(const std::string& path)
@@ -156,7 +153,6 @@ namespace Atlas {
 							indx = 0;
 							numCount += 1;
 							if (numCount > 2) break;
-							//ATL_CORE_ASSERT(numCount <= 2, "Atlas 3D only supports triangles!");
 						}
 
 						if (indx >= 16) break;

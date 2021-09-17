@@ -6,8 +6,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <glad/glad.h>
-
 #include "Atlas/Renderer/Mesh.h"
 
 using namespace Atlas;
@@ -28,11 +26,13 @@ void Sandbox3D::OnAttach()
 	scene->SetActiveCamera(PerspectiveCameraController(1.0f));
 
 	scene->LoadMesh("assets/Models/Hand.obj");
-	Atlas::Mesh& mesh = scene->LoadMesh("assets/Models/Box.obj");
+	Mesh& mesh = scene->LoadMesh("assets/Models/Box.obj");
 	mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Diffuse.png"), Utils::TextureType::DIFFUSE);
 	mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);
 
-	scene->SetLight({ 0.0f, 3.0f, -2.0f });
+	ECS::Entity lightEntity = scene->CreateEntity("Point light");
+	scene->CreateComponent<PointLightComponent>(lightEntity);
+	scene->CreateComponent<TransformComponent>(lightEntity);
 }
 
 void Sandbox3D::OnDetach()
@@ -45,35 +45,14 @@ void Sandbox3D::OnUpdate(Timestep ts)
 
 	Application::GetActiveScene()->GetActiveCamera().OnUpdate(ts);
 
-
-	//glEnable(GL_DEPTH_TEST);
-	//m_FrameBuffer->Bind();
-
 	RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 	RenderCommand::Clear();
 	Renderer3D::DrawScene(Application::GetActiveScene());
-
-	//m_FrameBuffer->Unbind();
-	//glDisable(GL_DEPTH_TEST);
-
-	//Atlas::Renderer2D::DrawFrameBuffer(m_FrameBuffer->GetColorAttachmentRendererID());
 }
 
 void Sandbox3D::OnImGuiRender()
 {
 	ATL_PROFILE_FUNCTION();
-
-
-	//ImGuiIO& io = ImGui::GetIO(); //(void)io;
-
-	//ImGui::Begin("Settings");
-	//ImGui::DragFloat("global scale", &io.FontGlobalScale, 0.005f, 1, 10, "%.2f", ImGuiSliderFlags_AlwaysClamp); // Scale everything
-	//ImGui::SetWindowFontScale(1.8f);
-	////ImGui::Checkbox("Smooth Shading", &m_Shading);
-	//ImGui::Image((void*)(size_t)m_FrameBuffer->GetColorAttachmentRendererID(), ImVec2(800, 800), ImVec2(0, 1), ImVec2(1, 0));
-	//ImGui::Image((void*)(size_t)m_FrameBuffer->GetDepthAttachmentRendererID(), ImVec2(800, 800), ImVec2(0, 1), ImVec2(1, 0));
-	//m_Scene->GetMesh(0)->SetShading(m_Shading);
-	////ImGui::End();
 }
 
 void Sandbox3D::OnEvent(Event& e)

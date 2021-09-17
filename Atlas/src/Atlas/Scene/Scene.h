@@ -16,7 +16,6 @@ namespace Atlas {
 	class Scene
 	{
 	private:
-		glm::vec3 m_Light = glm::vec3(0.0f);
 		PerspectiveCameraController m_ActiveCamera;
 
 		ECS::Register m_Register;
@@ -50,10 +49,6 @@ namespace Atlas {
 
 		std::set<ECS::Entity>& GetEntities() { return m_Entities; }
 		MeshComponent& LoadMesh(const char* path);
-
-		void SetLight(const glm::vec3& light) { m_Light = light; }
-
-		glm::vec3& GetLight() { return m_Light; }
 
 		void SetActiveCamera(PerspectiveCameraController& camera) { m_ActiveCamera = camera; }
 		PerspectiveCameraController& GetActiveCamera() { return m_ActiveCamera; }

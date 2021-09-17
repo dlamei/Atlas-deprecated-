@@ -10,6 +10,7 @@
 
 #include <GLFW/glfw3.h>
 
+
 namespace Atlas {
 
 	Application* Application::s_Instance = nullptr;

@@ -74,28 +74,9 @@ namespace Atlas {
 
 }
 
-namespace glm {
-
-	template<typename OStream, glm::length_t L, typename T, glm::qualifier Q>
-	inline OStream& operator<<(OStream& os, const glm::vec<L, T, Q>& vector)
-	{
-		return os << glm::to_string(vector);
-	}
-
-	template<typename OStream, glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-	inline OStream& operator<<(OStream& os, const glm::mat<C, R, T, Q>& matrix)
-	{
-		return os << glm::to_string(matrix);
-	}
-
-	template<typename OStream, typename T, glm::qualifier Q>
-	inline OStream& operator<<(OStream& os, glm::qua<T, Q> quaternio)
-	{
-		return os << glm::to_string(quaternio);
-	}
-}
 
 
+#ifdef ATL_WINDOW_APP
 // Core log
 #define ATL_CORE_TRACE(...)		::Atlas::Log::AtlasLog(true, ::Atlas::Utils::LogLevel::ATL_TRACE, __VA_ARGS__);
 #define ATL_CORE_INFO(...)		::Atlas::Log::AtlasLog(true, ::Atlas::Utils::LogLevel::ATL_INFO, __VA_ARGS__);
@@ -107,3 +88,15 @@ namespace glm {
 #define ATL_INFO(...)		::Atlas::Log::AtlasLog(false, ::Atlas::Utils::LogLevel::ATL_INFO, __VA_ARGS__);
 #define ATL_WARN(...)		::Atlas::Log::AtlasLog(false, ::Atlas::Utils::LogLevel::ATL_WARN, __VA_ARGS__);
 #define ATL_ERROR(...)		::Atlas::Log::AtlasLog(false, ::Atlas::Utils::LogLevel::ATL_ERROR, __VA_ARGS__);
+#else
+#define ATL_CORE_TRACE(...)		::Atlas::Log::GetCoreLogger()->trace(__VA_ARGS__);
+#define ATL_CORE_INFO(...)		::Atlas::Log::GetCoreLogger()->info(__VA_ARGS__);
+#define ATL_CORE_WARN(...)		::Atlas::Log::GetCoreLogger()->warn(__VA_ARGS__);
+#define ATL_CORE_ERROR(...)		::Atlas::Log::GetCoreLogger()->error(__VA_ARGS__);
+
+// Client log
+#define ATL_TRACE(...)		::Atlas::Log::GetLogger()->trace(__VA_ARGS__);
+#define ATL_INFO(...)		::Atlas::Log::GetLogger()->info(__VA_ARGS__);
+#define ATL_WARN(...)		::Atlas::Log::GetLogger()->warn(__VA_ARGS__);
+#define ATL_ERROR(...)		::Atlas::Log::GetLogger()->error(__VA_ARGS__);
+#endif
