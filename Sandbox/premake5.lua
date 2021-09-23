@@ -1,7 +1,7 @@
 project "Sandbox"
 	--kind "WindowedApp"
 	kind "ConsoleApp"
-	--entrypoint "mainCRTStartup"
+	entrypoint "mainCRTStartup"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "off"

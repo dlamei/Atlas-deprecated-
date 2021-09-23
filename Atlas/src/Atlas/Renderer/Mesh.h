@@ -22,6 +22,15 @@ namespace Atlas {
 			NONE
 			
 		};
+		
+		enum class DisplayMode
+		{
+			SOLID = 0,
+			NORMAL,
+			NONE
+		};
+
+		std::string DisplayEnumToString(DisplayMode type);
 	}
 
 	struct Vertex
@@ -47,17 +56,19 @@ namespace Atlas {
 		bool m_HasTexCoords = false;
 		bool m_SmoothShading = true;
 
-		std::string m_Name;
+		std::string m_Name = "";
+		std::string m_FilePath = "";
 
 		uint32_t m_VertexCount = 0, m_TriangleCount = 0, m_TextureCoordCount = 0;
 		VertexTriangle* m_VertexTriangles = nullptr;
 		uint32_t* m_Indices = nullptr;
 
-
 		glm::mat4 m_Transform = glm::mat4(1.0f);
 
 		Ref<VertexArray> m_VertexArray;
 		std::array<Ref<Texture2D>, (int)Utils::TextureType::NONE> m_Textures;
+
+		Utils::DisplayMode m_DisplayMode = Utils::DisplayMode::SOLID;
 
 
 	public:
@@ -70,7 +81,10 @@ namespace Atlas {
 		void Load(const std::string& path);
 		void Invalidate();
 		void CalculateNormals();
+		inline bool GetShading() { return m_SmoothShading; }
 		void SetShading(bool smooth);
+
+		void RecalculateNormals();
 
 		inline uint32_t GetTriangleCount() const { return m_TriangleCount; }
 		inline uint32_t GetIndexCount() const { return m_TriangleCount * 3; }
@@ -81,12 +95,16 @@ namespace Atlas {
 		glm::mat4& GetTransformMatrix() { return m_Transform; }
 
 		void SetTransfrom(const glm::mat4 transform) { m_Transform = transform; }
-
 		inline std::string& GetName() { return m_Name; }
 
 		inline void AddTexture(const Ref<Texture2D> texture, const Utils::TextureType type) { if (type != Utils::TextureType::NONE) m_Textures[(int)type] = texture; }
 		inline Ref<Texture2D> GetTexture(const Utils::TextureType type) { return m_Textures[(int)type]; }
 		inline void BindTexture(Utils::TextureType type) { m_Textures[(int)type]->Bind((int)type); }
+
+		void SetDisplayMode(Utils::DisplayMode type) { m_DisplayMode = type; }
+		Utils::DisplayMode GetDisplayMode() { return m_DisplayMode; }
+
+		std::string& GetFilePath() { return m_FilePath; }
 	};
 
 }

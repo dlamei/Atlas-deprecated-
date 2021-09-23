@@ -43,24 +43,28 @@ namespace Atlas {
 		s_Data.Shader->SetInt("material.SpecularTexture", (int)Utils::TextureType::SPECULAR);
 
 		s_Data.Shader->SetFloat("material.Shininess", 8.0f);
+		
+		int dirLightCount = 0;
+		for (DirLightComponent& light : scene->GetComponentGroup<DirLightComponent>())
+		{
+			if (dirLightCount >= 4) break;
+			light.SetUniform(s_Data.Shader, dirLightCount);
+			dirLightCount++;
+		}
+		s_Data.Shader->SetInt("u_DirLightCount", dirLightCount);
 
-		s_Data.Shader->SetFloat3("dirLight.Direction", {-0.2f, -1.0f, -0.3f});
-		s_Data.Shader->SetFloat3("dirLight.Ambient",   { 0.2f,  0.2f,  0.2f });
-		s_Data.Shader->SetFloat3("dirLight.Diffuse",   { 1.0f, 1.0f, 1.0f });
-		s_Data.Shader->SetFloat3("dirLight.Specular",  { 1.0f,  1.0f,  1.0f });
-
-		int lightCount = 0;
+		int pointLightCount = 0;
 		for (PointLightComponent& light : scene->GetComponentGroup<PointLightComponent>())
 		{
-			if (lightCount >= 4) break;
-			light.SetUniform(s_Data.Shader, lightCount);
-			lightCount++;
+			if (pointLightCount >= 4) break;
+			light.SetUniform(s_Data.Shader, pointLightCount);
+			pointLightCount++;
 		}
-		s_Data.Shader->SetInt("u_PointLightCount", lightCount);
+		s_Data.Shader->SetInt("u_PointLightCount", pointLightCount);
 
 		for (MeshComponent& mesh : scene->GetComponentGroup<MeshComponent>())
 		{
-			DrawMesh(mesh);
+			if (!mesh.Hide) DrawMesh(mesh);
 		}
 
 
@@ -69,6 +73,7 @@ namespace Atlas {
 	void Renderer3D::DrawMesh(const Ref<Mesh>& mesh)
 	{
 		s_Data.Shader->SetMat4("u_TransformMatrix", mesh->GetTransformMatrix());
+		s_Data.Shader->SetInt("u_DisplayMode", (int) mesh->GetDisplayMode());
 
 		mesh->BindTexture(Utils::TextureType::DIFFUSE);
 		mesh->BindTexture(Utils::TextureType::SPECULAR);

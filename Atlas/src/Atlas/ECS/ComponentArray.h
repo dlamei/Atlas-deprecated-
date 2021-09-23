@@ -85,7 +85,7 @@ namespace ECS {
 
 
 	public:
-		//TODO: maybe use std::vector
+		//TODO: maybe add std::vector
 		T m_ComponentArray[Size];
 		std::unordered_map<ECS::Entity, size_t> m_EntityIndexMap;
 		std::unordered_map<size_t, ECS::Entity> m_IndexEntityMap;

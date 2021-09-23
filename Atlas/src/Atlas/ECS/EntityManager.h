@@ -22,7 +22,7 @@ namespace ECS {
 		ECS::Entity CreateEntity();
 		void DestroyEntity(ECS::Entity entity);
 		void SetSignature(ECS::Entity entity, ECS::Signature signature);
-		ECS::Signature GetSignature(ECS::Entity entity);
+		ECS::Signature& GetSignature(ECS::Entity entity);
 
 	};
 

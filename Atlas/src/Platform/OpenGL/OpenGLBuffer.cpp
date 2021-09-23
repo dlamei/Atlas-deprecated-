@@ -100,6 +100,7 @@ namespace Atlas {
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size, data);
 	}
 
+	//TODO use templates
 	void OpenGLIndexBuffer::SetData(const void* data, uint32_t typeSize, uint32_t count)
 	{
 		m_Count = count;

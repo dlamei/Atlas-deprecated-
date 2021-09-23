@@ -23,7 +23,8 @@ namespace ECS {
 		{
 			size_t typeHash = typeid(T).hash_code();
 
-			ATL_CORE_ASSERT(m_ComponentTypes.find(typeHash) != m_ComponentTypes.end(), "Component not registered before use");
+			//ATL_CORE_ASSERT(m_ComponentTypes.find(typeHash) != m_ComponentTypes.end(), "Component not registered before use");
+			if (!HasComponentArray<T>()) RegisterComponent<T>();
 
 			return std::static_pointer_cast<ComponentArray<T, ECS::MAX_ENTITIES>>(m_ComponentArrays[typeHash]);
 		}
@@ -53,6 +54,13 @@ namespace ECS {
 		}
 
 		template<typename T>
+		bool IsComponentRegistered()
+		{
+			size_t typeHash = typeid(T).hash_code();
+			return m_ComponentTypes.find(typeHash) != m_ComponentTypes.end();
+		}
+
+		template<typename T>
 		void AddComponent(ECS::Entity entity, T component)
 		{
 			size_t typeHash = typeid(T).hash_code();
@@ -77,9 +85,9 @@ namespace ECS {
 		}
 
 		template<typename T>
-		bool HasComponent(ECS::Entity entity, T component)
+		bool HasComponentArray()
 		{
-			const char* typeHash = typeid(T).hash_code();
+			size_t typeHash = typeid(T).hash_code();
 			return m_ComponentTypes.find(typeHash) != m_ComponentTypes.end();
 		}
 

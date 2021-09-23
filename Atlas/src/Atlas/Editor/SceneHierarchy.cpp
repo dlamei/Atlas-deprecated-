@@ -9,6 +9,8 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#include <charconv>
+
 namespace Atlas {
 
 	void DrawVec3(const char* label, float* values, float speed = 0.1f, float resetValue = 0.0f, float columnWidth = 100.0f)
@@ -65,7 +67,7 @@ namespace Atlas {
 	}
 
 	template<typename T, typename Function>
-	inline void SceneHierarchy::DrawComponent(const char* name, ECS::Entity entity, Function function)
+	void SceneHierarchy::DrawComponent(const char* name, ECS::Entity entity, Function function)
 	{
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed;
 		if (m_Context->HasComponent<T>(entity))
@@ -103,6 +105,11 @@ namespace Atlas {
 				ImGui::TreePop();
 			}
 
+			if (removeComponent)
+			{
+				m_Context->RemoveComponent<T>(entity);
+			}
+
 			ImGui::NewLine();
 		}
 	}
@@ -135,8 +142,24 @@ namespace Atlas {
 		ImGui::End();
 
 		ImGui::Begin("Properties");
+
 		if (m_SelectedEntity != ECS::null)
 		{
+			if (ImGui::Button("Add Component"))
+			{
+				ImGui::OpenPopup("Add Component");
+			}
+
+			if (ImGui::BeginPopup("Add Component"))
+			{
+				if (ImGui::Selectable("Transform Component")) m_Context->CreateComponentEx<TransformComponent>(m_SelectedEntity);
+				if (ImGui::Selectable("Mesh Component")) m_Context->CreateComponentEx<MeshComponent>(m_SelectedEntity);
+				if (ImGui::Selectable("Point light Component")) m_Context->CreateComponentEx<PointLightComponent>(m_SelectedEntity);
+				if (ImGui::Selectable("Directional light Component")) m_Context->CreateComponentEx<DirLightComponent>(m_SelectedEntity);
+				ImGui::EndPopup();
+			}
+
+
 			DrawComponents(m_SelectedEntity);
 		}
 		ImGui::End();
@@ -203,6 +226,69 @@ namespace Atlas {
 				ImGui::DragFloat("Constant", &component.Constant, 0.1f);
 				ImGui::DragFloat("Linear", &component.Linear, 0.1f);
 				ImGui::DragFloat("Quadratic", &component.Quadratic, 0.1f);
+			});
+
+		DrawComponent<DirLightComponent>("Directional light", entity, [](DirLightComponent& component)
+			{
+				ImGui::DragFloat3("Direction", glm::value_ptr(component.Direction), 0.05f, -1.0f, 1.0f);
+				ImGui::ColorEdit4("Ambient", glm::value_ptr(component.Ambient), ImGuiColorEditFlags_NoInputs);
+				ImGui::ColorEdit4("Diffuse", glm::value_ptr(component.Diffuse), ImGuiColorEditFlags_NoInputs);
+				ImGui::ColorEdit4("Specular", glm::value_ptr(component.Specular), ImGuiColorEditFlags_NoInputs);
+			});
+
+		DrawComponent<MeshComponent>("Mesh", entity, [](MeshComponent& component)
+			{
+				ImGui::Text(component.Mesh->GetFilePath().c_str());
+				char buffer[128];
+				memset(&buffer[0], 0, 128);
+
+				std::to_chars(&buffer[0], &buffer[0] + 128, component.Mesh->GetTriangleCount());
+				ImGui::Text("Triangles: ");
+				ImGui::SameLine();
+				ImGui::Text(buffer);
+
+				std::to_chars(&buffer[0], &buffer[0] + 128, 3 * component.Mesh->GetTriangleCount());
+				ImGui::Text("Vertecies: ");
+				ImGui::SameLine();
+				ImGui::Text(buffer);
+
+
+				bool shading = component.Mesh->GetShading();
+				std::string shadingButton = "Shading: " + (std::string) (shading ? "Smooth" : "Flat");
+				if (ImGui::Button(shadingButton.c_str()))
+				{
+					ImGui::OpenPopup("Shading Settings");
+				}
+
+				if (ImGui::BeginPopup("Shading Settings"))
+				{
+					if (ImGui::MenuItem("Smooth", "", shading)) { shading = true; }
+					if (ImGui::MenuItem("Flat", "", !shading)) { shading = false; }
+					component.Mesh->SetShading(shading);
+					ImGui::EndPopup();
+				}
+
+				Utils::DisplayMode displayMode = component.Mesh->GetDisplayMode();
+				std::string displayButton = "Display: " + Utils::DisplayEnumToString(displayMode);
+				if (ImGui::Button(displayButton.c_str()))
+				{
+					ImGui::OpenPopup("Display Settings");
+				}
+
+				if (ImGui::BeginPopup("Display Settings"))
+				{
+					for (int i = 0; i < (int)Utils::DisplayMode::NONE; i++)
+					{
+						Utils::DisplayMode type = static_cast<Utils::DisplayMode>(i);
+						if (ImGui::MenuItem(Utils::DisplayEnumToString(type).c_str(), "", displayMode == type)) { displayMode = type; }
+					}
+
+					component.Mesh->SetDisplayMode(displayMode);
+					ImGui::EndPopup();
+				}
+
+				ImGui::Checkbox("Hide", &component.Hide);
+
 			});
 	}
 

@@ -24,6 +24,23 @@ namespace std {
 }
 
 namespace Atlas {
+	std::string Utils::DisplayEnumToString(DisplayMode type)
+	{
+		switch (type)
+		{
+		case DisplayMode::SOLID:
+			return "Solid";
+
+		case DisplayMode::NORMAL:
+			return "Normal";
+		}
+
+		ATL_CORE_ERROR("Unknown DisplayMode");
+		return "";
+	}
+}
+
+namespace Atlas {
 
 	void Mesh::InitTextures()
 	{
@@ -38,10 +55,25 @@ namespace Atlas {
 
 	Mesh::Mesh()
 	{
+		m_VertexTriangles = new VertexTriangle[0];
+		m_Indices = new uint32_t[0];
+		m_VertexArray = VertexArray::Create();
+
+		Ref<VertexBuffer> vertexBuffer = VertexBuffer::Create(0);
+		vertexBuffer->SetLayout({
+				{ ShaderDataType::Float3, "a_Position" },
+				{ ShaderDataType::Float3, "a_Normal" },
+				{ ShaderDataType::Float2, "a_TextureCoord" },
+			});
+
+		m_VertexArray->AddVertexBuffer(vertexBuffer);
+		m_VertexArray->SetIndexBuffer(IndexBuffer::Create(0));
+
 		InitTextures();
 	}
 
 	Mesh::Mesh(const std::string& path)
+		: m_FilePath(path)
 	{
 		InitTextures();
 		Load(path);
@@ -372,6 +404,12 @@ namespace Atlas {
 				v2.Normal = normalMap[v2.Position] / (float)repetitionCount[v2.Position];
 			}
 		}
+	}
+
+	void Mesh::RecalculateNormals()
+	{
+		CalculateNormals();
+		Invalidate();
 	}
 
 	void Mesh::SetShading(bool smooth)

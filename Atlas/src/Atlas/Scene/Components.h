@@ -26,7 +26,10 @@ namespace Atlas {
 	struct MeshComponent
 	{
 		Ref<Atlas::Mesh> Mesh;
-		MeshComponent() = default;
+		bool Hide = false;
+
+		MeshComponent()
+			: Mesh(CreateRef<Atlas::Mesh>()) {}
 		MeshComponent(const std::string& path)
 			: Mesh(CreateRef<Atlas::Mesh>(path)) {}
 
@@ -55,9 +58,9 @@ namespace Atlas {
 		glm::vec3 Diffuse = glm::vec3(0.5f);
 		glm::vec3 Specular = glm::vec3(1.0f);
 
-		float Constant = 1.0f;
-		float Linear = 0.7f;
-		float Quadratic = 1.8f;
+		float Constant = 0.0f;
+		float Linear = 0.0f;
+		float Quadratic = 0.3f;
 
 		PointLightComponent() = default;
 
@@ -71,6 +74,25 @@ namespace Atlas {
 			shader->SetFloat(uniformName + ".Constant", Constant);
 			shader->SetFloat(uniformName + ".Linear", Linear);
 			shader->SetFloat(uniformName + ".Quadratic", Quadratic);
+		}
+	};
+
+	struct DirLightComponent
+	{
+		glm::vec3 Direction = { 1.0, 0.0, 0.0 };
+		glm::vec3 Ambient = glm::vec3(0.2f);
+		glm::vec3 Diffuse = glm::vec3(0.5f);
+		glm::vec3 Specular = glm::vec3(1.0f);
+
+		DirLightComponent() = default;
+
+		void SetUniform(Ref<Shader> shader, int index)
+		{
+			std::string uniformName = "dirLights[" + std::to_string(index) + "]";
+			shader->SetFloat3(uniformName + ".Direction", Direction);
+			shader->SetFloat3(uniformName + ".Ambient", Ambient);
+			shader->SetFloat3(uniformName + ".Diffuse", Diffuse);
+			shader->SetFloat3(uniformName + ".Specular", Specular);
 		}
 	};
 

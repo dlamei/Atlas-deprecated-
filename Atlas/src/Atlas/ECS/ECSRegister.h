@@ -6,6 +6,7 @@
 #include "ComponentManager.h"
 #include "EntityManager.h"
 
+
 namespace ECS {
 
 	class Register
@@ -65,7 +66,7 @@ namespace ECS {
 		{
 			m_ComponentManager->RemoveComponent<T>(entity);
 
-			Signature signature = m_EntityManager->GetSignature(entity);
+			Signature& signature = m_EntityManager->GetSignature(entity);
 			signature.set(m_ComponentManager->GetComponentType<T>(), false);
 		}
 
@@ -86,6 +87,12 @@ namespace ECS {
 		{
 			Signature signature = m_EntityManager->GetSignature(entity);
 			return signature[m_ComponentManager->GetComponentType<T>()];
+		}
+
+		template<typename T>
+		bool IsComponentRegistered()
+		{
+			return m_ComponentManager->IsComponentRegistered<T>();
 		}
 
 	};

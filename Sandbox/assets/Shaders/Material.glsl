@@ -62,7 +62,8 @@ struct PointLight
 	vec3 Specular;
 };
 
-#define MAX_POINT_LIGHTS 4
+#define MAX_POINT_LIGHTS 16
+#define MAX_DIR_LIGHTS 4
 
 
 in vec3 v_FragPosition;
@@ -70,21 +71,35 @@ in vec3 v_Normal;
 in vec2 v_TexCoord;
 
 uniform Material material;
-uniform DirLight dirLight;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
+uniform DirLight dirLights[MAX_DIR_LIGHTS];
 
 uniform vec3 u_ViewPosition;
 
 uniform int u_PointLightCount;
+uniform int u_DirLightCount;
+
+uniform int u_DisplayMode = 0;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
 void main()
 {
+	if (u_DisplayMode == 1)
+	{
+		color = vec4(v_Normal, 1.0);
+		return;
+	}
+
 	vec3 viewDirection = normalize(u_ViewPosition - v_FragPosition);
 
-	vec3 result = CalcDirLight(dirLight, v_Normal, viewDirection);
+	vec3 result = vec3(0.0);
+
+	for (int i = 0; i < u_DirLightCount; i++)
+	{
+		result += CalcDirLight(dirLights[i], v_Normal, viewDirection);
+	}
 
 	for (int i = 0; i < u_PointLightCount; i++)
 	{

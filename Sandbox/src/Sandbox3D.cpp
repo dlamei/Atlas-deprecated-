@@ -25,14 +25,23 @@ void Sandbox3D::OnAttach()
 
 	scene->SetActiveCamera(PerspectiveCameraController(1.0f));
 
-	scene->LoadMesh("assets/Models/Hand.obj");
-	Mesh& mesh = scene->LoadMesh("assets/Models/Box.obj");
-	mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Diffuse.png"), Utils::TextureType::DIFFUSE);
-	mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);
+	//scene->LoadMesh("assets/Models/Hand.obj");
+	//Mesh& mesh = scene->LoadMesh("assets/Models/Box.obj");
+	//mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Diffuse.png"), Utils::TextureType::DIFFUSE);
+	//mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);
+	scene->LoadMesh("assets/Models/Box.obj");
+	scene->LoadMesh("assets/Models/Dragon.obj");
+
+	//Mesh& mesh = scene->LoadMesh("assets/Models/Backpack.obj");
+	//mesh.AddTexture(Texture2D::Create("assets/Textures/Backpack_Diffuse.jpg", false), Utils::TextureType::DIFFUSE);
+	//mesh.AddTexture(Texture2D::Create("assets/Textures/Backpack_Specular.jpg", false), Utils::TextureType::SPECULAR);
 
 	ECS::Entity lightEntity = scene->CreateEntity("Point light");
 	scene->CreateComponent<PointLightComponent>(lightEntity);
 	scene->CreateComponent<TransformComponent>(lightEntity);
+	
+	ECS::Entity dirLight = scene->CreateEntity("Dir Light");
+	scene->CreateComponent<DirLightComponent>(dirLight);
 }
 
 void Sandbox3D::OnDetach()

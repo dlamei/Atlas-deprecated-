@@ -64,7 +64,7 @@ namespace Atlas {
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
 		ImGuiIO& io = ImGui::GetIO();
-		io.FontGlobalScale = 1.8f;
+		io.FontGlobalScale = 2.0f;
 	}
 
 	void EditorLayer::OnUpdate(Timestep ts)

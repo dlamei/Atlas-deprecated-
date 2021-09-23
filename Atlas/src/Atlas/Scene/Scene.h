@@ -38,7 +38,7 @@ namespace Atlas {
 			}
 			else
 			{
-				AddComponent(entity, component.Mesh->GetName());
+				CreateComponent<TagComponent>(entity, component.Mesh->GetName());
 			}
 		}
 
@@ -86,6 +86,7 @@ namespace Atlas {
 		}
 
 		template<typename T>
+		[[deprecated("use CreateComponent instead")]]
 		inline void AddComponent(ECS::Entity entity, T& component)
 		{
 			m_Register.AddComponent<T>(entity, component);
@@ -100,10 +101,23 @@ namespace Atlas {
 			return component;
 		}
 
-		template<typename T>
-		void RemoveComponent(ECS::Entity entity, T comopnent)
+		template<typename T, typename... Args>
+		inline T& CreateComponentEx(ECS::Entity entity, Args&&... args)
 		{
-			m_Register.RemoveComponent<T>(entity, comopnent);
+			if (m_Register.IsComponentRegistered<T>())
+			{
+				if (m_Register.HasComponent<T>(entity))	return m_Register.GetComponent<T>(entity);
+			}
+
+			T& component = m_Register.CreateComponent<T>(entity, std::forward<Args>(args)...);
+			OnComponentAdded<T>(entity);
+			return component;
+		}
+
+		template<typename T>
+		void RemoveComponent(ECS::Entity entity)
+		{
+			m_Register.RemoveComponent<T>(entity);
 		}
 
 		template<typename T>
@@ -122,6 +136,12 @@ namespace Atlas {
 		ECS::ComponentArray<T, ECS::MAX_ENTITIES>& GetComponentGroup()
 		{
 			return *m_Register.GetComponentArray<T>();
+		}
+
+		template<typename T>
+		bool IsComponentRegistered()
+		{
+			return m_Register.IsComponentRegistered<T>();
 		}
 
 	};
