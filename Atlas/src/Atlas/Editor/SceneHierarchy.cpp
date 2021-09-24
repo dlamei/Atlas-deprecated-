@@ -5,6 +5,7 @@
 #include "Atlas/ImGui/AtlasTheme.h"
 
 #include <imgui.h>
+#include <ImGuizmo.h>
 #include <imgui_internal.h>
 
 #include <glm/gtc/type_ptr.hpp>
@@ -208,13 +209,14 @@ namespace Atlas {
 
 		}
 
-		DrawComponent<TransformComponent>("Transform", entity, [](TransformComponent& component)
+		DrawComponent<TransformComponent>("Transform", entity, [&](TransformComponent& component)
 			{
 				DrawVec3("Translation", glm::value_ptr(component.Translation), 0.01f);
 				glm::vec3 rotation = glm::degrees(component.Rotation);
 				DrawVec3("Rotation", glm::value_ptr(rotation));
 				component.Rotation = glm::radians(rotation);
 				DrawVec3("Scale", glm::value_ptr(component.Scale), 0.01f, 1.0f);
+				auto& camera = m_Context->GetActiveCamera();
 			});
 
 		DrawComponent<PointLightComponent>("Point light", entity, [](PointLightComponent& component)
@@ -252,6 +254,7 @@ namespace Atlas {
 				ImGui::SameLine();
 				ImGui::Text(buffer);
 
+				ImGui::DragFloat("Shininess", &component.Shininess, 0.1, 0, 32);
 
 				bool shading = component.Mesh->GetShading();
 				std::string shadingButton = "Shading: " + (std::string) (shading ? "Smooth" : "Flat");

@@ -39,6 +39,9 @@ namespace Atlas
 		inline float GetAspecRatio() { return m_Camera.GetAspectRatio(); }
 
 		inline const PerspectiveCamera& GetCamera() { return m_Camera; }
+
+		const glm::mat4& GetView() { return m_Camera.GetViewMatrix(); }
+		const glm::mat4& GetProjection() { return m_Camera.GetProjectionMatrix(); }
 	};
 }
 

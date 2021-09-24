@@ -31,13 +31,13 @@ namespace Atlas
 		void SetFov(float fov) { m_Fov = fov; RecalculateProjectionMatrix(); }
 		void SetAspecRatio(float aspectRatio) { m_AspectRatio = aspectRatio; RecalculateProjectionMatrix(); }
 
-		inline const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
-		inline const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
-		inline const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
-		inline const glm::vec3& GetUpVec() const { return m_Up; }
-		inline const glm::vec3& GetFrontVec() const { return m_Front; }
-		inline const glm::vec3& GetPosition() const { return m_Position; }
-		inline const glm::vec3 GetRightVec() const { return m_Right; }
+		const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
+		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
+		const glm::mat4& GetViewProjectionMatrix()  const { return m_ViewProjectionMatrix; }
+		const glm::vec3& GetUpVec() const { return m_Up; }
+		const glm::vec3& GetFrontVec() const { return m_Front; }
+		const glm::vec3& GetPosition() const { return m_Position; }
+		const glm::vec3& GetRightVec() const { return m_Right; }
 
 		inline float GetAspectRatio() { return m_AspectRatio; }
 

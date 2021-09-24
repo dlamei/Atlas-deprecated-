@@ -10,3 +10,6 @@
 [submodule "Atlas/vendor/ImGui"]
 	path = Atlas/vendor/ImGui
 	url = https://github.com/Kingalidj/imgui.git
+[submodule "Atlas/vendor/ImGuizmo"]
+	path = Atlas/vendor/ImGuizmo
+	url = https://github.com/TheCherno/ImGuizmo.git

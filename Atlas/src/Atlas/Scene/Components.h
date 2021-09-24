@@ -11,6 +11,16 @@
 
 namespace Atlas {
 
+	namespace Utils
+	{
+		enum class Transform
+		{
+			TRANSLATE = 0,
+			ROTATE,
+			SCALE
+		};
+	}
+
 	struct TagComponent
 	{
 		std::string Tag;
@@ -27,6 +37,7 @@ namespace Atlas {
 	{
 		Ref<Atlas::Mesh> Mesh;
 		bool Hide = false;
+		float Shininess = 8.0f;
 
 		MeshComponent()
 			: Mesh(CreateRef<Atlas::Mesh>()) {}
@@ -39,6 +50,7 @@ namespace Atlas {
 
 	struct TransformComponent
 	{
+		Utils::Transform TransformOperation = Utils::Transform::TRANSLATE;
 		glm::vec3 Translation = glm::vec3(0.0f);
 		glm::vec3 Rotation = glm::vec3(0.0f);
 		glm::vec3 Scale = glm::vec3(1.0f);

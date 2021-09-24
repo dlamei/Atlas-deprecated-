@@ -42,7 +42,6 @@ namespace Atlas {
 		s_Data.Shader->SetInt("material.DiffuseTexture", (int)Utils::TextureType::DIFFUSE);
 		s_Data.Shader->SetInt("material.SpecularTexture", (int)Utils::TextureType::SPECULAR);
 
-		s_Data.Shader->SetFloat("material.Shininess", 8.0f);
 		
 		int dirLightCount = 0;
 		for (DirLightComponent& light : scene->GetComponentGroup<DirLightComponent>())
@@ -64,20 +63,19 @@ namespace Atlas {
 
 		for (MeshComponent& mesh : scene->GetComponentGroup<MeshComponent>())
 		{
-			if (!mesh.Hide) DrawMesh(mesh);
+			if (!mesh.Hide)
+			{
+				s_Data.Shader->SetFloat("material.Shininess", mesh.Shininess);
+				s_Data.Shader->SetMat4("u_TransformMatrix", mesh.Mesh->GetTransformMatrix());
+				s_Data.Shader->SetInt("u_DisplayMode", (int) mesh.Mesh->GetDisplayMode());
+
+				mesh.Mesh->BindTexture(Utils::TextureType::DIFFUSE);
+				mesh.Mesh->BindTexture(Utils::TextureType::SPECULAR);
+
+				Flush(mesh);
+			}
 		}
 
-
-	}
-
-	void Renderer3D::DrawMesh(const Ref<Mesh>& mesh)
-	{
-		s_Data.Shader->SetMat4("u_TransformMatrix", mesh->GetTransformMatrix());
-		s_Data.Shader->SetInt("u_DisplayMode", (int) mesh->GetDisplayMode());
-
-		mesh->BindTexture(Utils::TextureType::DIFFUSE);
-		mesh->BindTexture(Utils::TextureType::SPECULAR);
-		Renderer3D::Flush(mesh);
 
 	}
 

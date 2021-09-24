@@ -24,6 +24,8 @@ namespace Atlas {
 		void DrawEntityNode(ECS::Entity entity);
 		void DrawComponents(ECS::Entity entity);
 
+		ECS::Entity GetSelectedEntity() { return m_SelectedEntity; }
+
 	};
 
 
