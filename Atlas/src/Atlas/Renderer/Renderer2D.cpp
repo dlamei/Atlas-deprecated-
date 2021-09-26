@@ -12,9 +12,6 @@
 
 #include <glad/glad.h>
 
-//Temp
-#include "Atlas/Core/Application.h"
-
 namespace Atlas {
 
 	struct Vertex2D
@@ -428,10 +425,10 @@ namespace Atlas {
 		s_Data.Stats.TriCount++;
 	}
 
-	void Renderer2D::DrawFrameBuffer(uint32_t id)
+	void Renderer2D::DrawFrameBuffer(uint32_t id, uint32_t width, uint32_t height)
 	{
 		//TEMP
-		RenderCommand::SetViewport(0, 0, Application::GetWindowWidth(), Application::GetWindowHeight());
+		RenderCommand::SetViewport(0, 0, width, height);
 		glm::mat4 camera = glm::ortho(-1, 1, -1, 1);
 
 		s_Data.ScreenShader->Bind();
@@ -441,7 +438,22 @@ namespace Atlas {
 		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, 6);
 
 		s_Data.FlatShader->Bind();
-	} 
+	}
+
+	void Renderer2D::DrawDebugTexture(uint32_t textureID, uint32_t width, uint32_t height, Ref<Shader> shader)
+	{
+		RenderCommand::SetViewport(0, 0, width, height);
+		glm::mat4 camera = glm::ortho(-1, 1, -1, 1);
+
+		shader->Bind();
+		s_Data.QuadVertexArray->BindAll();
+
+		RenderCommand::Bind2DTexture(textureID);
+		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, 6);
+
+		s_Data.FlatShader->Bind();
+	}
+
 
 	void Renderer2D::ResetStats()
 	{

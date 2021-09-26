@@ -30,6 +30,7 @@ void main()
 #version 330 core
 
 layout(location = 0) out vec4 color;
+layout(location = 1) out int color2;
 
 struct Material 
 {
@@ -80,12 +81,15 @@ uniform int u_PointLightCount;
 uniform int u_DirLightCount;
 
 uniform int u_DisplayMode = 0;
+uniform int u_ID = -1;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
 void main()
 {
+	color2 = u_ID;
+
 	if (u_DisplayMode == 1)
 	{
 		color = vec4(v_Normal, 1.0);

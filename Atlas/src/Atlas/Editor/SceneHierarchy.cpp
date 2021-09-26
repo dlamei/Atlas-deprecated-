@@ -254,7 +254,7 @@ namespace Atlas {
 				ImGui::SameLine();
 				ImGui::Text(buffer);
 
-				ImGui::DragFloat("Shininess", &component.Shininess, 0.1, 0, 32);
+				ImGui::DragFloat("Shininess", &component.Shininess, 0.1f, 0.0f, 32.0f);
 
 				bool shading = component.Mesh->GetShading();
 				std::string shadingButton = "Shading: " + (std::string) (shading ? "Smooth" : "Flat");

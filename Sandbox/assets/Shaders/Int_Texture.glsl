@@ -17,11 +17,13 @@ void main()
 
 layout(location = 0) out vec4 color;
 
+#extension GL_EXT_gpu_shader4 : require
+
 in vec2 v_TexCoord;
 
-uniform sampler2D u_Texture;
+uniform isampler2D u_Texture;
 
 void main()
 {
-	color = vec4(v_TexCoord, 0.0, 1.0);
+	color = texture(u_Texture, v_TexCoord) / 3.0 + 0.5;
 }

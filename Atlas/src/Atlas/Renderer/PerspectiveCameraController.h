@@ -32,6 +32,7 @@ namespace Atlas
 
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);
+		void OnImGuiUpdate();
 
 		inline void SetFov(float fov) { m_Camera.SetFov(fov); }
 		inline void SetAspectRatio(float aspectRatio) { m_Camera.SetAspecRatio(aspectRatio); }

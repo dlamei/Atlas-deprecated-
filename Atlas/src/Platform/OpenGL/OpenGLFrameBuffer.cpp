@@ -32,8 +32,10 @@ namespace Atlas
 			{
 				glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
 
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -175,25 +177,6 @@ namespace Atlas
 		ATL_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		//glCreateTextures(GL_TEXTURE_2D, 1, &m_ColorAttachment);
-		//glBindTexture(GL_TEXTURE_2D, m_ColorAttachment);
-		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Specification.Width, m_Specification.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorAttachment, 0);
-
-		//glCreateTextures(GL_TEXTURE_2D, 1, &m_DepthAttachment);
-		//glBindTexture(GL_TEXTURE_2D, m_DepthAttachment);
-
-		//glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, m_Specification.Width, m_Specification.Height);
-		//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_DepthAttachment, 0);
-
-		//ATL_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
-
-
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	void OpenGLFrameBuffer::Bind()
@@ -230,11 +213,20 @@ namespace Atlas
 		return pixelData;
 	}
 
+	//void OpenGLFrameBuffer::ClearAttachment(uint32_t indx, int value)
+	//{
+	//	ATL_CORE_ASSERT(indx < m_ColorAttachments.size(), "index out of bounds");
+
+	//	auto& spec = m_ColorAttachmentSpecs[indx];
+	//	glClearTexImage(m_ColorAttachments[indx], 0, Utils::ATLFBTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
+	//}
+
 	void OpenGLFrameBuffer::ClearAttachment(uint32_t indx, int value)
 	{
 		ATL_CORE_ASSERT(indx < m_ColorAttachments.size(), "index out of bounds");
 
 		auto& spec = m_ColorAttachmentSpecs[indx];
-		glClearTexImage(m_ColorAttachments[indx], 0, Utils::ATLFBTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
+		glClearTexImage(m_ColorAttachments[indx], 0,
+			Utils::ATLFBTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
 	}
 }

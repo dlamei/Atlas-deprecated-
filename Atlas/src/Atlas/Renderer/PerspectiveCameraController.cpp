@@ -5,6 +5,8 @@
 
 #include "Atlas/Core/Application.h"
 
+#include <imgui.h>
+
 namespace Atlas
 {
 	bool PerspectiveCameraController::OnMouseMoved(MouseMovedEvent& e)
@@ -104,7 +106,7 @@ namespace Atlas
 
 		glm::vec2& viewportSize = Application::GetViewportSize();
 		float aspecRatio = viewportSize.x / viewportSize.y;
-		if (aspecRatio != m_Camera.GetAspectRatio()) 
+		if (aspecRatio != m_Camera.GetAspectRatio())
 		{
 			m_Camera.SetAspecRatio(aspecRatio);
 		}
@@ -117,6 +119,49 @@ namespace Atlas
 		dispatcher.Dispatch<MouseMovedEvent>(ATL_BIND_EVENT_FN(PerspectiveCameraController::OnMouseMoved));
 		dispatcher.Dispatch<MouseButtonPressedEvent>(ATL_BIND_EVENT_FN(PerspectiveCameraController::OnMousePressed));
 		dispatcher.Dispatch<MouseButtonReleasedEvent>(ATL_BIND_EVENT_FN(PerspectiveCameraController::OnMouseReleased));
-		//dispatcher.Dispatch<WindowResizeEvent>(ATL_BIND_EVENT_FN(PerspectiveCameraController::OnWindowResized));
+	}
+
+	void PerspectiveCameraController::OnImGuiUpdate()
+	{
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered())
+		{
+			Scope<Window>& window = Application::GetWindowScope();
+			window->CaptureMouse(true);
+		}
+
+		if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+		{
+			Scope<Window>& window = Application::GetWindowScope();
+			window->CaptureMouse(false);
+			firstMouseMove = true;
+		}
+
+		if (ImGui::IsMouseDragging(ImGuiMouseButton_Right) && ImGui::IsWindowHovered())
+		{
+			ImVec2 pos = ImGui::GetMousePos();
+
+			if (firstMouseMove)
+			{
+				m_PMouseX = pos.x;
+				m_PMouseY = pos.y;
+				firstMouseMove = false;
+			}
+
+			float xOffset = pos.x - m_PMouseX;
+			float yOffset = m_PMouseY - pos.y;
+			m_PMouseX = pos.x;
+			m_PMouseY = pos.y;
+
+			m_Yaw += xOffset * m_CamearSensitivity;
+			m_Pitch += yOffset * m_CamearSensitivity;
+
+			m_Pitch = std::clamp(m_Pitch, -89.0f, 89.0f);
+
+			m_CameraDirection.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
+			m_CameraDirection.y = sin(glm::radians(m_Pitch));
+			m_CameraDirection.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
+
+			m_Camera.SetFrontVec(glm::normalize(m_CameraDirection));
+		}
 	}
 }

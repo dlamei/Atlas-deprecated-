@@ -61,18 +61,21 @@ namespace Atlas {
 		}
 		s_Data.Shader->SetInt("u_PointLightCount", pointLightCount);
 
-		for (MeshComponent& mesh : scene->GetComponentGroup<MeshComponent>())
+		for (auto& entity : scene->GetComponentGroup<MeshComponent>())
 		{
-			if (!mesh.Hide)
+			auto& mesh = entity.Component;
+
+			if (!mesh->Hide)
 			{
-				s_Data.Shader->SetFloat("material.Shininess", mesh.Shininess);
-				s_Data.Shader->SetMat4("u_TransformMatrix", mesh.Mesh->GetTransformMatrix());
-				s_Data.Shader->SetInt("u_DisplayMode", (int) mesh.Mesh->GetDisplayMode());
+				s_Data.Shader->SetFloat("material.Shininess", mesh->Shininess);
+				s_Data.Shader->SetMat4("u_TransformMatrix", mesh->Mesh->GetTransformMatrix());
+				s_Data.Shader->SetInt("u_DisplayMode", (int) mesh->Mesh->GetDisplayMode());
+				if (scene->HasComponent<IDComponent>(entity)) s_Data.Shader->SetInt("u_ID", scene->GetComponent<IDComponent>(entity));
 
-				mesh.Mesh->BindTexture(Utils::TextureType::DIFFUSE);
-				mesh.Mesh->BindTexture(Utils::TextureType::SPECULAR);
+				mesh->Mesh->BindTexture(Utils::TextureType::DIFFUSE);
+				mesh->Mesh->BindTexture(Utils::TextureType::SPECULAR);
 
-				Flush(mesh);
+				Flush(*mesh);
 			}
 		}
 

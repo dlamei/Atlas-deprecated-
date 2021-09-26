@@ -25,16 +25,16 @@ void Sandbox3D::OnAttach()
 
 	scene->SetActiveCamera(PerspectiveCameraController(1.0f));
 
-	//scene->LoadMesh("assets/Models/Hand.obj");
+	scene->LoadMesh("assets/Models/Hand.obj");
 	//Mesh& mesh = scene->LoadMesh("assets/Models/Box.obj");
 	//mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Diffuse.png"), Utils::TextureType::DIFFUSE);
 	//mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);
-	scene->LoadMesh("assets/Models/Box.obj");
+	//scene->LoadMesh("assets/Models/Box.obj");
 	scene->LoadMesh("assets/Models/Dragon.obj");
 
-	//Mesh& mesh = scene->LoadMesh("assets/Models/Backpack.obj");
-	//mesh.AddTexture(Texture2D::Create("assets/Textures/Backpack_Diffuse.jpg", false), Utils::TextureType::DIFFUSE);
-	//mesh.AddTexture(Texture2D::Create("assets/Textures/Backpack_Specular.jpg", false), Utils::TextureType::SPECULAR);
+	Mesh& mesh = scene->LoadMesh("assets/Models/Backpack.obj");
+	mesh.AddTexture(Texture2D::Create("assets/Textures/Backpack_Diffuse.jpg", false), Utils::TextureType::DIFFUSE);
+	mesh.AddTexture(Texture2D::Create("assets/Textures/Backpack_Specular.jpg", false), Utils::TextureType::SPECULAR);
 
 	ECS::Entity lightEntity = scene->CreateEntity("Point light");
 	scene->CreateComponent<PointLightComponent>(lightEntity);
@@ -52,11 +52,9 @@ void Sandbox3D::OnUpdate(Timestep ts)
 {
 	ATL_PROFILE_FUNCTION();
 
-	Application::GetActiveScene()->GetActiveCamera().OnUpdate(ts);
+	//Application::GetActiveScene()->GetActiveCamera().OnUpdate(ts);
 
-	RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-	RenderCommand::Clear();
-	Renderer3D::DrawScene(Application::GetActiveScene());
+	//Renderer3D::DrawScene(Application::GetActiveScene());
 }
 
 void Sandbox3D::OnImGuiRender()
@@ -66,7 +64,7 @@ void Sandbox3D::OnImGuiRender()
 
 void Sandbox3D::OnEvent(Event& e)
 {
-	Application::GetActiveScene()->GetActiveCamera().OnEvent(e);
+	//Application::GetActiveScene()->GetActiveCamera().OnEvent(e);
 
 	if (e.GetEventType() == EventType::WindowResize)
 	{

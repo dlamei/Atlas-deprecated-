@@ -25,7 +25,10 @@ namespace Atlas {
 		SceneHierarchy m_SceneHierarchy;
 
 		glm::vec2 m_ViewportSize = { 1.0f, 1.0f };
-		float m_GlobalFontScale = 1.0f;
+		glm::vec2 m_ViewportBounds[2];
+		float m_GlobalFontScale = 1.8f;
+
+		ECS::Entity m_HoveredEntity = ECS::null;
 
 	public:
 
@@ -46,6 +49,9 @@ namespace Atlas {
 		inline Ref<FrameBuffer>& GetFrameBuffer() { return m_ViewportFrameBuffer; }
 		inline Ref<Scene>& GetActiveScene() { return m_ActiveScene; }
 		inline glm::vec2& GetViewportSize() { return m_ViewportSize; }
+
+		void BindViewportFrameBuffer();
+		void UnbindViewportFrameBuffer();
 
 	};
 

@@ -62,16 +62,17 @@ namespace Atlas {
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 
-		inline Window& GetWindow() { return *m_Window; }
-		static inline Scope<Window>& GetWindowScope() { return s_Instance->m_Window; }
-		static inline uint32_t GetWindowHeight() { return s_Instance->m_Window->GetHeight(); }
-		static inline uint32_t GetWindowWidth() { return s_Instance->m_Window->GetWidth(); }
-		static inline Application& Get() { return *s_Instance; }
+		Window& GetWindow() { return *m_Window; }
+		static Scope<Window>& GetWindowScope() { return s_Instance->m_Window; }
+		static uint32_t GetWindowHeight() { return s_Instance->m_Window->GetHeight(); }
+		static uint32_t GetWindowWidth() { return s_Instance->m_Window->GetWidth(); }
+		static Application& Get() { return *s_Instance; }
 
-		static inline glm::vec2& GetViewportSize() { return s_Instance->m_EditorLayer->GetViewportSize(); }
-		static inline void ToggleEditor(bool toggle) { s_Instance->m_EditorLayer->ToggleEditor(toggle); }
+		static glm::vec2& GetViewportSize() { return s_Instance->m_EditorLayer->GetViewportSize(); }
+		static Ref<FrameBuffer>& GetViewportFrameBuffer() { return s_Instance->m_EditorLayer->GetFrameBuffer(); }
+		static void ToggleEditor(bool toggle) { s_Instance->m_EditorLayer->ToggleEditor(toggle); }
 		//TEMP
-		static inline Ref<Scene>& GetActiveScene() { return s_Instance->m_EditorLayer->GetActiveScene(); }
+		static Ref<Scene>& GetActiveScene() { return s_Instance->m_EditorLayer->GetActiveScene(); }
 
 	};
 

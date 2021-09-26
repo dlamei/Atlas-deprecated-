@@ -75,7 +75,7 @@ namespace Atlas {
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 
-			m_EditorLayer->GetFrameBuffer()->Bind();
+			//m_EditorLayer->BindViewportFrameBuffer();
 			if (!m_Minimized)
 			{
 				ATL_PROFILE_SCOPE("LayerStack on Update");
@@ -85,7 +85,7 @@ namespace Atlas {
 					layer->OnUpdate(timestep);
 				}
 			}
-			m_EditorLayer->GetFrameBuffer()->Unbind();
+			//m_EditorLayer->UnbindViewportFrameBuffer();
 
 
 			m_ImGuiLayer->Begin();
