@@ -12,6 +12,9 @@
 
 #include <charconv>
 
+//TODO:: TEMP
+#include <Atlas/Core/Application.h>
+
 namespace Atlas {
 
 	void DrawVec3(const char* label, float* values, float speed = 0.1f, float resetValue = 0.0f, float columnWidth = 100.0f)
@@ -132,7 +135,12 @@ namespace Atlas {
 
 		m_Context->RemoveTaggedEntites();
 
-		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) m_SelectedEntity = ECS::null;
+		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+		{
+			m_SelectedEntity = ECS::null;
+			auto& callBackFn = Application::GetEventCallback();
+			callBackFn(EntitySelectedEvent(m_SelectedEntity));
+		}
 
 		if (ImGui::BeginPopupContextWindow(0, 1, false))
 		{
@@ -166,6 +174,14 @@ namespace Atlas {
 		ImGui::End();
 	}
 
+	void SceneHierarchy::OnEvent(Event& e)
+	{
+		if (e.GetEventType() == EventType::EntitySelected)
+		{
+			m_SelectedEntity = ((EntitySelectedEvent&)e).GetEntity();
+		}
+	}
+
 	void SceneHierarchy::DrawEntityNode(ECS::Entity entity)
 	{
 		auto& tag = m_Context->GetComponent<TagComponent>(entity);
@@ -174,7 +190,12 @@ namespace Atlas {
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 		ImGui::TreeNodeEx((void*)(size_t)entity, flags, tag);
 
-		if (ImGui::IsItemClicked()) m_SelectedEntity = entity;
+		if (ImGui::IsItemClicked())
+		{
+			m_SelectedEntity = entity;
+			auto& callBackFn = Application::GetEventCallback();
+			callBackFn(EntitySelectedEvent(m_SelectedEntity));
+		}
 
 		bool entityDeleted = false;
 		if (ImGui::BeginPopupContextItem())
@@ -186,7 +207,12 @@ namespace Atlas {
 
 		if (entityDeleted)
 		{
-			if (m_SelectedEntity == entity) m_SelectedEntity = ECS::null;
+			if (m_SelectedEntity == entity) 
+			{
+				m_SelectedEntity = ECS::null;
+				auto& callBackFn = Application::GetEventCallback();
+				callBackFn(EntitySelectedEvent(m_SelectedEntity));
+			}
 			m_Context->TagToRemove(entity);
 		}
 	}

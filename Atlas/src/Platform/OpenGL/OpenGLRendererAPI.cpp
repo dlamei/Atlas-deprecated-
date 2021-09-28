@@ -10,9 +10,15 @@ namespace Atlas {
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
+
 		glEnable(GL_CULL_FACE);
+
+		glEnable(GL_STENCIL_TEST);
+		glStencilFunc(GL_EQUAL, 1, 0xFF);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	}
 
 	void OpenGLRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
@@ -27,7 +33,7 @@ namespace Atlas {
 
 	void OpenGLRendererAPI::Clear()
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	}
 
 	void OpenGLRendererAPI::DrawIndexedWireframe(const Ref<VertexArray>& vertexArray, const uint32_t indexCount)

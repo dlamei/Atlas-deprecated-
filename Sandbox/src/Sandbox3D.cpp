@@ -15,26 +15,18 @@ Sandbox3D::Sandbox3D()
 
 void Sandbox3D::OnAttach()
 {
-	m_FrameBuffer = FrameBuffer::Create({
-			Application::GetWindowWidth(),
-			Application::GetWindowHeight(),
-			{ FBTextureFormat::RGBA8, FBTextureFormat::DEPTH24STENCIL8 }
-		});
-
 	Ref<Scene> scene = Application::GetActiveScene();
 
 	scene->SetActiveCamera(PerspectiveCameraController(1.0f));
 
 	scene->LoadMesh("assets/Models/Hand.obj");
-	//Mesh& mesh = scene->LoadMesh("assets/Models/Box.obj");
-	//mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Diffuse.png"), Utils::TextureType::DIFFUSE);
-	//mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);
-	//scene->LoadMesh("assets/Models/Box.obj");
-	scene->LoadMesh("assets/Models/Dragon.obj");
+	Mesh& mesh = scene->LoadMesh("assets/Models/Box.obj");
+	mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Diffuse.png"), Utils::TextureType::DIFFUSE);
+	mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);
 
-	Mesh& mesh = scene->LoadMesh("assets/Models/Backpack.obj");
-	mesh.AddTexture(Texture2D::Create("assets/Textures/Backpack_Diffuse.jpg", false), Utils::TextureType::DIFFUSE);
-	mesh.AddTexture(Texture2D::Create("assets/Textures/Backpack_Specular.jpg", false), Utils::TextureType::SPECULAR);
+	//Mesh& mesh = scene->LoadMesh("assets/Models/Backpack.obj");
+	//mesh.AddTexture(Texture2D::Create("assets/Textures/Backpack_Diffuse.jpg", false), Utils::TextureType::DIFFUSE);
+	//mesh.AddTexture(Texture2D::Create("assets/Textures/Backpack_Specular.jpg", false), Utils::TextureType::SPECULAR);
 
 	ECS::Entity lightEntity = scene->CreateEntity("Point light");
 	scene->CreateComponent<PointLightComponent>(lightEntity);
@@ -65,10 +57,10 @@ void Sandbox3D::OnImGuiRender()
 void Sandbox3D::OnEvent(Event& e)
 {
 	//Application::GetActiveScene()->GetActiveCamera().OnEvent(e);
-
-	if (e.GetEventType() == EventType::WindowResize)
+	if (e.GetEventType() == EventType::EntitySelected)
 	{
-		WindowResizeEvent& resizeEvent = (WindowResizeEvent&)e;
-		m_FrameBuffer->Resize(resizeEvent.GetWidth(), resizeEvent.GetHeight());
+		auto& entitySelected = (EntitySelectedEvent&)e;
+		ATL_TRACE(entitySelected.GetEntity());
 	}
+
 }

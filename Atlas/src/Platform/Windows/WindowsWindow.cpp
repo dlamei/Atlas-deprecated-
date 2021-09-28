@@ -7,8 +7,8 @@
 
 #include "Platform/OpenGL/OpenGLContext.h"
 
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3native.h>
+//#define GLFW_EXPOSE_NATIVE_WIN32
+//#include <GLFW/glfw3native.h>
 
 namespace Atlas {
 
@@ -157,7 +157,7 @@ namespace Atlas {
 		});
 
 
-		HWND hwnd = glfwGetWin32Window(m_Window);
+		//HWND hwnd = glfwGetWin32Window(m_Window);
 
 		//EndPaint(hwnd, &paint);
 		

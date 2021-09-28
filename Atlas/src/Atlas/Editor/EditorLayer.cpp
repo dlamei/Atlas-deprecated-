@@ -6,14 +6,19 @@
 #include "Atlas/Math/Math.h"
 
 #include "imgui.h"
-#include <ImGuizmo.h>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 #include "Atlas/Renderer/Renderer3D.h"
 #include "Atlas/Renderer/Renderer2D.h"
 #include "Atlas/Renderer/RenderCommand.h"
+
+#include <ImGuizmo.h>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <charconv>
+
+//TODO: look at it
+#include "Atlas/Core/Application.h"
 
 namespace Atlas {
 
@@ -88,12 +93,23 @@ namespace Atlas {
 
 		m_ViewportFrameBuffer->Bind();
 
+		//TEMP
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderCommand::Clear();
 		m_ViewportFrameBuffer->ClearAttachment(1, -1);
 
 		Renderer3D::DrawScene(m_ActiveScene);
+		if (m_SceneHierarchy.GetSelectedEntity() != ECS::null)
+		{
+			if (m_ActiveScene->HasComponent<MeshComponent>(m_SceneHierarchy.GetSelectedEntity()))
+			{
+				auto& mesh = m_ActiveScene->GetComponent<MeshComponent>(m_SceneHierarchy.GetSelectedEntity());
+				Renderer3D::DrawOutline(mesh, m_ActiveScene->getCamera().GetViewProjectionMatrix(), {ATL_LIGHT_RED_COL.x, ATL_LIGHT_RED_COL.y, ATL_LIGHT_RED_COL.z, 1.0f}, m_OutlineThickness);
+			}
+		}
 
+		//TODO: find a better fix
+		if (m_ViewportSize.x > 100 && m_ViewportSize.y > 100)
 		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)m_ViewportSize.x && mouseY < (int)m_ViewportSize.y)
 		{
 			int value = m_ViewportFrameBuffer->ReadPixel(1, mouseX, mouseY);
@@ -101,7 +117,11 @@ namespace Atlas {
 			else if (value == -1) m_HoveredEntity = ECS::null;
 		}
 
-		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsOver() && ImGui::IsWindowHovered()) m_SceneHierarchy.SetSelectedEntity(m_HoveredEntity);
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsOver() && ImGui::IsWindowHovered()) 
+		{
+			const Window::EventCallbackFn& callbackFn = Application::GetEventCallback();
+			callbackFn(EntitySelectedEvent(m_HoveredEntity));
+		}
 
 		m_ViewportFrameBuffer->Unbind();
 
@@ -111,20 +131,17 @@ namespace Atlas {
 		ImGui::Image((void*)(size_t)m_ViewportFrameBuffer->GetColorAttachmentRendererID(0), { m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
 		ImGui::PushStyleColor(ImGuiCol_Text, { 0.6f, 0.6f, 0.6f, 1.0f });
+		ImGui::SetCursorPos(cursorPos);
 		if (m_HoveredEntity != ECS::null)
 		{
 			if (m_ActiveScene->HasComponent<TagComponent>(m_HoveredEntity))
 			{
-				ImGui::SetCursorPos(cursorPos);
 				std::string text = "Hovered: " + (std::string)m_ActiveScene->GetComponent<TagComponent>(m_HoveredEntity);
 				ImGui::Text(text.c_str());
 			}
 		}
-		else
-		{
-			ImGui::SetCursorPos(cursorPos);
-			ImGui::Text("Hovered: ");
-		}
+		else ImGui::Text("Hovered: ");
+
 		ImGui::PopStyleColor();
 
 		ImGui::PopStyleVar();
@@ -135,13 +152,12 @@ namespace Atlas {
 
 		auto& camera = m_ActiveScene->GetActiveCamera();
 
-		ECS::Entity selectedEntity = m_SceneHierarchy.GetSelectedEntity();
-		if (selectedEntity != ECS::null)
+		if (m_SelectedEntity != ECS::null)
 		{
-			if (m_ActiveScene->HasComponent<TransformComponent>(selectedEntity))
+			if (m_ActiveScene->HasComponent<TransformComponent>(m_SelectedEntity))
 			{
 
-				TransformComponent& component = m_ActiveScene->GetComponent<TransformComponent>(selectedEntity);
+				TransformComponent& component = m_ActiveScene->GetComponent<TransformComponent>(m_SelectedEntity);
 				glm::mat4 transform = component.GetTransform();
 				ImGuizmo::Manipulate(glm::value_ptr(camera.GetView()), glm::value_ptr(camera.GetProjection()), AtlOpToImGuizmoOp(component.TransformOperation), ImGuizmo::LOCAL, glm::value_ptr(transform));
 
@@ -160,9 +176,9 @@ namespace Atlas {
 					component.TransformOperation = Utils::Transform::SCALE;
 				}
 			}
-			else if (m_ActiveScene->HasComponent<DirLightComponent>(selectedEntity))
+			else if (m_ActiveScene->HasComponent<DirLightComponent>(m_SelectedEntity))
 			{
-				DirLightComponent& component = m_ActiveScene->GetComponent<DirLightComponent>(selectedEntity);
+				DirLightComponent& component = m_ActiveScene->GetComponent<DirLightComponent>(m_SelectedEntity);
 				glm::mat4 transform = glm::toMat4(glm::quat(component.Direction));
 				ImGuizmo::Manipulate(glm::value_ptr(camera.GetView()), glm::value_ptr(camera.GetProjection()), ImGuizmo::ROTATE, ImGuizmo::WORLD, glm::value_ptr(transform));
 
@@ -177,10 +193,21 @@ namespace Atlas {
 
 		Log::GetAtlasLogger().Draw("Atlas Log");
 		m_ActiveScene->OnUpdateEditor();
+
+		ImGui::Begin("Atlas Settings");
+		ImGui::DragFloat("Outline thickness", &m_OutlineThickness, 0.01f, 0.0f, 1.0f);
+		ImGui::End();
 	}
 
-	void EditorLayer::OnEvent(Event& event)
+	void EditorLayer::OnEvent(Event& e)
 	{
+		m_SceneHierarchy.OnEvent(e);
+
+		if (e.GetEventType() == EventType::EntitySelected)
+		{
+			m_SelectedEntity = ((EntitySelectedEvent&)e).GetEntity();
+			m_ActiveScene->SetSelectedEntity(m_SelectedEntity);
+		}
 	}
 
 	void EditorLayer::Begin()

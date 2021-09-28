@@ -21,6 +21,7 @@ namespace Atlas {
 		inline void SetContext(const Ref<Scene>& context) { m_Context = context; }
 
 		void OnImGuiRender();
+		void OnEvent(Event& e);
 		void DrawEntityNode(ECS::Entity entity);
 		void DrawComponents(ECS::Entity entity);
 

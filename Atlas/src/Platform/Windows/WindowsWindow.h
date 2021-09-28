@@ -44,6 +44,8 @@ namespace Atlas {
 		virtual void CaptureMouse(bool enabled) const override;
 
 		inline virtual void* GetNativeWindow() const { return m_Window; }
+
+		virtual const EventCallbackFn& GetEventCallback() const override { return m_Data.EventCallback; }
 	};
 
 }

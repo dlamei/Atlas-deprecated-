@@ -2,6 +2,8 @@
 
 #include "Event.h"
 
+#include "Atlas/ECS/ECSEntity.h"
+
 namespace Atlas {
 
 	class WindowResizeEvent : public Event
@@ -61,5 +63,21 @@ namespace Atlas {
 
 		EVENT_CLASS_TYPE(AppRender)
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	};
+
+	class EntitySelectedEvent : public Event
+	{
+	private:
+		ECS::Entity m_EntityHandle = ECS::null;
+
+	public:
+		EntitySelectedEvent() = default;
+		EntitySelectedEvent(ECS::Entity entity)
+			: m_EntityHandle(entity) {}
+
+		EVENT_CLASS_TYPE(EntitySelected)
+		EVENT_CLASS_CATEGORY(EventCategoryEditor)
+
+		ECS::Entity GetEntity() { return m_EntityHandle; }
 	};
 }

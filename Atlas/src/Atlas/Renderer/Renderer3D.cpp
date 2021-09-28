@@ -9,21 +9,37 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+//TEMP
+#include <glad/glad.h>
+
 namespace Atlas {
 
 	struct Renderer3DData
 	{
-		Ref<Shader> Shader;
+		Ref<Shader> MaterialShader;
+		Ref<Shader> OutlineShader;
 	};
 
 	static Renderer3DData s_Data;
+
+	void Renderer3D::DrawMesh(Mesh& mesh, const uint32_t id)
+	{
+		s_Data.MaterialShader->SetFloat("material.Shininess", 8.0f);
+		s_Data.MaterialShader->SetMat4("u_TransformMatrix", mesh.GetTransformMatrix());
+		s_Data.MaterialShader->SetInt("u_DisplayMode", (int)mesh.GetDisplayMode());
+		s_Data.MaterialShader->SetInt("u_ID", id);
+		mesh.BindTexture(Utils::TextureType::DIFFUSE);
+
+		Flush(mesh);
+	}
 
 	void Renderer3D::Init()
 	{
 		ATL_PROFILE_FUNCTION();
 
-		s_Data.Shader = Shader::Create("assets/Shaders/Material.glsl");
-		s_Data.Shader->Bind();
+		s_Data.MaterialShader = Shader::Create("assets/Shaders/Material.glsl");
+		s_Data.OutlineShader = Shader::Create("assets/Shaders/Outline.glsl");
+		s_Data.MaterialShader->Bind();
 	}
 
 	void Renderer3D::Shutdown()
@@ -34,59 +50,85 @@ namespace Atlas {
 	void Renderer3D::DrawScene(const Ref<Scene> scene)
 	{
 		ATL_PROFILE_FUNCTION();
-		s_Data.Shader->Bind();
 
-		s_Data.Shader->SetMat4("u_ViewProjection", scene->getCamera().GetViewProjectionMatrix());
-		s_Data.Shader->SetFloat3("u_ViewPosition", scene->getCamera().GetPosition());
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilMask(0x00);
 
-		s_Data.Shader->SetInt("material.DiffuseTexture", (int)Utils::TextureType::DIFFUSE);
-		s_Data.Shader->SetInt("material.SpecularTexture", (int)Utils::TextureType::SPECULAR);
 
-		
+		s_Data.MaterialShader->Bind();
+
+		s_Data.MaterialShader->SetMat4("u_ViewProjection", scene->getCamera().GetViewProjectionMatrix());
+		s_Data.MaterialShader->SetFloat3("u_ViewPosition", scene->getCamera().GetPosition());
+
+		s_Data.MaterialShader->SetInt("material.DiffuseTexture", (int)Utils::TextureType::DIFFUSE);
+		s_Data.MaterialShader->SetInt("material.SpecularTexture", (int)Utils::TextureType::SPECULAR);
+
+
 		int dirLightCount = 0;
 		for (DirLightComponent& light : scene->GetComponentGroup<DirLightComponent>())
 		{
 			if (dirLightCount >= 4) break;
-			light.SetUniform(s_Data.Shader, dirLightCount);
+			light.SetUniform(s_Data.MaterialShader, dirLightCount);
 			dirLightCount++;
 		}
-		s_Data.Shader->SetInt("u_DirLightCount", dirLightCount);
+		s_Data.MaterialShader->SetInt("u_DirLightCount", dirLightCount);
 
 		int pointLightCount = 0;
 		for (PointLightComponent& light : scene->GetComponentGroup<PointLightComponent>())
 		{
 			if (pointLightCount >= 4) break;
-			light.SetUniform(s_Data.Shader, pointLightCount);
+			light.SetUniform(s_Data.MaterialShader, pointLightCount);
 			pointLightCount++;
 		}
-		s_Data.Shader->SetInt("u_PointLightCount", pointLightCount);
+		s_Data.MaterialShader->SetInt("u_PointLightCount", pointLightCount);
 
 		for (auto& entity : scene->GetComponentGroup<MeshComponent>())
 		{
 			auto& mesh = entity.Component;
 
-			if (!mesh->Hide)
+			if (!mesh->Hide && entity.EntityHandle != scene->GetSelectedEntity())
 			{
-				s_Data.Shader->SetFloat("material.Shininess", mesh->Shininess);
-				s_Data.Shader->SetMat4("u_TransformMatrix", mesh->Mesh->GetTransformMatrix());
-				s_Data.Shader->SetInt("u_DisplayMode", (int) mesh->Mesh->GetDisplayMode());
-				if (scene->HasComponent<IDComponent>(entity)) s_Data.Shader->SetInt("u_ID", scene->GetComponent<IDComponent>(entity));
-
-				mesh->Mesh->BindTexture(Utils::TextureType::DIFFUSE);
-				mesh->Mesh->BindTexture(Utils::TextureType::SPECULAR);
-
-				Flush(*mesh);
+				uint32_t id = scene->HasComponent<IDComponent>(entity) ? scene->GetComponent<IDComponent>(entity) : -1;
+				DrawMesh(*mesh->Mesh, id);
 			}
+		}
+
+		ECS::Entity selection = scene->GetSelectedEntity();
+		if (selection != ECS::null && scene->HasComponent<MeshComponent>(selection))
+		{
+			MeshComponent& mesh = scene->GetComponent<MeshComponent>(selection);
+			glStencilMask(0xff);
+			uint32_t id = scene->HasComponent<IDComponent>(selection) ? scene->GetComponent<IDComponent>(selection) : -1;
+			DrawMesh(mesh, id);
 		}
 
 
 	}
 
-	void Renderer3D::Flush(const Ref<Mesh>& mesh)
+	void Renderer3D::Flush(const Mesh& mesh)
 	{
 		ATL_PROFILE_FUNCTION();
-		mesh->GetVertexArray()->BindAll();
+		mesh.GetVertexArray()->BindAll();
 
-		RenderCommand::DrawIndexed(mesh->GetVertexArray(), mesh->GetTriangleCount() * 3);
+		RenderCommand::DrawIndexed(mesh.GetVertexArray(), mesh.GetTriangleCount() * 3);
+	}
+
+	void Renderer3D::DrawOutline(const Ref<Mesh>& mesh, const glm::mat4& viewProjMat, const glm::vec4& color, float thickness)
+	{
+		s_Data.OutlineShader->Bind();
+		s_Data.OutlineShader->SetFloat4("u_OutlineColor", color);
+		s_Data.OutlineShader->SetFloat("u_Thickness", thickness);
+		s_Data.OutlineShader->SetMat4("u_ViewProjection", viewProjMat);
+		s_Data.OutlineShader->SetMat4("u_TransformMatrix", mesh->GetTransformMatrix());
+
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilMask(0x00);
+
+		Flush(*mesh);
+		glStencilMask(0xFF);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+
+		s_Data.MaterialShader->Bind();
 	}
 }

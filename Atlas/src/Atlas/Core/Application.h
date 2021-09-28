@@ -71,6 +71,8 @@ namespace Atlas {
 		static glm::vec2& GetViewportSize() { return s_Instance->m_EditorLayer->GetViewportSize(); }
 		static Ref<FrameBuffer>& GetViewportFrameBuffer() { return s_Instance->m_EditorLayer->GetFrameBuffer(); }
 		static void ToggleEditor(bool toggle) { s_Instance->m_EditorLayer->ToggleEditor(toggle); }
+
+		static const Window::EventCallbackFn& GetEventCallback() { return s_Instance->m_Window->GetEventCallback(); }
 		//TEMP
 		static Ref<Scene>& GetActiveScene() { return s_Instance->m_EditorLayer->GetActiveScene(); }
 

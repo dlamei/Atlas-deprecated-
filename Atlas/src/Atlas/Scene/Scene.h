@@ -19,6 +19,7 @@ namespace Atlas {
 		PerspectiveCameraController m_ActiveCamera;
 
 		ECS::Register m_Register;
+		ECS::Entity m_SelectedEntity = ECS::null;
 		std::set<ECS::Entity> m_Entities;
 		std::set<ECS::Entity> m_ToRemove;
 
@@ -53,6 +54,9 @@ namespace Atlas {
 		void SetActiveCamera(PerspectiveCameraController& camera) { m_ActiveCamera = camera; }
 		PerspectiveCameraController& GetActiveCamera() { return m_ActiveCamera; }
 		const PerspectiveCamera& getCamera() { return m_ActiveCamera.GetCamera(); }
+
+		void SetSelectedEntity(ECS::Entity entity) { m_SelectedEntity = entity; }
+		ECS::Entity GetSelectedEntity() { return m_SelectedEntity; }
 
 		void OnUpdateEditor();
 
