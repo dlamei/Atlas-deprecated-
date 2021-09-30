@@ -43,6 +43,22 @@ namespace Atlas {
 				}
 			});
 
+		m_PostProcessingFrameBuffer = FrameBuffer::Create({
+				(uint32_t)m_ViewportSize.x,
+				(uint32_t)m_ViewportSize.y,
+				{
+					FBTextureFormat::RGBA8
+				}
+			});
+
+		m_DirLightFrameBuffer = FrameBuffer::Create({
+				1024,
+				1024,
+				{
+					FBTextureFormat::DEPTH24STENCIL8
+				}
+			});
+
 		m_ActiveScene = CreateRef<Scene>();
 		m_SceneHierarchy.SetContext(m_ActiveScene);
 
@@ -91,8 +107,21 @@ namespace Atlas {
 		int mouseX = (int)mx;
 		int mouseY = (int)my;
 
-		m_ViewportFrameBuffer->Bind();
 
+		//LIGHT
+		m_DirLightFrameBuffer->Bind();
+		RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+		RenderCommand::Clear();
+		for (DirLightComponent& light : m_ActiveScene->GetComponentGroup<DirLightComponent>())
+		{
+			glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
+			glm::mat4 lightView = glm::lookAt(light.Direction, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+			Renderer3D::DrawLightDepthMap(m_ActiveScene, lightSpaceMatrix);
+		}
+		m_DirLightFrameBuffer->Unbind();
+
+		m_ViewportFrameBuffer->Bind();
 		//TEMP
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderCommand::Clear();
@@ -104,7 +133,7 @@ namespace Atlas {
 			if (m_ActiveScene->HasComponent<MeshComponent>(m_SceneHierarchy.GetSelectedEntity()))
 			{
 				auto& mesh = m_ActiveScene->GetComponent<MeshComponent>(m_SceneHierarchy.GetSelectedEntity());
-				Renderer3D::DrawOutline(mesh, m_ActiveScene->getCamera().GetViewProjectionMatrix(), {ATL_LIGHT_RED_COL.x, ATL_LIGHT_RED_COL.y, ATL_LIGHT_RED_COL.z, 1.0f}, m_OutlineThickness);
+				Renderer3D::DrawOutline(mesh, m_ActiveScene->getCamera().GetViewProjectionMatrix(), {ATL_RED_COL.x, ATL_RED_COL.y, ATL_RED_COL.z, 1.0f}, m_OutlineThickness);
 			}
 		}
 
@@ -125,10 +154,14 @@ namespace Atlas {
 
 		m_ViewportFrameBuffer->Unbind();
 
+		m_PostProcessingFrameBuffer->Bind();
+		Renderer2D::DrawFrameBuffer(m_ViewportFrameBuffer->GetColorAttachmentRendererID(0), m_ViewportSize.x, m_ViewportSize.y);
+		m_PostProcessingFrameBuffer->Unbind();
+
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
 		ImVec2 cursorPos = ImGui::GetCursorPos();
-		ImGui::Image((void*)(size_t)m_ViewportFrameBuffer->GetColorAttachmentRendererID(0), { m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+		ImGui::Image((void*)(size_t)m_PostProcessingFrameBuffer->GetColorAttachmentRendererID(0), { m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
 		ImGui::PushStyleColor(ImGuiCol_Text, { 0.6f, 0.6f, 0.6f, 1.0f });
 		ImGui::SetCursorPos(cursorPos);
@@ -197,6 +230,10 @@ namespace Atlas {
 		ImGui::Begin("Atlas Settings");
 		ImGui::DragFloat("Outline thickness", &m_OutlineThickness, 0.01f, 0.0f, 1.0f);
 		ImGui::End();
+		
+		ImGui::Begin("Image Inspector");
+		ImGui::Image((void*)(uint32_t)m_DirLightFrameBuffer->GetDepthAttachmentRendererID(), ImVec2(800, 800));
+		ImGui::End();
 	}
 
 	void EditorLayer::OnEvent(Event& e)
@@ -228,6 +265,7 @@ namespace Atlas {
 		if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && (specs.Width != (uint32_t)m_ViewportSize.x || specs.Height != (uint32_t)m_ViewportSize.y))
 		{
 			m_ViewportFrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_PostProcessingFrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
 	}

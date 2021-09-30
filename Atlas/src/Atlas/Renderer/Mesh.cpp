@@ -44,7 +44,7 @@ namespace Atlas {
 
 	void Mesh::InitTextures()
 	{
-		uint32_t whiteTextureData = 0xffffffff;
+		uint32_t whiteTextureData = 0xFFFFFFFF;
 		Ref<Texture2D> whiteTexture = Texture2D::Create(1, 1);
 		whiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
@@ -55,7 +55,7 @@ namespace Atlas {
 
 	Mesh::Mesh()
 	{
-		m_VertexTriangles = new VertexTriangle[0];
+		m_FlatVertexTriangles = new VertexTriangle[0];
 		m_Indices = new uint32_t[0];
 		m_VertexArray = VertexArray::Create();
 
@@ -82,7 +82,8 @@ namespace Atlas {
 
 	Mesh::~Mesh()
 	{
-		delete[] m_VertexTriangles;
+		delete[] m_FlatVertexTriangles;
+		delete[] m_SmoothVertexTriangles;
 		delete[] m_Indices;
 	}
 
@@ -267,10 +268,12 @@ namespace Atlas {
 			}
 		}
 
-		m_VertexTriangles = new VertexTriangle[m_TriangleCount];
+		m_FlatVertexTriangles = new VertexTriangle[m_TriangleCount];
+		m_SmoothVertexTriangles = new VertexTriangle[m_TriangleCount];
+
 		m_Indices = new uint32_t[m_TriangleCount * 3];
 
-		VertexTriangle* vertexTrianglePtr = m_VertexTriangles;
+		VertexTriangle* vertexTrianglePtr = m_FlatVertexTriangles;
 		uint32_t* indexPtr = m_Indices;
 
 		file.close();
@@ -325,7 +328,13 @@ namespace Atlas {
 			}
 		}
 
-		if (!hasVertexNormals) CalculateNormals();
+		//TODO: import normals
+		//if (!hasVertexNormals) CalculateNormals();
+
+		for (uint32_t i = 0; i < m_TriangleCount; i++) m_SmoothVertexTriangles[i] = m_FlatVertexTriangles[i];
+
+		CalculateNormals(m_FlatVertexTriangles, false);
+		CalculateNormals(m_SmoothVertexTriangles, true);
 
 		Ref<VertexBuffer> vertexBuffer = VertexBuffer::Create(m_TriangleCount * 3 * sizeof(Vertex));
 		vertexBuffer->SetLayout({
@@ -333,7 +342,7 @@ namespace Atlas {
 				{ ShaderDataType::Float3, "a_Normal" },
 				{ ShaderDataType::Float2, "a_TextureCoord" },
 			});
-		vertexBuffer->SetData(m_VertexTriangles, m_TriangleCount * 3 * sizeof(Vertex));
+		vertexBuffer->SetData(m_SmoothShading ? m_SmoothVertexTriangles : m_FlatVertexTriangles, m_TriangleCount * 3 * sizeof(Vertex));
 
 		Ref<IndexBuffer> indexBuffer = IndexBuffer::Create(m_TriangleCount * 3 * sizeof(uint32_t));
 
@@ -345,13 +354,13 @@ namespace Atlas {
 
 	void Mesh::Invalidate()
 	{
-		m_VertexArray->GetVertexBuffer()->SetData(m_VertexTriangles, m_TriangleCount * 3 * sizeof(Vertex));
+		m_VertexArray->GetVertexBuffer()->SetData(m_SmoothShading ? m_SmoothVertexTriangles : m_FlatVertexTriangles, m_TriangleCount * 3 * sizeof(Vertex));
 		m_VertexArray->GetIndexBuffer()->SetData(m_Indices, sizeof(uint32_t), m_TriangleCount * 3);
 	}
 
 
 
-	void Mesh::CalculateNormals()
+	void Mesh::CalculateNormals(VertexTriangle* vertexTriangles, bool shading)
 	{
 		ATL_PROFILE_FUNCTION();
 
@@ -360,7 +369,7 @@ namespace Atlas {
 
 		for (uint32_t i = 0; i < m_TriangleCount; i++)
 		{
-			VertexTriangle& tri = m_VertexTriangles[i];
+			VertexTriangle& tri = vertexTriangles[i];
 
 			Vertex& v0 = tri.Vertices[0];
 			Vertex& v1 = tri.Vertices[1];
@@ -371,7 +380,7 @@ namespace Atlas {
 
 			glm::vec3 normal = glm::normalize(glm::cross(vec1, vec2));
 
-			if (!m_SmoothShading)
+			if (!shading)
 			{
 				v0.Normal = normal;
 				v1.Normal = normal;
@@ -389,11 +398,11 @@ namespace Atlas {
 			}
 		}
 
-		if (m_SmoothShading)
+		if (shading)
 		{
 			for (uint32_t i = 0; i < m_TriangleCount; i++)
 			{
-				VertexTriangle& tri = m_VertexTriangles[i];
+				VertexTriangle& tri = vertexTriangles[i];
 
 				Vertex& v0 = tri.Vertices[0];
 				Vertex& v1 = tri.Vertices[1];
@@ -408,7 +417,8 @@ namespace Atlas {
 
 	void Mesh::RecalculateNormals()
 	{
-		CalculateNormals();
+		CalculateNormals(m_FlatVertexTriangles, false);
+		CalculateNormals(m_SmoothVertexTriangles, true);
 		Invalidate();
 	}
 
@@ -417,7 +427,6 @@ namespace Atlas {
 		if (smooth != m_SmoothShading)
 		{
 			m_SmoothShading = smooth;
-			CalculateNormals();
 			Invalidate();
 		}
 	}

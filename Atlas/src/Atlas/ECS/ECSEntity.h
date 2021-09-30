@@ -7,7 +7,7 @@
 namespace ECS {
 	using Entity = uint32_t;
 	constexpr Entity null = -1;
-	constexpr Entity MAX_ENTITIES = 5000;
+	constexpr Entity MAX_ENTITIES = 1000;
 
 	using ComponentType = uint8_t;
 	constexpr ComponentType MAX_COMPONENTS = 32;

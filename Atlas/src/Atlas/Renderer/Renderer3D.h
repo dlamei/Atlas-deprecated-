@@ -16,8 +16,8 @@ namespace Atlas {
 		static void Shutdown();
 
 		static void DrawScene(const Ref<Scene> scene);
-		static void Flush(const Mesh& mesh);
-
+		static void DrawLightDepthMap(Ref<Scene> scene, const glm::mat4& viewProjection);
+		static void Flush(const Ref<VertexArray>& vertexArray, uint32_t triangleCount);
 		static void DrawOutline(const Ref<Mesh>& mesh, const glm::mat4& viewProjMat, const glm::vec4& color, float thickness);
 
 	};

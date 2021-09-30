@@ -29,6 +29,19 @@ namespace Atlas {
 		return nullptr;
 	}
 
+
+	Ref<CubeMapTexture> CubeMapTexture::Create(std::initializer_list<std::string> paths)
+	{
+		switch (Renderer::GetAPI())
+		{
+			case RendererAPI::API::None:	ATL_CORE_ASSERT(false, "RendererAPI is not supported!"); return nullptr;
+			case RendererAPI::API::OpenGL:	return CreateRef<OpenGLCubeMapTexture>(paths);
+		}
+
+		ATL_CORE_ASSERT(false, "Unknown RendererAPI!");
+		return nullptr;
+	}
+
 }
 	//Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height, uint32_t id);
 	//{

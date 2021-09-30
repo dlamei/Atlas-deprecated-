@@ -6,6 +6,16 @@
 
 namespace Atlas {
 
+	namespace Utils {
+
+		enum class ShaderType
+		{
+			FRAGMENT = 0,
+			VERTEX,
+			GEOMETRY
+		};
+	}
+
 	class Shader
 	{
 	public:

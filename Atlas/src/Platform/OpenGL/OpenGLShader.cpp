@@ -10,10 +10,25 @@
 
 namespace Atlas {
 
+	GLenum AtlToOpenGLShaderType(Utils::ShaderType shadertype)
+	{
+		switch(shadertype)
+		{
+		case Utils::ShaderType::FRAGMENT: return GL_FRAGMENT_SHADER;
+		case Utils::ShaderType::VERTEX: return GL_VERTEX_SHADER;
+		case Utils::ShaderType::GEOMETRY: return GL_GEOMETRY_SHADER;
+		}
+
+		ATL_CORE_WARN("unknown shader type");
+
+		return GL_FRAGMENT_SHADER;
+	}
+
 	static GLenum ShaderTypeFromString(const std::string& type)
 	{
 		if (type == "vertex") return GL_VERTEX_SHADER;
 		if (type == "fragment" || type == "pixel") return GL_FRAGMENT_SHADER;
+		if (type == "geometry") return GL_GEOMETRY_SHADER;
 
 		ATL_CORE_ASSERT(false, "Unknown shader type!");
 		return 0;
@@ -23,6 +38,7 @@ namespace Atlas {
 	{
 		if (type == GL_VERTEX_SHADER) return "vertex";
 		if (type == GL_FRAGMENT_SHADER) return "fragment";
+		if (type == GL_GEOMETRY_SHADER) return "geometry";
 		return "unknown";
 	}
 
@@ -37,7 +53,6 @@ namespace Atlas {
 		std::filesystem::path path = filepath;
 		m_Name = path.stem().string();
 	}
-
 
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 		: m_Name(name)

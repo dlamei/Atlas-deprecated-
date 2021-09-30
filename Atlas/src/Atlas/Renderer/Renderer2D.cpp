@@ -39,7 +39,7 @@ namespace Atlas {
 		Ref<Shader> ActiveShader;
 
 		Ref<Shader> FlatShader;
-		Ref<Shader> ScreenShader;
+		Ref<Shader> PostProcessingShader;
 		Ref<Texture2D> WhiteTexture;
 
 		uint32_t IndexCount = 0;
@@ -105,7 +105,7 @@ namespace Atlas {
 		s_Data.FlatShader = Atlas::Shader::Create("assets/Shaders/2DShader.glsl");
 		s_Data.FlatShader->Bind();
 
-		s_Data.ScreenShader = Atlas::Shader::Create("assets/Shaders/Screen.glsl");
+		s_Data.PostProcessingShader = Atlas::Shader::Create("assets/Shaders/PostProcessing.glsl");
 
 		int32_t samplers[s_Data.MaxTextureSlots];
 		for (int32_t i = 0; i < s_Data.MaxTextureSlots; i++)
@@ -431,7 +431,7 @@ namespace Atlas {
 		RenderCommand::SetViewport(0, 0, width, height);
 		glm::mat4 camera = glm::ortho(-1, 1, -1, 1);
 
-		s_Data.ScreenShader->Bind();
+		s_Data.PostProcessingShader->Bind();
 		s_Data.QuadVertexArray->BindAll();
 
 		RenderCommand::Bind2DTexture(id);

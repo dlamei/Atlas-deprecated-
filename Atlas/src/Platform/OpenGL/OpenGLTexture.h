@@ -23,7 +23,7 @@ namespace Atlas {
 
 		virtual inline uint32_t GetWidth() const override { return m_Width; }
 		virtual inline uint32_t GetHeight() const override { return m_Height; }
-		
+
 		virtual void SetData(void* data, uint32_t size) override;
 
 		virtual void Bind(uint32_t slot) const override;
@@ -35,6 +35,34 @@ namespace Atlas {
 		{
 			return m_RendererID == ((OpenGLTexture2D&)other).m_RendererID;
 		}
+	};
+
+	class OpenGLCubeMapTexture : public CubeMapTexture
+	{
+	private:
+		uint32_t m_Width, m_Height;
+		uint32_t m_RendererID;
+
+		std::vector<std::string> m_Paths;
+
+	public:
+
+		OpenGLCubeMapTexture(std::initializer_list<std::string> paths);
+
+		uint32_t GetRendererID() override { return m_RendererID; }
+		virtual inline uint32_t GetWidth() const override { return m_Width; }
+		virtual inline uint32_t GetHeight() const override { return m_Height; }
+
+		virtual void Bind(uint32_t slot) const override;
+		virtual void Unbind(uint32_t slot) const override;
+
+		virtual void SetData(void* data, uint32_t size) override {};
+
+		virtual bool operator==(const Texture& other) const override
+		{
+			return m_RendererID == ((OpenGLCubeMapTexture&)other).m_RendererID;
+		}
+
 	};
 
 }

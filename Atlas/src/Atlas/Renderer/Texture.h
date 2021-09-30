@@ -18,6 +18,8 @@ namespace Atlas {
 		virtual void Bind(uint32_t slot = 0) const = 0;
 		virtual void Unbind(uint32_t slot = 0) const = 0;
 
+		virtual uint32_t GetRendererID() = 0;
+
 		virtual bool operator==(const Texture& other) const = 0;
 	};
 
@@ -26,6 +28,13 @@ namespace Atlas {
 	public:
 		static Ref<Texture2D> Create(uint32_t width, uint32_t height);
 		static Ref<Texture2D> Create(const std::string& path, bool flipped = true);
+
+	};
+
+	class CubeMapTexture : public Texture
+	{
+	public:
+		static Ref<CubeMapTexture> Create(std::initializer_list<std::string> paths);
 
 		virtual uint32_t GetRendererID() = 0;
 	};

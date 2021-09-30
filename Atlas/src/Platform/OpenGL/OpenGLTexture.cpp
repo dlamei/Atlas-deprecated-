@@ -114,4 +114,46 @@ namespace Atlas {
 		ATL_PROFILE_FUNCTION();
 		glBindTextureUnit(slot, 0);
 	}
+
+	OpenGLCubeMapTexture::OpenGLCubeMapTexture(std::initializer_list<std::string> paths)
+		: m_Paths(paths)
+	{
+		glGenTextures(1, &m_RendererID);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
+
+		int width, height, nrChannels;
+		for (unsigned int i = 0; i < m_Paths.size(); i++)
+		{
+			unsigned char* data = stbi_load(m_Paths[i].c_str(), &width, &height, &nrChannels, 0);
+			if (data)
+			{
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+				stbi_image_free(data);
+			}
+			else
+			{
+				ATL_CORE_WARN("Cubemap Texture failed to load at path: {0}", m_Paths[i]);
+				stbi_image_free(data);
+			}
+		}
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	}
+
+	void OpenGLCubeMapTexture::Bind(uint32_t slot) const
+	{
+		ATL_PROFILE_FUNCTION();
+		//glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
+		glBindTextureUnit(GL_TEXTURE_CUBE_MAP, m_RendererID);
+	}
+
+	void OpenGLCubeMapTexture::Unbind(uint32_t slot) const
+	{
+		ATL_PROFILE_FUNCTION();
+		//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		glBindTextureUnit(GL_TEXTURE_CUBE_MAP, 0);
+	}
 }

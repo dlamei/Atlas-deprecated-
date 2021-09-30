@@ -57,10 +57,5 @@ void Sandbox3D::OnImGuiRender()
 void Sandbox3D::OnEvent(Event& e)
 {
 	//Application::GetActiveScene()->GetActiveCamera().OnEvent(e);
-	if (e.GetEventType() == EventType::EntitySelected)
-	{
-		auto& entitySelected = (EntitySelectedEvent&)e;
-		ATL_TRACE(entitySelected.GetEntity());
-	}
 
 }

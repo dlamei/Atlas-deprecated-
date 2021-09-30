@@ -19,6 +19,8 @@ namespace Atlas {
 	{
 	private:
 		Ref<FrameBuffer> m_ViewportFrameBuffer;
+		Ref<FrameBuffer> m_DirLightFrameBuffer;
+		Ref<FrameBuffer> m_PostProcessingFrameBuffer;
 		Ref<Scene> m_ActiveScene;
 		bool m_ShowEditor = true;
 
@@ -27,7 +29,7 @@ namespace Atlas {
 		glm::vec2 m_ViewportSize = { 1.0f, 1.0f };
 		glm::vec2 m_ViewportBounds[2];
 		float m_GlobalFontScale = 1.8f;
-		float m_OutlineThickness = 0.025f;
+		float m_OutlineThickness = 0.08f;
 
 		ECS::Entity m_HoveredEntity = ECS::null;
 		ECS::Entity m_SelectedEntity = ECS::null;
