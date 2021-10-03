@@ -9,15 +9,19 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+//TEMP:
 #include "CubeMap.h"
-
-//TEMP
-#include <glad/glad.h>
 
 
 namespace Atlas {
 
 	static uint32_t MAX_POINT_LIGHTS = 128;
+
+	struct LightVertex
+	{
+		glm::vec3 Position;
+		int ID;
+	};
 
 	struct Renderer3DData
 	{
@@ -28,7 +32,6 @@ namespace Atlas {
 		Ref<Shader>	DirLightDepthShader;
 		Ref<Shader> NormalShader;
 		Ref<Shader> LightShader;
-		Ref<Shader> LightIDShader;
 
 		Ref<CubeMapTexture> SkyTexture;
 		Ref<Texture2D> LightTexture;
@@ -73,7 +76,6 @@ namespace Atlas {
 		s_Data.DirLightDepthShader = Shader::Create("assets/Shaders/DirLightDepthMap.glsl");
 		s_Data.NormalShader = Shader::Create("assets/Shaders/NormalShader.glsl");
 		s_Data.LightShader = Shader::Create("assets/Shaders/LightShader.glsl");
-		s_Data.LightIDShader = Shader::Create("assets/Shaders/LightID.glsl");
 		s_Data.MaterialShader->Bind();
 
 		s_Data.SkyTexture = CubeMapTexture::Create({
@@ -202,64 +204,41 @@ namespace Atlas {
 
 	}
 
-	struct LightVertex
-	{
-		glm::vec3 Position;
-		int ID;
-	};
 
 	void Renderer3D::DrawLights(const Ref<Scene> scene)
 	{
 		std::vector<LightVertex> lightPositions;
 		std::vector<uint32_t> lightIndices;
 
+		ECS::Entity selection = scene->GetSelectedEntity();
+
 		for (auto& entity : scene->GetComponentGroup<PointLightComponent>())
 		{
-			PointLightComponent* light = entity.Component;
-			lightPositions.push_back({ light->Position, (int) entity.EntityHandle });
-			
+			if (entity.EntityHandle != selection)
+			{
+				PointLightComponent* light = entity.Component;
+				lightPositions.push_back({ light->Position, (int)entity.EntityHandle });
+			}
+
 		}
 
 		for (uint32_t i = 0; i < lightPositions.size(); i++) lightIndices.push_back(i);
+
+		s_Data.LightShader->Bind();
+		s_Data.LightTexture->Bind();
+		s_Data.LightShader->SetMat4("u_ViewMatrix", scene->getCamera().GetViewMatrix());
+		s_Data.LightShader->SetMat4("u_ProjectionMatrix", scene->getCamera().GetProjectionMatrix());
+		s_Data.LightShader->SetFloat3("u_ViewPosition", scene->getCamera().GetPosition());
+		s_Data.LightShader->SetFloat4("u_TextureColor", { 1.0, 1.0, 1.0, 1.0 });
 
 		if (lightPositions.size() != 0)
 		{
 			s_Data.LightVertexArray->GetVertexBuffer()->SetData(&lightPositions[0], lightPositions.size() * sizeof(LightVertex));
 			s_Data.LightVertexArray->GetIndexBuffer()->SetData(&lightIndices[0], lightPositions.size() * sizeof(uint32_t));
-
-			s_Data.LightShader->Bind();
-			s_Data.LightShader->SetMat4("u_ViewMatrix", scene->getCamera().GetViewMatrix());
-			s_Data.LightShader->SetMat4("u_ProjectionMatrix", scene->getCamera().GetProjectionMatrix());
-			s_Data.LightShader->SetFloat3("u_ViewPosition", scene->getCamera().GetPosition());
-			s_Data.LightShader->SetFloat4("u_TextureColor", { 1.0, 1.0, 1.0, 1.0 });
-			s_Data.LightTexture->Bind();
-
 			s_Data.LightVertexArray->BindAll();
 
 			RenderCommand::DrawPoints(s_Data.LightVertexArray, lightIndices.size());
-
-			//s_Data.LightIDShader->Bind();
-			//s_Data.LightIDShader->SetMat4("u_ViewMatrix", scene->getCamera().GetViewMatrix());
-			//s_Data.LightIDShader->SetMat4("u_ProjectionMatrix", scene->getCamera().GetProjectionMatrix());
-			//s_Data.LightIDShader->SetFloat3("u_ViewPosition", scene->getCamera().GetPosition());
-
-			//RenderCommand::DrawPoints(s_Data.LightVertexArray, 12 * 3);
 		}
-
-
-		//if (scene->HasComponent<PointLightComponent>(scene->GetSelectedEntity()))
-		//{
-		//	auto& light = scene->GetComponent<PointLightComponent>(scene->GetSelectedEntity());
-
-		//	std::pair<glm::vec3, int> positions = { light.Position, scene->GetSelectedEntity() };
-		//	uint32_t indices[1] = { 0 };
-
-		//	s_Data.LightVertexArray->GetVertexBuffer()->SetData(&positions, (sizeof(std::pair<glm::vec3, int>)));
-		//	s_Data.LightVertexArray->GetIndexBuffer()->SetData(&indices[0], sizeof(uint32_t));
-		//	s_Data.LightShader->Bind();
-		//	s_Data.LightShader->SetFloat4("u_TextureColor", {1.0, 0.0, 0.0, 1.0});
-		//}
-
 	}
 
 	void Renderer3D::DrawLightDepthMap(Ref<Scene> scene, const glm::mat4& viewProjection)
@@ -274,24 +253,52 @@ namespace Atlas {
 		}
 	}
 
-	void Renderer3D::DrawOutline(const Ref<Mesh>& mesh, const glm::mat4& viewProjMat, const glm::vec4& color, float thickness)
+	void Renderer3D::DrawOutline(const Ref<Scene> scene, const glm::vec4& color, float thickness)
 	{
-		s_Data.OutlineShader->Bind();
-		s_Data.OutlineShader->SetFloat4("u_OutlineColor", color);
-		s_Data.OutlineShader->SetFloat("u_Thickness", thickness);
-		s_Data.OutlineShader->SetMat4("u_ViewProjection", viewProjMat);
-		s_Data.OutlineShader->SetMat4("u_TransformMatrix", mesh->GetTransformMatrix());
+		ECS::Entity selection = scene->GetSelectedEntity();
+		if (selection == ECS::null) return;
 
-		RenderCommand::SetStencilFunc(Utils::Operation::NOTEQUAL, 1, 0xFF);
-		RenderCommand::SetStencilMask(0x00);
+		if (scene->HasComponent<MeshComponent>(selection))
+		{
+			auto& mesh = scene->GetComponent<MeshComponent>(selection);
+			s_Data.OutlineShader->Bind();
+			s_Data.OutlineShader->SetFloat4("u_OutlineColor", color);
+			s_Data.OutlineShader->SetFloat("u_Thickness", thickness);
+			s_Data.OutlineShader->SetMat4("u_ViewProjection", scene->getCamera().GetViewProjectionMatrix());
+			s_Data.OutlineShader->SetMat4("u_TransformMatrix", mesh.Mesh->GetTransformMatrix());
 
-		bool shading = mesh->GetShading();
-		mesh->SetShading(true);
-		Flush(mesh->GetVertexArray(), mesh->GetTriangleCount());
-		mesh->SetShading(shading);
+			RenderCommand::SetStencilFunc(Utils::Operation::NOTEQUAL, 1, 0xFF);
+			RenderCommand::SetStencilMask(0x00);
 
-		RenderCommand::SetStencilFunc(Utils::Operation::ALLWAYS, 1, 0xFF);
-		RenderCommand::SetStencilMask(0xFF);
+			bool shading = mesh.Mesh->GetShading();
+			mesh.Mesh->SetShading(true);
+			Flush(mesh.Mesh->GetVertexArray(), mesh.Mesh->GetTriangleCount());
+			mesh.Mesh->SetShading(shading);
+
+			RenderCommand::SetStencilFunc(Utils::Operation::ALLWAYS, 1, 0xFF);
+			RenderCommand::SetStencilMask(0xFF);
+		}
+
+		if (scene->HasComponent<PointLightComponent>(selection))
+		{
+			auto& light = scene->GetComponent<PointLightComponent>(selection);
+
+			LightVertex vertex = { light.Position, selection };
+			uint32_t index = 0;
+
+			s_Data.LightVertexArray->GetVertexBuffer()->SetData(&vertex, sizeof(LightVertex));
+			s_Data.LightVertexArray->GetIndexBuffer()->SetData(&index, sizeof(uint32_t));
+			s_Data.LightVertexArray->BindAll();
+
+			s_Data.LightShader->Bind();
+			s_Data.LightTexture->Bind();
+			s_Data.LightShader->SetMat4("u_ViewMatrix", scene->getCamera().GetViewMatrix());
+			s_Data.LightShader->SetMat4("u_ProjectionMatrix", scene->getCamera().GetProjectionMatrix());
+			s_Data.LightShader->SetFloat3("u_ViewPosition", scene->getCamera().GetPosition());
+
+			s_Data.LightShader->SetFloat4("u_TextureColor", { 1.0, 0.0, 0.0, 1.0 });
+			RenderCommand::DrawPoints(s_Data.LightVertexArray, 1);
+		}
 
 		s_Data.MaterialShader->Bind();
 	}

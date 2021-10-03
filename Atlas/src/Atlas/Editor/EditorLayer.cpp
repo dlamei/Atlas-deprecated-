@@ -132,15 +132,7 @@ namespace Atlas {
 		//TODO: seperate every shader into own function call
 
 		Renderer3D::DrawScene(m_ActiveScene);
-		if (m_SceneHierarchy.GetSelectedEntity() != ECS::null)
-		{
-			if (m_ActiveScene->HasComponent<MeshComponent>(m_SceneHierarchy.GetSelectedEntity()))
-			{
-				auto& mesh = m_ActiveScene->GetComponent<MeshComponent>(m_SceneHierarchy.GetSelectedEntity());
-				Renderer3D::DrawOutline(mesh, m_ActiveScene->getCamera().GetViewProjectionMatrix(), {ATL_RED_COL.x, ATL_RED_COL.y, ATL_RED_COL.z, 1.0f}, m_OutlineThickness);
-			}
-		}
-
+		Renderer3D::DrawOutline(m_ActiveScene, {ATL_RED_COL.x, ATL_RED_COL.y, ATL_RED_COL.z, 1.0f}, m_OutlineThickness);
 		Renderer3D::DrawLights(m_ActiveScene);
 
 		//TODO: find a better fix

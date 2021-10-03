@@ -63,7 +63,7 @@ in vec2 gs_TexCoord;
 flat in int gs_ID;
 
 uniform sampler2D u_LightTexture;
-uniform vec4 u_TextureColor = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec4 u_TextureColor;
 
 void main()
 {
