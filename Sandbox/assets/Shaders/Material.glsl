@@ -130,26 +130,26 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 void main()
 {
 	color2 = u_ID;
-	vec3 I = normalize(FragPosition - u_ViewPosition);
-    vec3 R = reflect(I, normalize(Normal));
-    color = vec4(texture(u_SkyBoxTexture, R).rgb, 1.0);
+	//vec3 I = normalize(FragPosition - u_ViewPosition);
+    //vec3 R = reflect(I, normalize(Normal));
+    //color = vec4(texture(u_SkyBoxTexture, R).rgb, 1.0);
 
 	//TODO: optimization
-	//vec3 viewDirection = normalize(u_ViewPosition - v_FragPosition);
+	vec3 viewDirection = normalize(u_ViewPosition - FragPosition);
 
-	//vec3 result = vec3(0.0);
+	vec3 result = vec3(0.0);
 
-	//for (int i = 0; i < u_DirLightCount; i++)
-	//{
-	//	result += CalcDirLight(dirLights[i], v_Normal, viewDirection);
-	//}
+	for (int i = 0; i < u_DirLightCount; i++)
+	{
+		result += CalcDirLight(dirLights[i], Normal, viewDirection);
+	}
 
-	//for (int i = 0; i < u_PointLightCount; i++)
-	//{
-	//	result += CalcPointLight(pointLights[i], v_Normal, v_FragPosition, viewDirection);
-	//}
+	for (int i = 0; i < u_PointLightCount; i++)
+	{
+		result += CalcPointLight(pointLights[i], Normal, FragPosition, viewDirection);
+	}
 
-	//color = vec4(result, 1.0);
+	color = vec4(result, 1.0);
 }
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)

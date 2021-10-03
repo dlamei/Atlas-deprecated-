@@ -19,7 +19,7 @@ void Sandbox3D::OnAttach()
 
 	scene->SetActiveCamera(PerspectiveCameraController(1.0f));
 
-	scene->LoadMesh("assets/Models/Hand.obj");
+	//scene->LoadMesh("assets/Models/Dragon.obj");
 	Mesh& mesh = scene->LoadMesh("assets/Models/Box.obj");
 	mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Diffuse.png"), Utils::TextureType::DIFFUSE);
 	mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);

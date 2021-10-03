@@ -55,6 +55,7 @@ namespace Atlas {
 
 		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, const uint32_t indexCount) = 0;
 		virtual void DrawIndexedWireframe(const Ref<VertexArray>& verteyArray, const uint32_t indexCount) = 0;
+		virtual void DrawPoints(const Ref<VertexArray>& vertexArray, const uint32_t indexCount) = 0;
 
 		virtual void Bind2DTexture(uint32_t id) = 0;
 

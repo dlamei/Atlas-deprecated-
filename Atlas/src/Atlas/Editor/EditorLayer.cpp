@@ -91,6 +91,9 @@ namespace Atlas {
 	{
 		ATL_PROFILE_FUNCTION();
 
+		ImGui::Begin("Image Inspector");
+		ImGui::Image((void*)(size_t)m_DirLightFrameBuffer->GetDepthAttachmentRendererID(), ImVec2(800, 800));
+		ImGui::End();
 
 		ImGui::Begin("Viewport");
 		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
@@ -126,8 +129,10 @@ namespace Atlas {
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderCommand::Clear();
 		m_ViewportFrameBuffer->ClearAttachment(1, -1);
+		//TODO: seperate every shader into own function call
 
 		Renderer3D::DrawScene(m_ActiveScene);
+		Renderer3D::DrawLights(m_ActiveScene);
 		if (m_SceneHierarchy.GetSelectedEntity() != ECS::null)
 		{
 			if (m_ActiveScene->HasComponent<MeshComponent>(m_SceneHierarchy.GetSelectedEntity()))
@@ -142,8 +147,9 @@ namespace Atlas {
 		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)m_ViewportSize.x && mouseY < (int)m_ViewportSize.y)
 		{
 			int value = m_ViewportFrameBuffer->ReadPixel(1, mouseX, mouseY);
-			if (value >= 0) m_HoveredEntity = value;
+			if (value >= 0 && value < m_ActiveScene->GetEntities().size()) m_HoveredEntity = value;
 			else if (value == -1) m_HoveredEntity = ECS::null;
+			ATL_CORE_TRACE("{0}, {1}", value, m_HoveredEntity);
 		}
 
 		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsOver() && ImGui::IsWindowHovered()) 
@@ -155,7 +161,7 @@ namespace Atlas {
 		m_ViewportFrameBuffer->Unbind();
 
 		m_PostProcessingFrameBuffer->Bind();
-		Renderer2D::DrawFrameBuffer(m_ViewportFrameBuffer->GetColorAttachmentRendererID(0), m_ViewportSize.x, m_ViewportSize.y);
+		Renderer2D::DrawFrameBuffer(m_ViewportFrameBuffer->GetColorAttachmentRendererID(0), (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y, m_Gamma);
 		m_PostProcessingFrameBuffer->Unbind();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -229,11 +235,9 @@ namespace Atlas {
 
 		ImGui::Begin("Atlas Settings");
 		ImGui::DragFloat("Outline thickness", &m_OutlineThickness, 0.01f, 0.0f, 1.0f);
+		ImGui::DragFloat("Gamma", &m_Gamma, 0.01f, 0.0f, 4.0f);
 		ImGui::End();
 		
-		ImGui::Begin("Image Inspector");
-		ImGui::Image((void*)(uint32_t)m_DirLightFrameBuffer->GetDepthAttachmentRendererID(), ImVec2(800, 800));
-		ImGui::End();
 	}
 
 	void EditorLayer::OnEvent(Event& e)

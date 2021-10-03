@@ -233,6 +233,13 @@ namespace Atlas {
 			}
 			ImGui::PopItemWidth();
 
+			ImGui::Text("ID: ");
+			ImGui::SameLine();
+			char idBuffer[64]{};
+			std::to_chars(&idBuffer[0], &idBuffer[128], entity);
+			ImGui::Text(idBuffer);
+
+
 		}
 
 		DrawComponent<TransformComponent>("Transform", entity, [&](TransformComponent& component)

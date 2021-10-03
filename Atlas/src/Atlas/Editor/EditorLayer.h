@@ -29,7 +29,9 @@ namespace Atlas {
 		glm::vec2 m_ViewportSize = { 1.0f, 1.0f };
 		glm::vec2 m_ViewportBounds[2];
 		float m_GlobalFontScale = 1.8f;
+
 		float m_OutlineThickness = 0.08f;
+		float m_Gamma = 2.2f;
 
 		ECS::Entity m_HoveredEntity = ECS::null;
 		ECS::Entity m_SelectedEntity = ECS::null;

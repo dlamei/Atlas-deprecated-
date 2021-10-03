@@ -45,12 +45,13 @@ namespace ECS {
 			value_type m_Pair;
 			T* m_Ptr;
 			int m_Index = 0;
-			std::unordered_map<size_t, ECS::Entity> m_IndexEntityMap;
+			std::unordered_map<size_t, ECS::Entity>& m_IndexEntityMap;
 		public:
 
-			Iterator(T* ptr, std::unordered_map<size_t, ECS::Entity> indexEntityMap)
-				: m_Ptr(ptr), m_IndexEntityMap(indexEntityMap), m_Pair(value_type(ptr, indexEntityMap[m_Index]))
+			Iterator(T* ptr, std::unordered_map<size_t, ECS::Entity>& indexEntityMap)
+				: m_Ptr(ptr), m_IndexEntityMap(indexEntityMap) 
 			{
+				m_Pair = value_type(ptr, m_IndexEntityMap[m_Index]);
 			}
 
 			Reference operator*() { return m_Pair; }
@@ -85,7 +86,7 @@ namespace ECS {
 
 
 	public:
-		//TODO: maybe add std::vector
+		//TODO: maybe use std::vector
 		T m_ComponentArray[Size]{};
 		std::unordered_map<ECS::Entity, size_t> m_EntityIndexMap;
 		std::unordered_map<size_t, ECS::Entity> m_IndexEntityMap;

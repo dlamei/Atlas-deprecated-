@@ -17,6 +17,8 @@
 
 namespace Atlas {
 
+	static uint32_t MAX_POINT_LIGHTS = 128;
+
 	struct Renderer3DData
 	{
 		//TODO: Use shader lib
@@ -25,9 +27,13 @@ namespace Atlas {
 		Ref<Shader> CubemapShader;
 		Ref<Shader>	DirLightDepthShader;
 		Ref<Shader> NormalShader;
+		Ref<Shader> LightShader;
 
-		Ref<Texture> CubeTexture;
+		Ref<CubeMapTexture> SkyTexture;
+		Ref<Texture2D> LightTexture;
 		Ref<CubeMap> SkyCube;
+
+		Ref<VertexArray> LightVertexArray;
 	};
 
 	static Renderer3DData s_Data;
@@ -42,7 +48,7 @@ namespace Atlas {
 		s_Data.MaterialShader->SetInt("u_ID", id);
 		mesh.BindTexture(Utils::TextureType::DIFFUSE);
 		mesh.BindTexture(Utils::TextureType::SPECULAR);
-		s_Data.CubeTexture->Bind((int)Utils::TextureType::SKYBOX);
+		s_Data.SkyTexture->Bind((int)Utils::TextureType::SKYBOX);
 
 		Flush(mesh.GetVertexArray(), mesh.GetTriangleCount());
 	}
@@ -65,9 +71,10 @@ namespace Atlas {
 		s_Data.CubemapShader = Shader::Create("assets/Shaders/SkyBox.glsl");
 		s_Data.DirLightDepthShader = Shader::Create("assets/Shaders/DirLightDepthMap.glsl");
 		s_Data.NormalShader = Shader::Create("assets/Shaders/NormalShader.glsl");
+		s_Data.LightShader = Shader::Create("assets/Shaders/LightShader.glsl");
 		s_Data.MaterialShader->Bind();
 
-		s_Data.CubeTexture = CubeMapTexture::Create({
+		s_Data.SkyTexture = CubeMapTexture::Create({
 			"assets/Textures/skybox/right.jpg",
 			"assets/Textures/skybox/left.jpg",
 			"assets/Textures/skybox/top.jpg",
@@ -75,9 +82,22 @@ namespace Atlas {
 			"assets/Textures/skybox/front.jpg",
 			"assets/Textures/skybox/back.jpg"
 			});
+		s_Data.LightTexture = Texture2D::Create("assets/Textures/LightBulb.png");
 
 		s_Data.SkyCube = CreateRef<CubeMap>();
 		s_Data.SkyCube->Load();
+
+		Ref<VertexBuffer> vertexBuffer = VertexBuffer::Create(MAX_POINT_LIGHTS);
+		vertexBuffer->SetLayout({
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Int, "a_ID" }
+			});
+
+		Ref<IndexBuffer> indexBuffer = IndexBuffer::Create(MAX_POINT_LIGHTS);
+
+		s_Data.LightVertexArray = VertexArray::Create();
+		s_Data.LightVertexArray->AddVertexBuffer(vertexBuffer);
+		s_Data.LightVertexArray->SetIndexBuffer(indexBuffer);
 
 	}
 
@@ -128,8 +148,8 @@ namespace Atlas {
 
 			if (!mesh->Hide && entity.EntityHandle != scene->GetSelectedEntity())
 			{
-				uint32_t id = scene->HasComponent<IDComponent>(entity) ? scene->GetComponent<IDComponent>(entity) : -1;
-				DrawMesh(*mesh->Mesh, id);
+				//uint32_t id = scene->HasComponent<IDComponent>(entity) ? scene->GetComponent<IDComponent>(entity) : -1;
+				DrawMesh(*mesh->Mesh, entity);
 
 				if (mesh->Mesh->GetDisplayMode() == Utils::DisplayMode::NORMAL)
 				{
@@ -148,11 +168,10 @@ namespace Atlas {
 		{
 			MeshComponent& mesh = scene->GetComponent<MeshComponent>(selection);
 			RenderCommand::SetStencilMask(0xFF);
-			uint32_t id = scene->HasComponent<IDComponent>(selection) ? scene->GetComponent<IDComponent>(selection) : -1;
 
 			//TODO: find better way
 
-			DrawMesh(mesh, id);
+			DrawMesh(mesh, selection);
 
 			if (mesh.Mesh->GetDisplayMode() == Utils::DisplayMode::NORMAL)
 			{
@@ -170,7 +189,7 @@ namespace Atlas {
 		RenderCommand::Disable(Utils::Operation::STENCIL);
 		RenderCommand::SetDepthFunc(Utils::Operation::LEQUAL);
 		s_Data.CubemapShader->Bind();
-		s_Data.CubeTexture->Bind();
+		s_Data.SkyTexture->Bind();
 
 		s_Data.CubemapShader->SetMat4("u_View", glm::mat4(glm::mat3(scene->getCamera().GetViewMatrix())));
 		s_Data.CubemapShader->SetMat4("u_Projection", scene->getCamera().GetProjectionMatrix());
@@ -179,6 +198,34 @@ namespace Atlas {
 		RenderCommand::SetDepthFunc(Utils::Operation::LESS);
 		RenderCommand::Enalbe(Utils::Operation::STENCIL);
 
+	}
+
+	void Renderer3D::DrawLights(const Ref<Scene> scene)
+	{
+		std::vector<std::pair<glm::vec3, int>> lightPositions;
+		std::vector<uint32_t> lightIndices;
+
+		for (auto& entity : scene->GetComponentGroup<PointLightComponent>())
+		{
+			PointLightComponent* light = entity.Component;
+			lightPositions.push_back({ light->Position, (int) entity.EntityHandle });
+			
+		}
+
+		for (uint32_t i = 0; i < lightPositions.size(); i++) lightIndices.push_back(i);
+
+		s_Data.LightVertexArray->GetVertexBuffer()->SetData(&lightPositions[0], lightPositions.size() * (sizeof(std::pair<glm::vec3, int>)));
+		s_Data.LightVertexArray->GetIndexBuffer()->SetData(&lightIndices[0], lightPositions.size() * sizeof(uint32_t));
+
+		s_Data.LightShader->Bind(); 
+		s_Data.LightShader->SetMat4("u_ViewMatrix", scene->getCamera().GetViewMatrix());
+		s_Data.LightShader->SetMat4("u_ProjectionMatrix", scene->getCamera().GetProjectionMatrix());
+		s_Data.LightShader->SetFloat3("u_ViewPosition", scene->getCamera().GetPosition());
+		s_Data.LightTexture->Bind();
+
+		s_Data.LightVertexArray->BindAll();
+		
+		RenderCommand::DrawPoints(s_Data.SkyCube->GetVertexArray(), 12 * 3);
 	}
 
 	void Renderer3D::DrawLightDepthMap(Ref<Scene> scene, const glm::mat4& viewProjection)

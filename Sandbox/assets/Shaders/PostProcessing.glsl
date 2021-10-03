@@ -20,11 +20,11 @@ layout(location = 0) out vec4 color;
 in vec2 v_TexCoord;
 
 uniform sampler2D u_Texture;
+uniform float u_Gamma = 2.2;
 
 void main()
 {
-	float gamma = 2.2;
 	vec4 fragColor = texture(u_Texture, v_TexCoord);
-    color.rgb = pow(fragColor.rgb, vec3(1.0/gamma));
+    color.rgb = pow(fragColor.rgb, vec3(1.0/u_Gamma));
 	color.a = 1.0;
 }

@@ -425,13 +425,14 @@ namespace Atlas {
 		s_Data.Stats.TriCount++;
 	}
 
-	void Renderer2D::DrawFrameBuffer(uint32_t id, uint32_t width, uint32_t height)
+	void Renderer2D::DrawFrameBuffer(uint32_t id, uint32_t width, uint32_t height, float gamma)
 	{
 		//TEMP
 		RenderCommand::SetViewport(0, 0, width, height);
 		glm::mat4 camera = glm::ortho(-1, 1, -1, 1);
 
 		s_Data.PostProcessingShader->Bind();
+		s_Data.PostProcessingShader->SetFloat("u_Gamma", gamma);
 		s_Data.QuadVertexArray->BindAll();
 
 		RenderCommand::Bind2DTexture(id);

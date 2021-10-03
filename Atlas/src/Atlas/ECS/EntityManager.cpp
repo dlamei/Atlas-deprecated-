@@ -41,7 +41,7 @@ namespace ECS {
 
 		ECS::Signature& EntityManager::GetSignature(ECS::Entity entity)
 		{
-			ATL_CORE_ASSERT(entity < ECS::MAX_ENTITIES, "Entity out of range");
+		ATL_CORE_ASSERT(entity < ECS::MAX_ENTITIES, "Entity out of range");
 
 			return m_Signatures[entity];
 		}

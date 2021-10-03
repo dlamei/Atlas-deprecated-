@@ -19,6 +19,7 @@ void main()
 
 #version 330 core
 layout(location = 0) out vec4 color;
+layout(location = 1) out int color2;
 
 in vec3 v_TexCoords;
 
@@ -27,4 +28,5 @@ uniform samplerCube u_CubeMapTexture;
 void main()
 {    
     color = texture(u_CubeMapTexture, v_TexCoords);
+    color2 = -1;
 }

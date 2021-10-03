@@ -98,9 +98,16 @@ namespace Atlas {
 	
 	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, const uint32_t indexCount)
 	{
-		uint32_t count = indexCount ? vertexArray->GetIndexBuffer()->GetCount() : indexCount;
+		uint32_t count = indexCount;
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 	}
+
+	void OpenGLRendererAPI::DrawPoints(const Ref<VertexArray>& vertexArray, const uint32_t indexCount)
+	{
+		uint32_t count = indexCount ? vertexArray->GetIndexBuffer()->GetCount() : indexCount;
+		glDrawElements(GL_POINTS, count, GL_UNSIGNED_INT, nullptr);
+	}
+
 
 	void OpenGLRendererAPI::Bind2DTexture(uint32_t id)
 	{

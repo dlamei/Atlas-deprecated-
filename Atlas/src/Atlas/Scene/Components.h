@@ -21,16 +21,16 @@ namespace Atlas {
 		};
 	}
 
-	struct IDComponent
-	{
-		ECS::Entity ID;
+	//struct IDComponent
+	//{
+	//	ECS::Entity ID;
 
-		IDComponent() = default;
-		IDComponent(ECS::Entity id)
-			: ID(id) {}
+	//	IDComponent() = default;
+	//	IDComponent(ECS::Entity id)
+	//		: ID(id) {}
 
-		operator uint32_t() { return ID; }
-	};
+	//	operator uint32_t() { return ID; }
+	//};
 
 	struct TagComponent
 	{

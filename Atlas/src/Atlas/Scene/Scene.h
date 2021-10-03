@@ -65,7 +65,6 @@ namespace Atlas {
 
 			ECS::Entity entity = m_Register.CreateEntity();
 			m_Register.CreateComponent<TagComponent>(entity, tag ? tag : "Entity");
-			m_Register.CreateComponent<IDComponent>(entity, entity);
 			m_Entities.insert(entity);
 			return entity;
 		}
