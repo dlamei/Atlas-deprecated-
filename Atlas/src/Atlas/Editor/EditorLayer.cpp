@@ -132,7 +132,6 @@ namespace Atlas {
 		//TODO: seperate every shader into own function call
 
 		Renderer3D::DrawScene(m_ActiveScene);
-		Renderer3D::DrawLights(m_ActiveScene);
 		if (m_SceneHierarchy.GetSelectedEntity() != ECS::null)
 		{
 			if (m_ActiveScene->HasComponent<MeshComponent>(m_SceneHierarchy.GetSelectedEntity()))
@@ -142,6 +141,8 @@ namespace Atlas {
 			}
 		}
 
+		Renderer3D::DrawLights(m_ActiveScene);
+
 		//TODO: find a better fix
 		if (m_ViewportSize.x > 100 && m_ViewportSize.y > 100)
 		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)m_ViewportSize.x && mouseY < (int)m_ViewportSize.y)
@@ -149,7 +150,6 @@ namespace Atlas {
 			int value = m_ViewportFrameBuffer->ReadPixel(1, mouseX, mouseY);
 			if (value >= 0 && value < m_ActiveScene->GetEntities().size()) m_HoveredEntity = value;
 			else if (value == -1) m_HoveredEntity = ECS::null;
-			ATL_CORE_TRACE("{0}, {1}", value, m_HoveredEntity);
 		}
 
 		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsOver() && ImGui::IsWindowHovered()) 

@@ -2,7 +2,7 @@
 #version 330 core
 
 layout (location = 0) in vec3 a_Position;
-layout (location = 1) in float a_ID;
+layout (location = 1) in int a_ID;
 
 uniform mat4 u_ViewMatrix;
 
@@ -10,7 +10,7 @@ out int vs_ID;
 
 void main()
 {
-    vs_ID = int(a_ID);
+    vs_ID = a_ID;
     gl_Position = u_ViewMatrix * vec4(a_Position, 1.0); 
 }
 
@@ -26,28 +26,25 @@ uniform vec3 u_ViewPosition;
 uniform float u_Size = 0.3;
 
 in int vs_ID[];
-
-out vec2 gs_TexCoord;
 flat out int gs_ID;
 
 void main()
 {
 
-    gs_ID = vs_ID[0];
     vec4 position = gl_in[0].gl_Position;
 
     gl_Position = u_ProjectionMatrix * (position + vec4(-u_Size, -u_Size, 0, 0));
-    gs_TexCoord = vec2(0, 0);
+    gs_ID = vs_ID[0];
     EmitVertex();
     gl_Position = u_ProjectionMatrix * (position + vec4(u_Size, -u_Size, 0, 0));
-    gs_TexCoord = vec2(1, 0);
+    gs_ID = vs_ID[0];
     EmitVertex();
 
     gl_Position = u_ProjectionMatrix * (position + vec4(-u_Size, u_Size, 0, 0));
-    gs_TexCoord = vec2(0, 1);
+    gs_ID = vs_ID[0];
     EmitVertex();
     gl_Position = u_ProjectionMatrix * (position + vec4(u_Size, u_Size, 0, 0));
-    gs_TexCoord = vec2(1, 1);
+    gs_ID = vs_ID[0];
     EmitVertex();
     EndPrimitive();
 
@@ -59,14 +56,10 @@ void main()
 layout(location = 0) out vec4 color;
 layout(location = 1) out int color2;
 
-in vec2 gs_TexCoord;
 flat in int gs_ID;
-
-uniform sampler2D u_LightTexture;
-uniform vec4 u_TextureColor = vec4(1.0, 1.0, 1.0, 1.0);
 
 void main()
 {
-    color = u_TextureColor * texture(u_LightTexture, gs_TexCoord);
+    color = vec4(0, 0, 0, 0);
     color2 = gs_ID;
 }  

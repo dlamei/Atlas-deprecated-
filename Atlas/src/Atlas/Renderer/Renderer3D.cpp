@@ -28,6 +28,7 @@ namespace Atlas {
 		Ref<Shader>	DirLightDepthShader;
 		Ref<Shader> NormalShader;
 		Ref<Shader> LightShader;
+		Ref<Shader> LightIDShader;
 
 		Ref<CubeMapTexture> SkyTexture;
 		Ref<Texture2D> LightTexture;
@@ -72,6 +73,7 @@ namespace Atlas {
 		s_Data.DirLightDepthShader = Shader::Create("assets/Shaders/DirLightDepthMap.glsl");
 		s_Data.NormalShader = Shader::Create("assets/Shaders/NormalShader.glsl");
 		s_Data.LightShader = Shader::Create("assets/Shaders/LightShader.glsl");
+		s_Data.LightIDShader = Shader::Create("assets/Shaders/LightID.glsl");
 		s_Data.MaterialShader->Bind();
 
 		s_Data.SkyTexture = CubeMapTexture::Create({
@@ -90,7 +92,7 @@ namespace Atlas {
 		Ref<VertexBuffer> vertexBuffer = VertexBuffer::Create(MAX_POINT_LIGHTS);
 		vertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Int, "a_ID" }
+			{ ShaderDataType::Int, "a_ID" },
 			});
 
 		Ref<IndexBuffer> indexBuffer = IndexBuffer::Create(MAX_POINT_LIGHTS);
@@ -200,9 +202,15 @@ namespace Atlas {
 
 	}
 
+	struct LightVertex
+	{
+		glm::vec3 Position;
+		int ID;
+	};
+
 	void Renderer3D::DrawLights(const Ref<Scene> scene)
 	{
-		std::vector<std::pair<glm::vec3, int>> lightPositions;
+		std::vector<LightVertex> lightPositions;
 		std::vector<uint32_t> lightIndices;
 
 		for (auto& entity : scene->GetComponentGroup<PointLightComponent>())
@@ -214,18 +222,44 @@ namespace Atlas {
 
 		for (uint32_t i = 0; i < lightPositions.size(); i++) lightIndices.push_back(i);
 
-		s_Data.LightVertexArray->GetVertexBuffer()->SetData(&lightPositions[0], lightPositions.size() * (sizeof(std::pair<glm::vec3, int>)));
-		s_Data.LightVertexArray->GetIndexBuffer()->SetData(&lightIndices[0], lightPositions.size() * sizeof(uint32_t));
+		if (lightPositions.size() != 0)
+		{
+			s_Data.LightVertexArray->GetVertexBuffer()->SetData(&lightPositions[0], lightPositions.size() * sizeof(LightVertex));
+			s_Data.LightVertexArray->GetIndexBuffer()->SetData(&lightIndices[0], lightPositions.size() * sizeof(uint32_t));
 
-		s_Data.LightShader->Bind(); 
-		s_Data.LightShader->SetMat4("u_ViewMatrix", scene->getCamera().GetViewMatrix());
-		s_Data.LightShader->SetMat4("u_ProjectionMatrix", scene->getCamera().GetProjectionMatrix());
-		s_Data.LightShader->SetFloat3("u_ViewPosition", scene->getCamera().GetPosition());
-		s_Data.LightTexture->Bind();
+			s_Data.LightShader->Bind();
+			s_Data.LightShader->SetMat4("u_ViewMatrix", scene->getCamera().GetViewMatrix());
+			s_Data.LightShader->SetMat4("u_ProjectionMatrix", scene->getCamera().GetProjectionMatrix());
+			s_Data.LightShader->SetFloat3("u_ViewPosition", scene->getCamera().GetPosition());
+			s_Data.LightShader->SetFloat4("u_TextureColor", { 1.0, 1.0, 1.0, 1.0 });
+			s_Data.LightTexture->Bind();
 
-		s_Data.LightVertexArray->BindAll();
-		
-		RenderCommand::DrawPoints(s_Data.SkyCube->GetVertexArray(), 12 * 3);
+			s_Data.LightVertexArray->BindAll();
+
+			RenderCommand::DrawPoints(s_Data.LightVertexArray, lightIndices.size());
+
+			//s_Data.LightIDShader->Bind();
+			//s_Data.LightIDShader->SetMat4("u_ViewMatrix", scene->getCamera().GetViewMatrix());
+			//s_Data.LightIDShader->SetMat4("u_ProjectionMatrix", scene->getCamera().GetProjectionMatrix());
+			//s_Data.LightIDShader->SetFloat3("u_ViewPosition", scene->getCamera().GetPosition());
+
+			//RenderCommand::DrawPoints(s_Data.LightVertexArray, 12 * 3);
+		}
+
+
+		//if (scene->HasComponent<PointLightComponent>(scene->GetSelectedEntity()))
+		//{
+		//	auto& light = scene->GetComponent<PointLightComponent>(scene->GetSelectedEntity());
+
+		//	std::pair<glm::vec3, int> positions = { light.Position, scene->GetSelectedEntity() };
+		//	uint32_t indices[1] = { 0 };
+
+		//	s_Data.LightVertexArray->GetVertexBuffer()->SetData(&positions, (sizeof(std::pair<glm::vec3, int>)));
+		//	s_Data.LightVertexArray->GetIndexBuffer()->SetData(&indices[0], sizeof(uint32_t));
+		//	s_Data.LightShader->Bind();
+		//	s_Data.LightShader->SetFloat4("u_TextureColor", {1.0, 0.0, 0.0, 1.0});
+		//}
+
 	}
 
 	void Renderer3D::DrawLightDepthMap(Ref<Scene> scene, const glm::mat4& viewProjection)
@@ -238,14 +272,6 @@ namespace Atlas {
 			s_Data.DirLightDepthShader->SetMat4("u_ModelMat", mesh.Mesh->GetTransformMatrix());
 			Flush(mesh.Mesh->GetVertexArray(), mesh.Mesh->GetTriangleCount());
 		}
-	}
-
-	void Renderer3D::Flush(const Ref<VertexArray>& vertexArray, uint32_t triangleCount)
-	{
-		ATL_PROFILE_FUNCTION();
-		vertexArray->BindAll();
-
-		RenderCommand::DrawIndexed(vertexArray, triangleCount * 3);
 	}
 
 	void Renderer3D::DrawOutline(const Ref<Mesh>& mesh, const glm::mat4& viewProjMat, const glm::vec4& color, float thickness)
@@ -269,4 +295,13 @@ namespace Atlas {
 
 		s_Data.MaterialShader->Bind();
 	}
+
+	void Renderer3D::Flush(const Ref<VertexArray>& vertexArray, uint32_t triangleCount)
+	{
+		ATL_PROFILE_FUNCTION();
+		vertexArray->BindAll();
+
+		RenderCommand::DrawIndexed(vertexArray, triangleCount * 3);
+	}
+
 }
