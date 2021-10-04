@@ -254,7 +254,11 @@ namespace Atlas {
 		int location = glGetUniformLocation(m_RendererID, name.c_str());
 		m_UnifromLocationChache[name] = location;
 		
-		if (location == -1) ATL_CORE_WARN("{0} uniform not found!", name);
+		if (location == -1)
+		{
+			ATL_CORE_WARN("{0} uniform not found!", name);
+		}
+
 		return location;
 	}
 

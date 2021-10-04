@@ -14,7 +14,9 @@ namespace Atlas {
 		case Utils::Operation::LEQUAL: return GL_LEQUAL;
 		case Utils::Operation::STENCIL: return GL_STENCIL_TEST;
 		case Utils::Operation::DEPTH: return GL_DEPTH_TEST;
-		case Utils::Operation::CULL_FACES: return GL_DEPTH_TEST;
+		case Utils::Operation::CULL_FACES: return GL_CULL_FACE;
+		case Utils::Operation::FRONT: return GL_FRONT;
+		case Utils::Operation::BACK: return GL_BACK;
 		case Utils::Operation::KEEP: return GL_KEEP;
 		case Utils::Operation::REPLACE: return GL_REPLACE;
 		case Utils::Operation::EQUAL: return GL_EQUAL;
@@ -82,6 +84,11 @@ namespace Atlas {
 		glStencilMask(mask);
 	}
 
+	void OpenGLRendererAPI::SetCull(Utils::Operation op)
+	{
+		glCullFace(AtlToGlEnum(op));
+	}
+
 	void OpenGLRendererAPI::SetDepthFunc(Utils::Operation operation)
 	{
 		glDepthFunc(AtlToGlEnum(operation));
@@ -112,5 +119,10 @@ namespace Atlas {
 	void OpenGLRendererAPI::Bind2DTexture(uint32_t id)
 	{
 		glBindTexture(GL_TEXTURE_2D, id);
+	}
+
+	void OpenGLRendererAPI::Bind2DTexture(uint32_t id, uint32_t indx)
+	{
+		glBindTextureUnit(indx, id);
 	}
 }

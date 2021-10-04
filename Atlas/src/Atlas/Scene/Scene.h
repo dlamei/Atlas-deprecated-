@@ -8,6 +8,8 @@
 #include "Atlas/ECS/ECSRegister.h"
 #include "Components.h"
 
+#include "Atlas/Renderer/FrameBuffer.h"
+
 #include <set>
 #include <list>
 
@@ -22,6 +24,8 @@ namespace Atlas {
 		ECS::Entity m_SelectedEntity = ECS::null;
 		std::set<ECS::Entity> m_Entities;
 		std::set<ECS::Entity> m_ToRemove;
+
+		Ref<FrameBuffer> m_ShadowMap;
 
 		template<typename T>
 		void OnComponentAdded(ECS::Entity entity)
@@ -54,6 +58,8 @@ namespace Atlas {
 		void SetActiveCamera(PerspectiveCameraController& camera) { m_ActiveCamera = camera; }
 		PerspectiveCameraController& GetActiveCamera() { return m_ActiveCamera; }
 		const PerspectiveCamera& getCamera() { return m_ActiveCamera.GetCamera(); }
+
+		Ref<FrameBuffer> GetShadowMap() { return m_ShadowMap; }
 
 		void SetSelectedEntity(ECS::Entity entity) { m_SelectedEntity = entity; }
 		ECS::Entity GetSelectedEntity() { return m_SelectedEntity; }

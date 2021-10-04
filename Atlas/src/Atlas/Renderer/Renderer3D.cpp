@@ -43,15 +43,18 @@ namespace Atlas {
 	static Renderer3DData s_Data;
 
 	//TODO: material system
-	void Renderer3D::DrawMesh(Mesh& mesh, const uint32_t id)
+	void Renderer3D::DrawMesh(Mesh& mesh, const uint32_t id, const uint32_t shadowMapID, const glm::mat4& lightSpace)
 	{
 		ATL_PROFILE_FUNCTION();
 
 		s_Data.MaterialShader->SetFloat("material.Shininess", 8.0f);
 		s_Data.MaterialShader->SetMat4("u_TransformMatrix", mesh.GetTransformMatrix());
+		s_Data.MaterialShader->SetMat4("u_LightSpace", lightSpace);
 		s_Data.MaterialShader->SetInt("u_ID", id);
+
 		mesh.BindTexture(Utils::TextureType::DIFFUSE);
 		mesh.BindTexture(Utils::TextureType::SPECULAR);
+		RenderCommand::Bind2DTexture(shadowMapID, (int)Utils::TextureType::SHADOW_MAP);
 		s_Data.SkyTexture->Bind((int)Utils::TextureType::SKYBOX);
 
 		Flush(mesh.GetVertexArray(), mesh.GetTriangleCount());
@@ -110,7 +113,7 @@ namespace Atlas {
 		ATL_PROFILE_FUNCTION();
 	}
 
-	void Renderer3D::DrawScene(const Ref<Scene> scene)
+	void Renderer3D::DrawScene(const Ref<Scene> scene, const glm::mat4& lightSpace)
 	{
 		ATL_PROFILE_FUNCTION();
 
@@ -125,7 +128,9 @@ namespace Atlas {
 
 		s_Data.MaterialShader->SetInt("material.DiffuseTexture", (int)Utils::TextureType::DIFFUSE);
 		s_Data.MaterialShader->SetInt("material.SpecularTexture", (int)Utils::TextureType::SPECULAR);
-		s_Data.MaterialShader->SetInt("u_SkyCubeTexture", (int)Utils::TextureType::SKYBOX);
+		//s_Data.MaterialShader->SetInt("u_SkyBoxTexture", (int)Utils::TextureType::SKYBOX);
+		//s_Data.MaterialShader->SetInt("u_ShadowMap", (int)Utils::TextureType::SHADOW_MAP);
+		s_Data.MaterialShader->SetInt("u_ShadowMap", (int)Utils::TextureType::SHADOW_MAP);
 
 
 		int dirLightCount = 0;
@@ -153,7 +158,7 @@ namespace Atlas {
 			if (!mesh->Hide && entity.EntityHandle != scene->GetSelectedEntity())
 			{
 				//uint32_t id = scene->HasComponent<IDComponent>(entity) ? scene->GetComponent<IDComponent>(entity) : -1;
-				DrawMesh(*mesh->Mesh, entity);
+				DrawMesh(*mesh->Mesh, entity, scene->GetShadowMap()->GetDepthAttachmentRendererID(), lightSpace);
 
 				if (mesh->Mesh->GetDisplayMode() == Utils::DisplayMode::NORMAL)
 				{
@@ -175,7 +180,7 @@ namespace Atlas {
 
 			//TODO: find better way
 
-			DrawMesh(mesh, selection);
+			DrawMesh(mesh, selection, scene->GetShadowMap()->GetDepthAttachmentRendererID(), lightSpace);
 
 			if (mesh.Mesh->GetDisplayMode() == Utils::DisplayMode::NORMAL)
 			{
@@ -296,7 +301,7 @@ namespace Atlas {
 			s_Data.LightShader->SetMat4("u_ProjectionMatrix", scene->getCamera().GetProjectionMatrix());
 			s_Data.LightShader->SetFloat3("u_ViewPosition", scene->getCamera().GetPosition());
 
-			s_Data.LightShader->SetFloat4("u_TextureColor", { 1.0, 0.0, 0.0, 1.0 });
+			s_Data.LightShader->SetFloat4("u_TextureColor", color);
 			RenderCommand::DrawPoints(s_Data.LightVertexArray, 1);
 		}
 

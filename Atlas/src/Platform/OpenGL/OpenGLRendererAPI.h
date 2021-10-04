@@ -21,6 +21,8 @@ namespace Atlas {
 		virtual void SetStencilFunc(Utils::Operation operation, int ref, uint32_t mask) override;
 		virtual void SetStencilMask(uint32_t mask) override;
 
+		virtual void SetCull(Utils::Operation op) override;
+
 		virtual void SetDepthFunc(Utils::Operation operation) override;
 
 		virtual void DrawIndexedWireframe(const Ref<VertexArray>& vertexArray, const uint32_t indexCount) override;
@@ -28,6 +30,7 @@ namespace Atlas {
 		virtual void DrawPoints(const Ref<VertexArray>& vertexArray, const uint32_t indexCount) override;
 
 		virtual void Bind2DTexture(uint32_t id) override;
+		virtual void Bind2DTexture(uint32_t id, uint32_t indx) override;
 	};
 
 }

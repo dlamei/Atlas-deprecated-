@@ -20,10 +20,12 @@ namespace Atlas {
 		inline static void SetStencilFunc(Utils::Operation operation, int ref, uint32_t mask) { s_RendererAPI->SetStencilFunc(operation, ref, mask); }
 		inline static void SetStencilMask(uint32_t mask) { s_RendererAPI->SetStencilMask(mask); }
 		inline static void SetDepthFunc(Utils::Operation operation) { s_RendererAPI->SetDepthFunc(operation); }
+		inline static void SetCull(Utils::Operation op) { s_RendererAPI->SetCull(op); }
 		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray, const uint32_t indexSize = 0) { s_RendererAPI->DrawIndexed(vertexArray, indexSize); }
 		inline static void DrawPoints(const Ref<VertexArray>& vertexArray, const uint32_t indexSize = 0) { s_RendererAPI->DrawPoints(vertexArray, indexSize); }
 		inline static void DrawIndexedWireframe(const Ref<VertexArray>& vertexArray, const uint32_t indexSize = 0) { s_RendererAPI->DrawIndexedWireframe(vertexArray, indexSize); }
 		inline static void Bind2DTexture(uint32_t id) { s_RendererAPI->Bind2DTexture(id); }
+		inline static void Bind2DTexture(uint32_t id, uint32_t indx) { s_RendererAPI->Bind2DTexture(id, indx); }
 
 	};
 

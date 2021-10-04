@@ -140,7 +140,7 @@ namespace ECS {
 
 		T& GetData(ECS::Entity entity)
 		{
-		ATL_CORE_ASSERT(m_EntityIndexMap.find(entity) != m_EntityIndexMap.end(), "Retrieving non-existant component");
+			ATL_CORE_ASSERT(m_EntityIndexMap.find(entity) != m_EntityIndexMap.end(), "Retrieving non-existant component");
 			return m_ComponentArray[m_EntityIndexMap[entity]];
 		}
 

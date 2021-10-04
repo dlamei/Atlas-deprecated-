@@ -19,7 +19,6 @@ namespace Atlas {
 	{
 	private:
 		Ref<FrameBuffer> m_ViewportFrameBuffer;
-		Ref<FrameBuffer> m_DirLightFrameBuffer;
 		Ref<FrameBuffer> m_PostProcessingFrameBuffer;
 		Ref<Scene> m_ActiveScene;
 		bool m_ShowEditor = true;

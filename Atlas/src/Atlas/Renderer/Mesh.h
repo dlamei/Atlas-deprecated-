@@ -19,6 +19,7 @@ namespace Atlas {
 			DIFFUSE = 0,
 			SPECULAR,
 			NORMAL,
+			SHADOW_MAP,
 			SKYBOX //is set globally (for now)
 			
 		};

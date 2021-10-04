@@ -7,6 +7,13 @@ namespace Atlas {
 
 	Scene::Scene()
 	{
+		m_ShadowMap = FrameBuffer::Create({
+				1024,
+				1024,
+				{
+					FBTextureFormat::DEPTH24STENCIL8
+				}
+			});
 	}
 
 
@@ -25,18 +32,28 @@ namespace Atlas {
 
 	void Scene::OnUpdateEditor()
 	{
-		for (auto& entity : GetComponentGroup<TransformComponent>())
+		//for (auto& entity : GetComponentGroup<TransformComponent>())
+		if (m_SelectedEntity != ECS::null && HasComponent<TransformComponent>(m_SelectedEntity))
 		{
-			if (HasComponent<MeshComponent>(entity))
+			TransformComponent& transform = GetComponent<TransformComponent>(m_SelectedEntity);
+
+			if (HasComponent<MeshComponent>(m_SelectedEntity))
 			{
-				Mesh& mesh = GetComponent<MeshComponent>(entity);
-				mesh.SetTransfrom(entity.Component->GetTransform());
+				Mesh& mesh = GetComponent<MeshComponent>(m_SelectedEntity);
+				mesh.SetTransfrom(transform.GetTransform());
 			}
 
-			if (HasComponent<PointLightComponent>(entity))
+			if (HasComponent<PointLightComponent>(m_SelectedEntity))
 			{
-				PointLightComponent& light = GetComponent<PointLightComponent>(entity);
-				light.Position = entity.Component->Translation;
+				PointLightComponent& light = GetComponent<PointLightComponent>(m_SelectedEntity);
+				light.Position = transform.Translation;
+			}
+
+			if (HasComponent<DirLightComponent>(m_SelectedEntity))
+			{
+				DirLightComponent& light = GetComponent<DirLightComponent>(m_SelectedEntity);
+				light.Direction = transform.Rotation;
+				light.Position = transform.Translation;
 			}
 		}
 	}

@@ -51,13 +51,6 @@ namespace Atlas {
 				}
 			});
 
-		m_DirLightFrameBuffer = FrameBuffer::Create({
-				1024,
-				1024,
-				{
-					FBTextureFormat::DEPTH24STENCIL8
-				}
-			});
 
 		m_ActiveScene = CreateRef<Scene>();
 		m_SceneHierarchy.SetContext(m_ActiveScene);
@@ -92,7 +85,7 @@ namespace Atlas {
 		ATL_PROFILE_FUNCTION();
 
 		ImGui::Begin("Image Inspector");
-		ImGui::Image((void*)(size_t)m_DirLightFrameBuffer->GetDepthAttachmentRendererID(), ImVec2(800, 800));
+		ImGui::Image((void*)(size_t)m_ActiveScene->GetShadowMap()->GetDepthAttachmentRendererID(), ImVec2(800, 800), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		ImGui::End();
 
 		ImGui::Begin("Viewport");
@@ -112,17 +105,22 @@ namespace Atlas {
 
 
 		//LIGHT
-		m_DirLightFrameBuffer->Bind();
+		m_ActiveScene->GetShadowMap()->Bind();
+		RenderCommand::SetCull(Utils::Operation::FRONT);
 		RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 		RenderCommand::Clear();
+
+		glm::mat4 lightSpaceMatrix{ 0 };
 		for (DirLightComponent& light : m_ActiveScene->GetComponentGroup<DirLightComponent>())
 		{
-			glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
-			glm::mat4 lightView = glm::lookAt(light.Direction, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+			glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 100.0f);
+			glm::mat4 lightView = glm::lookAt(light.Direction + light.Position, light.Position, glm::vec3(0.0f, 1.0f, 0.0f));
+			lightSpaceMatrix = lightProjection * lightView;
 			Renderer3D::DrawLightDepthMap(m_ActiveScene, lightSpaceMatrix);
 		}
-		m_DirLightFrameBuffer->Unbind();
+
+		RenderCommand::SetCull(Utils::Operation::BACK);
+		m_ActiveScene->GetShadowMap()->Unbind();
 
 		m_ViewportFrameBuffer->Bind();
 		//TEMP
@@ -131,7 +129,7 @@ namespace Atlas {
 		m_ViewportFrameBuffer->ClearAttachment(1, -1);
 		//TODO: seperate every shader into own function call
 
-		Renderer3D::DrawScene(m_ActiveScene);
+		Renderer3D::DrawScene(m_ActiveScene, lightSpaceMatrix);
 		Renderer3D::DrawOutline(m_ActiveScene, {ATL_RED_COL.x, ATL_RED_COL.y, ATL_RED_COL.z, 1.0f}, m_OutlineThickness);
 		Renderer3D::DrawLights(m_ActiveScene);
 
@@ -140,7 +138,7 @@ namespace Atlas {
 		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)m_ViewportSize.x && mouseY < (int)m_ViewportSize.y)
 		{
 			int value = m_ViewportFrameBuffer->ReadPixel(1, mouseX, mouseY);
-			if (value >= 0 && value < m_ActiveScene->GetEntities().size()) m_HoveredEntity = value;
+			if (value >= 0) m_HoveredEntity = value;
 			else if (value == -1) m_HoveredEntity = ECS::null;
 		}
 
@@ -189,10 +187,46 @@ namespace Atlas {
 			{
 
 				TransformComponent& component = m_ActiveScene->GetComponent<TransformComponent>(m_SelectedEntity);
-				glm::mat4 transform = component.GetTransform();
+				//glm::mat4 transform = component.GetTransform();
+				glm::mat4 transform;
+
+				switch (component.TransformOperation)
+				{
+					case Utils::Transform::TRANSLATE:
+						transform = glm::translate(glm::mat4(1.0f), component.Translation);
+						break;
+					case Utils::Transform::ROTATE:
+						transform = glm::translate(glm::mat4(1.0f), component.Translation) * glm::toMat4(glm::quat(component.Rotation));
+						break;
+					case Utils::Transform::SCALE:
+						transform = glm::translate(glm::mat4(1.0f), component.Translation) * glm::toMat4(glm::quat(component.Rotation)) * glm::scale(glm::mat4(1.0f), component.Scale);
+						break;
+
+					default:
+						transform = glm::mat4(1.0f);
+				}
+
+				//glm::mat4 transform = glm::translate(glm::mat4(1.0f), component.Translation) * glm::scale(glm::mat4(1.0f), component.Scale);
 				ImGuizmo::Manipulate(glm::value_ptr(camera.GetView()), glm::value_ptr(camera.GetProjection()), AtlOpToImGuizmoOp(component.TransformOperation), ImGuizmo::LOCAL, glm::value_ptr(transform));
 
-				if (ImGuizmo::IsUsing()) Math::DecomposeTransform(transform, component.Translation, component.Rotation, component.Scale);
+				if (ImGuizmo::IsUsing())
+				{
+					glm::vec3 translation, rotation, scale;
+					Math::DecomposeTransform(transform, translation, rotation, scale);
+
+					switch (component.TransformOperation)
+					{
+					case Utils::Transform::TRANSLATE:
+						component.Translation = translation;
+						break;
+					case Utils::Transform::ROTATE:
+						component.Rotation = rotation;
+						break;
+					case Utils::Transform::SCALE:
+						component.Scale = scale;
+						break;
+					}
+				}
 
 				if (ImGui::IsKeyPressed('1'))
 				{
@@ -207,15 +241,15 @@ namespace Atlas {
 					component.TransformOperation = Utils::Transform::SCALE;
 				}
 			}
-			else if (m_ActiveScene->HasComponent<DirLightComponent>(m_SelectedEntity))
-			{
-				DirLightComponent& component = m_ActiveScene->GetComponent<DirLightComponent>(m_SelectedEntity);
-				glm::mat4 transform = glm::toMat4(glm::quat(component.Direction));
-				ImGuizmo::Manipulate(glm::value_ptr(camera.GetView()), glm::value_ptr(camera.GetProjection()), ImGuizmo::ROTATE, ImGuizmo::WORLD, glm::value_ptr(transform));
+			//else if (m_ActiveScene->HasComponent<DirLightComponent>(m_SelectedEntity))
+			//{
+			//	DirLightComponent& component = m_ActiveScene->GetComponent<DirLightComponent>(m_SelectedEntity);
+			//	glm::mat4 transform = glm::toMat4(glm::quat(component.Direction));
+			//	ImGuizmo::Manipulate(glm::value_ptr(camera.GetView()), glm::value_ptr(camera.GetProjection()), ImGuizmo::ROTATE, ImGuizmo::WORLD, glm::value_ptr(transform));
 
-				glm::vec3 tmp;
-				if (ImGuizmo::IsUsing()) { Math::DecomposeTransform(transform, tmp, component.Direction, tmp); }
-			}
+			//	glm::vec3 tmp;
+			//	if (ImGuizmo::IsUsing()) { Math::DecomposeTransform(transform, tmp, component.Direction, tmp); }
+			//}
 		}
 
 		m_SceneHierarchy.OnImGuiRender();

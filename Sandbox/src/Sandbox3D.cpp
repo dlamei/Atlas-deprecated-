@@ -11,7 +11,7 @@
 using namespace Atlas;
 
 Sandbox3D::Sandbox3D()
-	: Layer("Sandbox2D"), m_CameraController(1.0f) {}
+	: Layer("Sandbox2D") {}
 
 void Sandbox3D::OnAttach()
 {
@@ -19,7 +19,8 @@ void Sandbox3D::OnAttach()
 
 	scene->SetActiveCamera(PerspectiveCameraController(1.0f));
 
-	//scene->LoadMesh("assets/Models/Dragon.obj");
+	scene->LoadMesh("assets/Models/Dragon.obj");
+	scene->LoadMesh("assets/Models/Box.obj");
 	Mesh& mesh = scene->LoadMesh("assets/Models/Box.obj");
 	mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Diffuse.png"), Utils::TextureType::DIFFUSE);
 	mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);
@@ -34,6 +35,7 @@ void Sandbox3D::OnAttach()
 	
 	ECS::Entity dirLight = scene->CreateEntity("Dir Light");
 	scene->CreateComponent<DirLightComponent>(dirLight);
+	scene->CreateComponent<TransformComponent>(dirLight, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 1.0f, -4.0f), glm::vec3(1, 1, 1));
 }
 
 void Sandbox3D::OnDetach()
@@ -43,10 +45,6 @@ void Sandbox3D::OnDetach()
 void Sandbox3D::OnUpdate(Timestep ts)
 {
 	ATL_PROFILE_FUNCTION();
-
-	//Application::GetActiveScene()->GetActiveCamera().OnUpdate(ts);
-
-	//Renderer3D::DrawScene(Application::GetActiveScene());
 }
 
 void Sandbox3D::OnImGuiRender()
@@ -56,6 +54,4 @@ void Sandbox3D::OnImGuiRender()
 
 void Sandbox3D::OnEvent(Event& e)
 {
-	//Application::GetActiveScene()->GetActiveCamera().OnEvent(e);
-
 }

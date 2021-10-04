@@ -20,6 +20,8 @@ namespace Atlas {
 			DEPTH,
 
 			CULL_FACES,
+			FRONT,
+			BACK,
 
 			KEEP,
 			REPLACE
@@ -51,6 +53,8 @@ namespace Atlas {
 		virtual void SetStencilFunc(Utils::Operation operation, int ref, uint32_t mask) = 0;
 		virtual void SetStencilMask(uint32_t mask) = 0;
 
+		virtual void SetCull(Utils::Operation op) = 0;
+
 		virtual void SetDepthFunc(Utils::Operation operation) = 0;
 
 		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, const uint32_t indexCount) = 0;
@@ -58,6 +62,7 @@ namespace Atlas {
 		virtual void DrawPoints(const Ref<VertexArray>& vertexArray, const uint32_t indexCount) = 0;
 
 		virtual void Bind2DTexture(uint32_t id) = 0;
+		virtual void Bind2DTexture(uint32_t id, uint32_t indx) = 0;
 
 		inline static API GetAPI() { return s_API; }
 		

@@ -7,18 +7,19 @@ layout (location = 2) in vec2 a_TexCoord;
 
 uniform mat4 u_ViewProjection;
 uniform mat4 u_TransformMatrix;
+uniform mat4 u_LightSpace;
 
 out VS_OUT
 {
 	vec3 FragPosition;
 	vec3 Normal;
 	vec2 TexCoord;
+	vec4 LightSpacePosition;
 } vsOut;
 
 void main()
 {
 	vec4 position = u_TransformMatrix * vec4(a_Position, 1.0);
-	gl_Position =  u_ViewProjection * position;
 
 	vec4 normal = normalize(transpose(inverse(u_TransformMatrix)) * vec4(a_Normal, 1.0));
 
@@ -28,40 +29,42 @@ void main()
 	vsOut.FragPosition = vec3(position);
 	vsOut.Normal = vec3(normal);
 	vsOut.TexCoord = a_TexCoord;
+	vsOut.LightSpacePosition = u_LightSpace * position;
+	gl_Position =  u_ViewProjection * position;
 }
 
-#type geometry
-#version 330 core
-
-layout(triangles) in;
-layout(triangle_strip, max_vertices = 3) out;
-
-in VS_OUT
-{
-	vec3 FragPosition;
-	vec3 Normal;
-	vec2 TexCoord;
-} gsIn[];
-
-out GS_OUT
-{
-	vec3 FragPosition;
-	vec3 Normal;
-	vec2 TexCoord;
-} gsOut;
-
-void main() {
-  for(int i = 0; i < 3; i++) 
-  { 
-    gl_Position = gl_in[i].gl_Position;
-	gsOut.FragPosition = gsIn[i].FragPosition;
-	gsOut.Normal = gsIn[i].Normal;
-	gsOut.TexCoord = gsIn[i].TexCoord;
-    EmitVertex();
-  }
-
-  EndPrimitive();
-}
+//type geometry
+//#version 330 core
+//
+//layout(triangles) in;
+//layout(triangle_strip, max_vertices = 3) out;
+//
+//in VS_OUT
+//{
+//	vec3 FragPosition;
+//	vec3 Normal;
+//	vec2 TexCoord;
+//} gsIn[];
+//
+//out GS_OUT
+//{
+//	vec3 FragPosition;
+//	vec3 Normal;
+//	vec2 TexCoord;
+//} gsOut;
+//
+//void main() {
+//  for(int i = 0; i < 3; i++) 
+//  { 
+//    gl_Position = gl_in[i].gl_Position;
+//	gsOut.FragPosition = gsIn[i].FragPosition;
+//	gsOut.Normal = gsIn[i].Normal;
+//	gsOut.TexCoord = gsIn[i].TexCoord;
+//    EmitVertex();
+//  }
+//
+//  EndPrimitive();
+//}
 
 #type fragment
 #version 330 core
@@ -69,11 +72,12 @@ void main() {
 layout(location = 0) out vec4 color;
 layout(location = 1) out int color2;
 
-in GS_OUT
+in VS_OUT
 {
 	vec3 FragPosition;
 	vec3 Normal;
 	vec2 TexCoord;
+	vec4 LightSpacePosition;
 };
 
 struct Material 
@@ -122,10 +126,12 @@ uniform int u_DirLightCount;
 
 uniform int u_ID = -1;
 
-uniform samplerCube u_SkyBoxTexture;
+//uniform samplerCube u_SkyBoxTexture;
+uniform sampler2D u_ShadowMap;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
+float ShadowCalculation(vec4 fragPosLightSpace, float bias);
 
 void main()
 {
@@ -150,19 +156,48 @@ void main()
 	}
 
 	color = vec4(result, 1.0);
+
+}
+
+float ShadowCalculation(vec4 lightSpacePos, float bias)
+{
+	vec3 projection = lightSpacePos.xyz / lightSpacePos.w;
+	projection = projection * 0.5 + 0.5;
+
+	float closestDepth = texture(u_ShadowMap, projection.xy).r;   
+	float currentDepth = projection.z;
+
+	//float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;  
+	float shadow = 0.0;
+	vec2 texelSize = 1.0 / textureSize(u_ShadowMap, 0);
+	for(int x = -1; x <= 1; ++x)
+	{
+	    for(int y = -1; y <= 1; ++y)
+	    {
+	        float pcfDepth = texture(u_ShadowMap, projection.xy + vec2(x, y) * texelSize).r; 
+	        shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;        
+	    }    
+	}
+	shadow /= 9.0;
+	return shadow;
 }
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 {
-    vec3 lightDir = normalize(-light.Direction);
-    float diff = max(dot(normal, lightDir), 0.0);
+    vec3 lightDir = normalize(light.Direction);
+    float diff = max(dot(lightDir, normal), 0.0);
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.Shininess);
 
     vec3 ambient  = light.Ambient  * vec3(texture(material.DiffuseTexture, TexCoord));
     vec3 diffuse  = light.Diffuse  * diff * vec3(texture(material.DiffuseTexture, TexCoord));
     vec3 specular = light.Specular * spec * vec3(texture(material.SpecularTexture, TexCoord));
-    return (ambient + diffuse + specular);
+
+	//float bias = max(0.05 * (1.0 - dot(Normal, lightDir)), 0.005);
+	float shadow = (1 - ShadowCalculation(LightSpacePosition, 0.005));
+
+    //return ((shadow / 2 + 0.5 ) * ambient + shadow * (diffuse + specular));
+    return  (ambient + shadow * (diffuse + specular));
 } 
 
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPosition, vec3 viewDirection)

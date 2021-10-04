@@ -21,17 +21,6 @@ namespace Atlas {
 		};
 	}
 
-	//struct IDComponent
-	//{
-	//	ECS::Entity ID;
-
-	//	IDComponent() = default;
-	//	IDComponent(ECS::Entity id)
-	//		: ID(id) {}
-
-	//	operator uint32_t() { return ID; }
-	//};
-
 	struct TagComponent
 	{
 		std::string Tag;
@@ -61,12 +50,14 @@ namespace Atlas {
 
 	struct TransformComponent
 	{
-		Utils::Transform TransformOperation = Utils::Transform::TRANSLATE;
 		glm::vec3 Translation = glm::vec3(0.0f);
 		glm::vec3 Rotation = glm::vec3(0.0f);
 		glm::vec3 Scale = glm::vec3(1.0f);
+		Utils::Transform TransformOperation = Utils::Transform::TRANSLATE;
 
 		TransformComponent() = default;
+		TransformComponent(const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale)
+			: Translation(translation), Rotation(rotation), Scale(scale) {}
 
 		glm::mat4 GetTransform() const
 		{
@@ -102,7 +93,9 @@ namespace Atlas {
 
 	struct DirLightComponent
 	{
-		glm::vec3 Direction = { 1.0, 0.0, 0.0 };
+		glm::vec3 Direction = { -2.0f, 1.0f, -4.0f };
+		glm::vec3 Position = { 3.0f, 3.0f, 3.0f };
+
 		glm::vec3 Ambient = glm::vec3(0.2f);
 		glm::vec3 Diffuse = glm::vec3(0.5f);
 		glm::vec3 Specular = glm::vec3(1.0f);
