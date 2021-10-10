@@ -11,7 +11,7 @@
 using namespace Atlas;
 
 Sandbox3D::Sandbox3D()
-	: Layer("Sandbox2D") {}
+	: Layer("Sandbox3D") {}
 
 void Sandbox3D::OnAttach()
 {
@@ -25,9 +25,9 @@ void Sandbox3D::OnAttach()
 	mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Diffuse.png"), Utils::TextureType::DIFFUSE);
 	mesh.AddTexture(Texture2D::Create("assets/Textures/Box_Specular.png"), Utils::TextureType::SPECULAR);
 
-	//Mesh& mesh = scene->LoadMesh("assets/Models/Backpack.obj");
-	//mesh.AddTexture(Texture2D::Create("assets/Textures/Backpack_Diffuse.jpg", false), Utils::TextureType::DIFFUSE);
-	//mesh.AddTexture(Texture2D::Create("assets/Textures/Backpack_Specular.jpg", false), Utils::TextureType::SPECULAR);
+	//Mesh& backpack = scene->LoadMesh("assets/Models/Backpack.obj");
+	//backpack.AddTexture(Texture2D::Create("assets/Textures/Backpack_Diffuse.jpg", false), Utils::TextureType::DIFFUSE);
+	//backpack.AddTexture(Texture2D::Create("assets/Textures/Backpack_Specular.jpg", false), Utils::TextureType::SPECULAR);
 
 	ECS::Entity lightEntity = scene->CreateEntity("Point light");
 	scene->CreateComponent<PointLightComponent>(lightEntity);

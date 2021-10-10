@@ -10,6 +10,7 @@
 #include <glm/glm.hpp>
 
 #include "SceneHierarchy.h"
+#include "Editor.h"
 #include "AtlasLog.h"
 
 
@@ -23,6 +24,7 @@ namespace Atlas {
 		Ref<Scene> m_ActiveScene;
 		bool m_ShowEditor = true;
 
+		Ref<Editor> m_Editor;
 		SceneHierarchy m_SceneHierarchy;
 
 		glm::vec2 m_ViewportSize = { 1.0f, 1.0f };
@@ -53,7 +55,7 @@ namespace Atlas {
 
 		inline Ref<FrameBuffer>& GetFrameBuffer() { return m_ViewportFrameBuffer; }
 		inline Ref<Scene>& GetActiveScene() { return m_ActiveScene; }
-		inline glm::vec2& GetViewportSize() { return m_ViewportSize; }
+		inline glm::vec2& GetViewportSize() { return m_Editor->GetViewportSize(); }
 
 		void BindViewportFrameBuffer();
 		void UnbindViewportFrameBuffer();

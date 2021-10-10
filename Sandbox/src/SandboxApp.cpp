@@ -7,6 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Sandbox3D.h"
+#include "Sandbox2D.h"
 
 //TODO: Stats for 3D
 

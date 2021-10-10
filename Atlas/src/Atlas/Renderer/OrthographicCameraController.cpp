@@ -3,6 +3,8 @@
 #include "Atlas/Core/Input.h"
 #include "Atlas/Core/KeyCodes.h"
 
+#include "Atlas/Core/Application.h"
+
 namespace Atlas {
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e)
 	{
@@ -67,6 +69,14 @@ namespace Atlas {
 		m_Camera.SetPosition(m_CameraPosition);
 
 		m_CameraTranslationSpeed = m_ZoomLevel * 2;
+
+		glm::vec2& viewportSize = Application::GetViewportSize();
+		float aspecRatio = viewportSize.x / viewportSize.y;
+		if (aspecRatio != m_AspectRatio)
+		{
+			m_AspectRatio = aspecRatio;
+			m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+		}
 	}
 
 	void OrthographicCameraController::OnEvent(Event& e)

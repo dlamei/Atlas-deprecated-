@@ -11,7 +11,8 @@ namespace Atlas {
 		ATL_PROFILE_FUNCTION();
 
 		int width, height, channels;
-		if (flipped) stbi_set_flip_vertically_on_load(1);
+		stbi_set_flip_vertically_on_load(flipped);
+
 		stbi_uc* data = nullptr;
 
 		{ 

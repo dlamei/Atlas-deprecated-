@@ -5,12 +5,11 @@
 
 #include "VertexArray.h"
 #include "Shader.h"
+#include "Atlas/Core/Application.h"
 
 #include "OrthographicCamera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
-
-#include <glad/glad.h>
 
 namespace Atlas {
 
@@ -24,7 +23,7 @@ namespace Atlas {
 
 	struct Renderer2DData
 	{
-		static const uint32_t MaxQuads = 10000;
+		static const uint32_t MaxQuads = 30000;
 		static const uint32_t MaxVertices = MaxQuads * 4;
 		static const uint32_t MaxIndices = MaxQuads * 6;
 		static const uint32_t MaxTextureSlots = 32;
@@ -135,6 +134,8 @@ namespace Atlas {
 	{
 		ATL_PROFILE_FUNCTION();
 		//TODO
+		//Application::GetViewportFrameBuffer()->Bind();
+
 		s_Data.TriVertexArray->BindAll();
 
 		s_Data.ActiveShader = s_Data.FlatShader;
@@ -174,6 +175,8 @@ namespace Atlas {
 	void Renderer2D::EndScene()
 	{
 		ATL_PROFILE_FUNCTION();
+
+		//Application::GetViewportFrameBuffer()->Unbind();
 
 		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.VertexBufferPtr - (uint8_t*)s_Data.VertexBufferBase);
 		s_Data.VertexBuffer->SetData(s_Data.VertexBufferBase, dataSize);
