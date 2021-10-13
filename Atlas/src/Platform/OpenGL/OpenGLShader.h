@@ -26,6 +26,7 @@ namespace Atlas {
 	public:
 		OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 		OpenGLShader(const std::string& filepath);
+		OpenGLShader(const std::string& name, const std::string& filepath);
 
 		virtual ~OpenGLShader();
 

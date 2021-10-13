@@ -17,29 +17,27 @@ void Sandbox2D::OnDetach()
 
 void Sandbox2D::OnUpdate(Atlas::Timestep ts)
 {
-	Ref<FrameBuffer> fb = Application::GetViewportFrameBuffer();
 	m_Controller.OnUpdate(ts);
-
-	fb->Bind();
-
-	RenderCommand::SetClearColor({ 0.3f, 0.3f, 0.3f, 1.0f });
-	RenderCommand::Clear();
 
 	uint32_t size = 100;
 
 	Renderer2D::BeginScene(m_Controller.GetCamera());
 
-	for (int i = 0; i < size; i++)
+
+	RenderCommand::SetClearColor({ 0.3f, 0.3f, 0.3f, 1.0f });
+	RenderCommand::Clear();
+
+	for (uint32_t i = 0; i < size; i++)
 	{
-		for (int j = 0; j < size; j++)
+		for (uint32_t j = 0; j < size; j++)
 		{
-			Renderer2D::DrawRect({ i, j }, { 0.8, 0.8 }, { (float) i / 255.0f, (float) j / 255.0f, 0.0f, 1.0f });
+			Renderer2D::DrawRect({ i, j }, { 0.8, 0.8 }, { (float) i / size, (float) j / size, 0.0f, 1.0f });
 		}
 	}
 
 	Renderer2D::EndScene();
 
-	fb->Unbind();
+	//fb->Unbind();
 }
 
 void Sandbox2D::OnImGuiRender()

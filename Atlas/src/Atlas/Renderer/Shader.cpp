@@ -22,6 +22,18 @@ namespace Atlas {
 		return nullptr;
 	}
 
+	Ref<Shader> Shader::Create(const std::string& name, const std::string& src)
+	{
+		switch (Renderer::GetAPI())
+		{
+			case RendererAPI::API::None:	ATL_CORE_ASSERT(false, "RendererAPI is not supported!"); return nullptr;
+			case RendererAPI::API::OpenGL:	return std::make_shared<OpenGLShader>(name, src);
+		}
+
+		ATL_CORE_ASSERT(false, "Unknown RendererAPI!")
+		return nullptr;
+	}
+
 	Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 	{
 		switch (Renderer::GetAPI())

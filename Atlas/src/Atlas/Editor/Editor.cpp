@@ -244,6 +244,12 @@ namespace Atlas
 
 	void Editor2D::Render()
 	{
+
+		m_PostProcessingFrameBuffer->Bind();
+		Renderer2D::DrawFrameBuffer(m_ViewportFrameBuffer->GetColorAttachmentRendererID(0), (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y, 2.2f);
+		m_PostProcessingFrameBuffer->Unbind();
+
+
 		ImGui::Begin("Viewport");
 		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
 		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
@@ -253,7 +259,7 @@ namespace Atlas
 		m_ViewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Image((void*)(size_t)m_ViewportFrameBuffer->GetColorAttachmentRendererID(0), { m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+		ImGui::Image((void*)(size_t)m_PostProcessingFrameBuffer->GetColorAttachmentRendererID(0), { m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		ImGui::PopStyleVar();
 
 		ImGui::End();
@@ -287,8 +293,9 @@ namespace Atlas
 
 		Renderer2D::ResetStats();
 
-
 		ImGui::End();
+
+		Log::GetAtlasLogger().Draw("Atlas Log");
 	}
 
 	void Editor2D::OnUpdate(Timestep ts)

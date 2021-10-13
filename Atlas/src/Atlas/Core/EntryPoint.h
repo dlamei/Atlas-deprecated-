@@ -1,9 +1,5 @@
 ﻿#pragma once
 
-#ifdef ATL_PLATFORM_WINDOWS
-
-
-
 extern Atlas::Application* Atlas::CreateApplication();
 
 int main(int argc, char** argv)
@@ -23,5 +19,3 @@ int main(int argc, char** argv)
 	delete app;
 	ATL_PROFILE_END_SESSION();
 }
-
-#endif

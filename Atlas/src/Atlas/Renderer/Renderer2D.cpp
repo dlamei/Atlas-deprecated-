@@ -5,11 +5,12 @@
 
 #include "VertexArray.h"
 #include "Shader.h"
+#include "DefaultShaders.h"
+
 #include "Atlas/Core/Application.h"
-
 #include "OrthographicCamera.h"
-
 #include <glm/gtc/matrix_transform.hpp>
+
 
 namespace Atlas {
 
@@ -35,7 +36,7 @@ namespace Atlas {
 		Ref<IndexBuffer> IndexBuffer;
 		Ref<VertexArray> QuadVertexArray;
 
-		Ref<Shader> ActiveShader;
+		//Ref<Shader> ActiveShader;
 
 		Ref<Shader> FlatShader;
 		Ref<Shader> PostProcessingShader;
@@ -101,10 +102,13 @@ namespace Atlas {
 		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 
-		s_Data.FlatShader = Atlas::Shader::Create("assets/Shaders/2DShader.glsl");
+		//s_Data.FlatShader = Atlas::Shader::Create("assets/Shaders/2DShader.glsl");
+		s_Data.FlatShader = Atlas::Shader::Create("FlatShader", DefaultShaders::FlatShader);
 		s_Data.FlatShader->Bind();
 
-		s_Data.PostProcessingShader = Atlas::Shader::Create("assets/Shaders/PostProcessing.glsl");
+		//s_Data.PostProcessingShader = Atlas::Shader::Create("assets/Shaders/PostProcessing.glsl");
+		s_Data.PostProcessingShader = Atlas::Shader::Create("PostProcessingShader", DefaultShaders::PostProcessingShader);
+
 
 		int32_t samplers[s_Data.MaxTextureSlots];
 		for (int32_t i = 0; i < s_Data.MaxTextureSlots; i++)
@@ -116,7 +120,7 @@ namespace Atlas {
 		s_Data.TriVertexArray->AddVertexBuffer(s_Data.VertexBuffer);
 		s_Data.TriVertexArray->SetIndexBuffer(s_Data.IndexBuffer);
 
-		s_Data.ActiveShader = s_Data.FlatShader;
+		//s_Data.ActiveShader = s_Data.FlatShader;
 	}
 
 	void Renderer2D::Shutdown()
@@ -134,11 +138,11 @@ namespace Atlas {
 	{
 		ATL_PROFILE_FUNCTION();
 		//TODO
-		//Application::GetViewportFrameBuffer()->Bind();
+		Application::GetViewportFrameBuffer()->Bind();
 
 		s_Data.TriVertexArray->BindAll();
 
-		s_Data.ActiveShader = s_Data.FlatShader;
+		//s_Data.ActiveShader = s_Data.FlatShader;
 		s_Data.FlatShader->Bind();
 		s_Data.FlatShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 
@@ -151,32 +155,30 @@ namespace Atlas {
 		s_Data.TextureSlotIndex = 1;
 	}
 
-	void Renderer2D::SetFlatShader()
-	{
-		if (s_Data.ActiveShader != s_Data.FlatShader)
-		{
-			s_Data.ActiveShader = s_Data.FlatShader;
-			s_Data.FlatShader->Bind();
-			FlushReset();
-		}
-	}
+	//void Renderer2D::SetFlatShader()
+	//{
+	//	//if (s_Data.ActiveShader != s_Data.FlatShader)
+	//	//{
+	//	//	s_Data.ActiveShader = s_Data.FlatShader;
+	//	//	s_Data.FlatShader->Bind();
+	//	//	FlushReset();
+	//	//}
+	//}
 
-	void Renderer2D::SetShader(const Ref<Shader>& shader)
-	{
-		if (s_Data.ActiveShader != shader)
-		{
-			s_Data.ActiveShader = shader;
-			shader->Bind();
-			FlushReset();
-		}
-	}
+	//void Renderer2D::SetShader(const Ref<Shader>& shader)
+	//{
+	//	//if (s_Data.ActiveShader != shader)
+	//	//{
+	//	//	s_Data.ActiveShader = shader;
+	//	//	shader->Bind();
+	//	//	FlushReset();
+	//	//}
+	//}
 
 	//TODO: what if nothing is drawn
 	void Renderer2D::EndScene()
 	{
 		ATL_PROFILE_FUNCTION();
-
-		//Application::GetViewportFrameBuffer()->Unbind();
 
 		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.VertexBufferPtr - (uint8_t*)s_Data.VertexBufferBase);
 		s_Data.VertexBuffer->SetData(s_Data.VertexBufferBase, dataSize);
@@ -185,6 +187,8 @@ namespace Atlas {
 		s_Data.IndexBuffer->SetData(s_Data.IndexBufferBase, dataSize);
 
 		Flush();
+
+		Application::GetViewportFrameBuffer()->Unbind();
 	}
 
 	void Renderer2D::Flush()

@@ -55,8 +55,8 @@ namespace Atlas {
 		m_ActiveScene = CreateRef<Scene>();
 		m_SceneHierarchy.SetContext(m_ActiveScene);
 
-		m_Editor = CreateRef<Editor3D>(m_ViewportFrameBuffer, m_PostProcessingFrameBuffer, m_ActiveScene);
-		//m_Editor = CreateRef<Editor2D>(m_ViewportFrameBuffer, m_PostProcessingFrameBuffer);
+		if (Application::GetEditorType() == EditorType::ATLAS3D) m_Editor = CreateRef<Editor3D>(m_ViewportFrameBuffer, m_PostProcessingFrameBuffer, m_ActiveScene);
+		else m_Editor = CreateRef<Editor2D>(m_ViewportFrameBuffer, m_PostProcessingFrameBuffer);
 
 	}
 

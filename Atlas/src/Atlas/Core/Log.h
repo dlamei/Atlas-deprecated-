@@ -74,7 +74,7 @@ namespace Atlas {
 
 }
 
-//#define ATL_WINDOW_APP
+#define ATL_WINDOW_APP
 #ifdef ATL_WINDOW_APP
 // Core log
 #define ATL_CORE_TRACE(...)		::Atlas::Log::AtlasLog(true, ::Atlas::Utils::LogLevel::ATL_TRACE, __VA_ARGS__);

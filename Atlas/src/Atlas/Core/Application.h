@@ -17,15 +17,17 @@
 
 namespace Atlas {
 
-
 	class Application
 	{
 
 	public:
+
 		struct AppProps
 		{
-			int m_Width, m_Height;
 			std::string m_Title;
+			int m_Width, m_Height;
+			EditorType type = EditorType::ATLAS2D;
+
 		};
 
 
@@ -34,6 +36,7 @@ namespace Atlas {
 		ImGuiLayer* m_ImGuiLayer;
 		EditorLayer* m_EditorLayer;
 		
+		EditorType m_EditorType = EditorType::ATLAS2D;
 
 		bool m_Running = true;
 		bool m_Minimized = false;
@@ -52,7 +55,7 @@ namespace Atlas {
 
 		Application();
 		Application(AppProps props);
-		Application(std::string title, uint32_t width, uint32_t height);
+		Application(std::string title, uint32_t width, uint32_t height, EditorType type);
 		virtual ~Application();
 
 		void Run();
@@ -71,6 +74,8 @@ namespace Atlas {
 		static glm::vec2& GetViewportSize() { return s_Instance->m_EditorLayer->GetViewportSize(); }
 		static Ref<FrameBuffer>& GetViewportFrameBuffer() { return s_Instance->m_EditorLayer->GetFrameBuffer(); }
 		static void ToggleEditor(bool toggle) { s_Instance->m_EditorLayer->ToggleEditor(toggle); }
+
+		static EditorType GetEditorType() { return s_Instance->m_EditorType; }
 
 		static const Window::EventCallbackFn& GetEventCallback() { return s_Instance->m_Window->GetEventCallback(); }
 		//TEMP

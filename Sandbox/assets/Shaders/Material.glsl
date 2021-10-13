@@ -23,9 +23,6 @@ void main()
 
 	vec4 normal = normalize(transpose(inverse(u_TransformMatrix)) * vec4(a_Normal, 1.0));
 
-	//v_FragPosition = vec3(position);
-	//v_Normal = vec3(normal);
-	//v_TexCoord = a_TexCoord;
 	vsOut.FragPosition = vec3(position);
 	vsOut.Normal = vec3(normal);
 	vsOut.TexCoord = a_TexCoord;
@@ -33,38 +30,6 @@ void main()
 	gl_Position =  u_ViewProjection * position;
 }
 
-//type geometry
-//#version 330 core
-//
-//layout(triangles) in;
-//layout(triangle_strip, max_vertices = 3) out;
-//
-//in VS_OUT
-//{
-//	vec3 FragPosition;
-//	vec3 Normal;
-//	vec2 TexCoord;
-//} gsIn[];
-//
-//out GS_OUT
-//{
-//	vec3 FragPosition;
-//	vec3 Normal;
-//	vec2 TexCoord;
-//} gsOut;
-//
-//void main() {
-//  for(int i = 0; i < 3; i++) 
-//  { 
-//    gl_Position = gl_in[i].gl_Position;
-//	gsOut.FragPosition = gsIn[i].FragPosition;
-//	gsOut.Normal = gsIn[i].Normal;
-//	gsOut.TexCoord = gsIn[i].TexCoord;
-//    EmitVertex();
-//  }
-//
-//  EndPrimitive();
-//}
 
 #type fragment
 #version 330 core

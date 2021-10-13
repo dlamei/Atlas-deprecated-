@@ -54,6 +54,13 @@ namespace Atlas {
 		m_Name = path.stem().string();
 	}
 
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& src)
+		: m_Name(name)
+	{
+		auto shaderSources = PreProcess(src);
+		Compile(shaderSources);
+	}
+
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 		: m_Name(name)
 	{

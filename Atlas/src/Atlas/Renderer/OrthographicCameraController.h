@@ -22,7 +22,6 @@ namespace Atlas {
 		OrthographicCamera m_Camera;
 
 		bool OnMouseScrolled(MouseScrolledEvent& e);
-		bool OnWindowResized(WindowResizeEvent& e);
 
 	public:
 		OrthographicCameraController(float aspectRatio, bool roation = false);

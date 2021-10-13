@@ -16,12 +16,15 @@ namespace Atlas {
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application(Application::AppProps props)
-		: Application(props.m_Title, props.m_Width, props.m_Height) {}
+		: Application(props.m_Title, props.m_Width, props.m_Height, props.type) 
+	{
+	}
 
 	Application::Application()
-		: Application("Atlas Engine", 1200, 1200) {}
+		: Application("Atlas Engine", 1200, 1200, EditorType::ATLAS2D) {}
 
-	Application::Application(std::string title, uint32_t width, uint32_t height)
+	Application::Application(std::string title, uint32_t width, uint32_t height, EditorType type)
+		: m_EditorType(type)
 	{
 		ATL_PROFILE_FUNCTION();
 
@@ -31,7 +34,7 @@ namespace Atlas {
 		m_Window = std::unique_ptr<Window>(Window::Create({ title, width, height }));
 		m_Window->SetEventCallback(ATL_BIND_EVENT_FN(Application::OnEvent));
 
-		Renderer::Init();
+		Renderer::Init(m_EditorType);
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);

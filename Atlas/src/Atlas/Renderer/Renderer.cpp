@@ -8,15 +8,17 @@
 
 
 namespace Atlas {
+
 	Renderer::SceneData* Renderer::s_SceneData = new Renderer::SceneData();
 
-	void Renderer::Init()
+	void Renderer::Init(EditorType type)
 	{
 		ATL_PROFILE_FUNCTION();
 
 		RenderCommand::Init();
+
 		Renderer2D::Init();
-		Renderer3D::Init();
+		if (type == EditorType::ATLAS3D) Renderer3D::Init();
 	}
 
 	void Renderer::OnWindowResize(uint32_t width, uint32_t height)

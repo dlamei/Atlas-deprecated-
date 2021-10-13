@@ -1,10 +1,8 @@
 #pragma once
 
-#include "RenderCommand.h"
-
 #include "OrthographicCamera.h"
-
-#include "Shader.h"
+#include "Atlas/Editor/Editor.h"
+#include "Atlas/Renderer/RenderCommand.h"
 
 namespace Atlas {
 
@@ -19,7 +17,7 @@ namespace Atlas {
 		static SceneData* s_SceneData;
 
 	public:
-		static void Init();
+		static void Init(EditorType type);
 		static void OnWindowResize(uint32_t width, uint32_t height);
 
 		static void BeginScene(OrthographicCamera& camera);

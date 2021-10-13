@@ -39,6 +39,7 @@ namespace Atlas {
 
 		static Ref<Shader> Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 		static Ref<Shader> Create(const std::string& filepath);
+		static Ref<Shader> Create(const std::string& name, const std::string& src);
 
 		virtual bool operator==(const Shader& other) const = 0;
 		virtual bool operator!=(const Shader& other) const = 0;
@@ -57,7 +58,27 @@ namespace Atlas {
 		Ref<Shader> Load(const std::string& name, const std::string& filepath);
 		Ref<Shader> Get(const std::string& name);
 		bool Exists(const std::string& name);
+	};
 
+	class ShaderManager
+	{
+	private:
+		static const Ref<Shader>& m_ActiveShader;
+
+	public:
+		static void BindShader(const Ref<Shader>& shader)
+		{
+			if (*m_ActiveShader != *shader)
+			{
+				*m_ActiveShader = *shader;
+				m_ActiveShader->Bind();
+			}
+		}
+
+		static const Ref<Shader>& GetActiveShader()
+		{
+			return m_ActiveShader;
+		}
 	};
 
 

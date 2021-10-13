@@ -15,10 +15,10 @@ class Sandbox : public Atlas::Application
 {
 public:
 	Sandbox()
-		: Application("Atlas Engine", 2100, 1200)
+		: Application(AppProps({ "Atlas Engine", 2100, 1200, Atlas::EditorType::ATLAS2D }))
 	{
-		PushLayer(new Sandbox3D());
-		Atlas::Application::GetWindow().SetVSync(false);
+		PushLayer(new Sandbox2D());
+		Atlas::Application::GetWindow().SetVSync(true);
 	}
 
 	~Sandbox()

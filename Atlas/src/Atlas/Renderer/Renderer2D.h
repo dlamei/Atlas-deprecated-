@@ -20,8 +20,8 @@ namespace Atlas {
 		static void EndScene();
 		static void Flush();
 
-		static void SetFlatShader();
-		static void SetShader(const Ref<Shader>& shader);
+		//static void SetFlatShader();
+		//static void SetShader(const Ref<Shader>& shader);
 
 		static void SetFill(const glm::vec3& color);
 		static void SetFill(const glm::vec4& color);

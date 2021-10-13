@@ -5,6 +5,7 @@
 
 #include "VertexArray.h"
 #include "Shader.h"
+#include "DefaultShaders.h"
 #include "Mesh.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -29,7 +30,7 @@ namespace Atlas {
 		Ref<Shader> MaterialShader;
 		Ref<Shader> OutlineShader;
 		Ref<Shader> CubemapShader;
-		Ref<Shader>	DirLightDepthShader;
+		Ref<Shader>	DepthPass;
 		Ref<Shader> NormalShader;
 		Ref<Shader> LightShader;
 
@@ -73,12 +74,12 @@ namespace Atlas {
 			RenderCommand::SetStencilOp(Operation::KEEP, Operation::KEEP, Operation::REPLACE);
 		}
 
-		s_Data.MaterialShader = Shader::Create("assets/Shaders/Material.glsl");
-		s_Data.OutlineShader = Shader::Create("assets/Shaders/Outline.glsl");
-		s_Data.CubemapShader = Shader::Create("assets/Shaders/SkyBox.glsl");
-		s_Data.DirLightDepthShader = Shader::Create("assets/Shaders/DirLightDepthMap.glsl");
-		s_Data.NormalShader = Shader::Create("assets/Shaders/NormalShader.glsl");
-		s_Data.LightShader = Shader::Create("assets/Shaders/LightShader.glsl");
+		s_Data.MaterialShader = Shader::Create("MaterialShader", DefaultShaders::MaterialShader);
+		s_Data.OutlineShader = Shader::Create("OutlineShader", DefaultShaders::OutlineShader);
+		s_Data.CubemapShader = Shader::Create("CubemapShader", DefaultShaders::SkyBoxShader);
+		s_Data.DepthPass = Shader::Create("DepthPassShader", DefaultShaders::DepthShader);
+		s_Data.NormalShader = Shader::Create("NormalShader", DefaultShaders::NormalShader);
+		s_Data.LightShader = Shader::Create("LightTextureShader", DefaultShaders::LightTextureShader);
 		s_Data.MaterialShader->Bind();
 
 		s_Data.SkyTexture = CubeMapTexture::Create({
@@ -129,7 +130,6 @@ namespace Atlas {
 		s_Data.MaterialShader->SetInt("material.DiffuseTexture", (int)Utils::TextureType::DIFFUSE);
 		s_Data.MaterialShader->SetInt("material.SpecularTexture", (int)Utils::TextureType::SPECULAR);
 		//s_Data.MaterialShader->SetInt("u_SkyBoxTexture", (int)Utils::TextureType::SKYBOX);
-		//s_Data.MaterialShader->SetInt("u_ShadowMap", (int)Utils::TextureType::SHADOW_MAP);
 		s_Data.MaterialShader->SetInt("u_ShadowMap", (int)Utils::TextureType::SHADOW_MAP);
 
 
@@ -157,7 +157,6 @@ namespace Atlas {
 
 			if (!mesh->Hide && entity.EntityHandle != scene->GetSelectedEntity())
 			{
-				//uint32_t id = scene->HasComponent<IDComponent>(entity) ? scene->GetComponent<IDComponent>(entity) : -1;
 				DrawMesh(*mesh->Mesh, entity, scene->GetShadowMap()->GetDepthAttachmentRendererID(), lightSpace);
 
 				if (mesh->Mesh->GetDisplayMode() == Utils::DisplayMode::NORMAL)
@@ -238,22 +237,22 @@ namespace Atlas {
 
 		if (lightPositions.size() != 0)
 		{
-			s_Data.LightVertexArray->GetVertexBuffer()->SetData(&lightPositions[0], lightPositions.size() * sizeof(LightVertex));
-			s_Data.LightVertexArray->GetIndexBuffer()->SetData(&lightIndices[0], lightPositions.size() * sizeof(uint32_t));
+			s_Data.LightVertexArray->GetVertexBuffer()->SetData(&lightPositions[0], (uint32_t) lightPositions.size() * sizeof(LightVertex));
+			s_Data.LightVertexArray->GetIndexBuffer()->SetData(&lightIndices[0], (uint32_t) lightPositions.size() * sizeof(uint32_t));
 			s_Data.LightVertexArray->BindAll();
 
-			RenderCommand::DrawPoints(s_Data.LightVertexArray, lightIndices.size());
+			RenderCommand::DrawPoints(s_Data.LightVertexArray, (uint32_t) lightIndices.size());
 		}
 	}
 
 	void Renderer3D::DrawLightDepthMap(Ref<Scene> scene, const glm::mat4& viewProjection)
 	{
-		s_Data.DirLightDepthShader->Bind();
-		s_Data.DirLightDepthShader->SetMat4("u_ViewProjection", viewProjection);
+		s_Data.DepthPass->Bind();
+		s_Data.DepthPass->SetMat4("u_ViewProjection", viewProjection);
 
 		for (MeshComponent& mesh : scene->GetComponentGroup<MeshComponent>())
 		{
-			s_Data.DirLightDepthShader->SetMat4("u_ModelMat", mesh.Mesh->GetTransformMatrix());
+			s_Data.DepthPass->SetMat4("u_ModelMat", mesh.Mesh->GetTransformMatrix());
 			Flush(mesh.Mesh->GetVertexArray(), mesh.Mesh->GetTriangleCount());
 		}
 	}
@@ -288,7 +287,7 @@ namespace Atlas {
 		{
 			auto& light = scene->GetComponent<PointLightComponent>(selection);
 
-			LightVertex vertex = { light.Position, selection };
+			LightVertex vertex = { light.Position, (int) selection };
 			uint32_t index = 0;
 
 			s_Data.LightVertexArray->GetVertexBuffer()->SetData(&vertex, sizeof(LightVertex));

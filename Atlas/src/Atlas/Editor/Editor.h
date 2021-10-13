@@ -7,6 +7,11 @@
 
 namespace Atlas
 {
+	enum class EditorType
+	{
+		ATLAS2D = 0,
+		ATLAS3D
+	};
 
 	class Editor
 	{
