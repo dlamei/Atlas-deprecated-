@@ -85,7 +85,7 @@ namespace ECS {
 		template<typename T>
 		bool HasComponent(Entity entity)
 		{
-			Signature signature = m_EntityManager->GetSignature(entity);
+		Signature signature = m_EntityManager->GetSignature(entity);
 			return signature[m_ComponentManager->GetComponentType<T>()];
 		}
 

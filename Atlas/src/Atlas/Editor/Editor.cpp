@@ -48,7 +48,11 @@ namespace Atlas
 		ImGui::Image((void*)(size_t)m_ActiveScene->GetShadowMap()->GetDepthAttachmentRendererID(), ImVec2(800, 800), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		ImGui::End();
 
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Viewport");
+		ImGui::PopStyleVar();
+
+
 		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
 		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
 		auto viewportOffset = ImGui::GetWindowPos();
@@ -114,7 +118,6 @@ namespace Atlas
 		Renderer2D::DrawFrameBuffer(m_ViewportFrameBuffer->GetColorAttachmentRendererID(0), (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y, m_Gamma);
 		m_PostProcessingFrameBuffer->Unbind();
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
 		ImVec2 cursorPos = ImGui::GetCursorPos();
 		ImGui::Image((void*)(size_t)m_PostProcessingFrameBuffer->GetColorAttachmentRendererID(0), { m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
@@ -133,7 +136,6 @@ namespace Atlas
 
 		ImGui::PopStyleColor();
 
-		ImGui::PopStyleVar();
 
 		ImGuiWindow* window = GImGui->CurrentWindow;
 		ImGuizmo::SetRect(window->Pos.x, window->Pos.y, window->Size.x, window->Size.y);
@@ -250,7 +252,10 @@ namespace Atlas
 		m_PostProcessingFrameBuffer->Unbind();
 
 
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Viewport");
+		ImGui::PopStyleVar();
+
 		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
 		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
 		auto viewportOffset = ImGui::GetWindowPos();
@@ -258,9 +263,7 @@ namespace Atlas
 		m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
 		m_ViewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Image((void*)(size_t)m_PostProcessingFrameBuffer->GetColorAttachmentRendererID(0), { m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-		ImGui::PopStyleVar();
 
 		ImGui::End();
 
