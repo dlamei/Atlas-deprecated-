@@ -252,51 +252,54 @@ namespace Atlas
 		m_PostProcessingFrameBuffer->Unbind();
 
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("Viewport");
-		ImGui::PopStyleVar();
+		if (m_ShowViewport)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+			ImGui::Begin("Viewport");
+			ImGui::PopStyleVar();
 
-		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
-		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
-		auto viewportOffset = ImGui::GetWindowPos();
-		m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
-		m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
-		m_ViewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+			auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+			auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+			auto viewportOffset = ImGui::GetWindowPos();
+			m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+			m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
+			m_ViewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
 
-		ImGui::Image((void*)(size_t)m_PostProcessingFrameBuffer->GetColorAttachmentRendererID(0), { m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+			ImGui::Image((void*)(size_t)m_PostProcessingFrameBuffer->GetColorAttachmentRendererID(0), { m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
-		ImGui::End();
+			ImGui::End();
 
-		ImGui::Begin("Render Stats");
+			ImGui::Begin("Render Stats");
 
-		auto& stats = Renderer2D::GetStats();
+			auto& stats = Renderer2D::GetStats();
 
-		char buffer[16];
-		memset(&buffer[0], 0, sizeof(buffer));
-		std::to_chars(&buffer[0], &buffer[16], stats.DrawCalls);
+			char buffer[16];
+			memset(&buffer[0], 0, sizeof(buffer));
+			std::to_chars(&buffer[0], &buffer[16], stats.DrawCalls);
 
-		ImGui::Text("Draw Calls: ");
-		ImGui::SameLine();
-		ImGui::Text(buffer);
+			ImGui::Text("Draw Calls: ");
+			ImGui::SameLine();
+			ImGui::Text(buffer);
 
-		memset(&buffer[0], 0, sizeof(buffer));
-		std::to_chars(&buffer[0], &buffer[16], stats.GetTotalVertexCount());
+			memset(&buffer[0], 0, sizeof(buffer));
+			std::to_chars(&buffer[0], &buffer[16], stats.GetTotalVertexCount());
 
-		ImGui::Text("Vertex Count: ");
-		ImGui::SameLine();
-		ImGui::Text(buffer);
+			ImGui::Text("Vertex Count: ");
+			ImGui::SameLine();
+			ImGui::Text(buffer);
 
-		memset(&buffer[0], 0, sizeof(buffer));
-		std::to_chars(&buffer[0], &buffer[16], stats.QuadCount);
+			memset(&buffer[0], 0, sizeof(buffer));
+			std::to_chars(&buffer[0], &buffer[16], stats.QuadCount);
 
-		ImGui::Text("Quad Count: ");
-		ImGui::SameLine();
-		ImGui::Text(buffer);
+			ImGui::Text("Quad Count: ");
+			ImGui::SameLine();
+			ImGui::Text(buffer);
 
 
-		Renderer2D::ResetStats();
+			Renderer2D::ResetStats();
 
-		ImGui::End();
+			ImGui::End();
+		}
 
 		Log::GetAtlasLogger().Draw("Atlas Log");
 	}

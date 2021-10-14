@@ -22,7 +22,6 @@ namespace Atlas {
 		Ref<FrameBuffer> m_ViewportFrameBuffer;
 		Ref<FrameBuffer> m_PostProcessingFrameBuffer;
 		Ref<Scene> m_ActiveScene;
-		bool m_ShowEditor = true;
 
 		Ref<Editor> m_Editor;
 		SceneHierarchy m_SceneHierarchy;
@@ -42,8 +41,6 @@ namespace Atlas {
 		EditorLayer();
 		virtual ~EditorLayer() = default;
 
-		inline void ToggleEditor(bool toggle) { m_ShowEditor = toggle; }
-
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
 		virtual void OnImGuiRender() override;
@@ -56,6 +53,8 @@ namespace Atlas {
 		inline Ref<FrameBuffer>& GetFrameBuffer() { return m_ViewportFrameBuffer; }
 		inline Ref<Scene>& GetActiveScene() { return m_ActiveScene; }
 		inline glm::vec2& GetViewportSize() { return m_Editor->GetViewportSize(); }
+
+		Ref<Editor>& GetEditor() { return m_Editor; }
 
 		void BindViewportFrameBuffer();
 		void UnbindViewportFrameBuffer();

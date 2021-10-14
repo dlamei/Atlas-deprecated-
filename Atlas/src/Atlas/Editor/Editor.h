@@ -21,11 +21,15 @@ namespace Atlas
 		glm::vec2 m_ViewportBounds[2] = { glm::vec2(0) };
 		glm::vec2 m_ViewportSize = { 1.0f, 1.0f };
 
+		bool m_ShowViewport = true;
+
 	public:
 		Editor(Ref<FrameBuffer> viewportFB, Ref<FrameBuffer> postprocessingFB)
 			: m_ViewportFrameBuffer(viewportFB), m_PostProcessingFrameBuffer(postprocessingFB) {}
 
 		glm::vec2& GetViewportSize() { return m_ViewportSize; }
+
+		void ToggleViewport(bool toggle) { m_ShowViewport = toggle; }
 
 		virtual void Render() = 0;
 		virtual void OnUpdate(Timestep ts) = 0;
